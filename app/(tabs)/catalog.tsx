@@ -11,60 +11,7 @@ import {
 } from 'react-native';
 import { Link } from 'expo-router';
 import { Search, Star, MapPin, Phone, Clock, ChevronRight } from 'lucide-react-native';
-
-interface Business {
-  id: string;
-  name: string;
-  category: string;
-  rating: number;
-  reviewCount: number;
-  image: string;
-  address: string;
-  openHours: string;
-  phone: string;
-}
-
-interface Category {
-  id: string;
-  name: string;
-  icon: string;
-}
-
-// Временные данные для демонстрации
-const CATEGORIES: Category[] = [
-  { id: '1', name: 'Рестораны', icon: '🍽️' },
-  { id: '2', name: 'Магазины', icon: '🛍️' },
-  { id: '3', name: 'Красота', icon: '💇‍♀️' },
-  { id: '4', name: 'Здоровье', icon: '🏥' },
-  { id: '5', name: 'Услуги', icon: '🔧' },
-  { id: '6', name: 'Развлечения', icon: '🎮' },
-];
-
-const BUSINESSES: Business[] = [
-  {
-    id: '1',
-    name: 'Кафе "У Дома"',
-    category: 'Рестораны',
-    rating: 4.8,
-    reviewCount: 124,
-    image: 'https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=400',
-    address: 'ул. Примерная, 1',
-    openHours: '09:00 - 22:00',
-    phone: '+7 (999) 123-45-67',
-  },
-  {
-    id: '2',
-    name: 'Салон красоты "Элегант"',
-    category: 'Красота',
-    rating: 4.6,
-    reviewCount: 89,
-    image: 'https://images.unsplash.com/photo-1560066984-138dadb4c035?w=400',
-    address: 'ул. Центральная, 15',
-    openHours: '10:00 - 20:00',
-    phone: '+7 (999) 234-56-78',
-  },
-  // Добавьте больше бизнесов по необходимости
-];
+import { BUSINESSES, CATEGORIES, type Business } from '../data/businesses';
 
 export default function CatalogScreen() {
   const [searchQuery, setSearchQuery] = useState('');
