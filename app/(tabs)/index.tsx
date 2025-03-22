@@ -1,8 +1,11 @@
 import { View, Text, ScrollView, StyleSheet, Image, Pressable } from 'react-native';
 import { Link } from 'expo-router';
-import { Bell, MessageCircle } from 'lucide-react-native';
+import { Bell, MessageCircle, User } from 'lucide-react-native';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function HomeScreen() {
+  const { user } = useAuth();
+  
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -14,6 +17,20 @@ export default function HomeScreen() {
           <Pressable style={styles.iconButton}>
             <MessageCircle size={24} color="#0f172a" />
           </Pressable>
+          <Link href="../../account" asChild>
+            <Pressable style={styles.avatarButton}>
+              {user?.avatar_url ? (
+                <Image
+                  source={{ uri: user.avatar_url }}
+                  style={styles.avatarImage}
+                />
+              ) : (
+                <View style={styles.avatarPlaceholder}>
+                  <User size={18} color="#64748b" />
+                </View>
+              )}
+            </Pressable>
+          </Link>
         </View>
       </View>
 
@@ -35,17 +52,17 @@ export default function HomeScreen() {
         <View style={styles.quickActions}>
           <Text style={styles.sectionTitle}>Быстрые действия</Text>
           <View style={styles.actionGrid}>
-            <Link href="/events" asChild>
+            <Link href="../events" asChild>
               <Pressable style={styles.actionButton}>
                 <Text style={styles.actionText}>События</Text>
               </Pressable>
             </Link>
-            <Link href="/map" asChild>
+            <Link href="../map" asChild>
               <Pressable style={styles.actionButton}>
                 <Text style={styles.actionText}>Карта</Text>
               </Pressable>
             </Link>
-            <Link href="/services" asChild>
+            <Link href="../services" asChild>
               <Pressable style={styles.actionButton}>
                 <Text style={styles.actionText}>Услуги</Text>
               </Pressable>
@@ -81,9 +98,31 @@ const styles = StyleSheet.create({
   headerIcons: {
     flexDirection: 'row',
     gap: 16,
+    alignItems: 'center',
   },
   iconButton: {
     padding: 8,
+  },
+  avatarButton: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    overflow: 'hidden',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  avatarImage: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+  },
+  avatarPlaceholder: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#e2e8f0',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   content: {
     flex: 1,

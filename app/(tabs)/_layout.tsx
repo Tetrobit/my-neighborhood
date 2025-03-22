@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Users, Calendar, MapPin, Menu } from 'lucide-react-native';
+import { Chrome as Home, Users, Calendar, MapPin, Menu, UserCircle } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -46,6 +46,14 @@ export default function TabLayout() {
         options={{
           title: 'Сервисы',
           tabBarIcon: ({ color, size }) => <Menu size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="user"
+        options={{
+          title: 'Профиль',
+          tabBarIcon: ({ color, size }) => <UserCircle size={size} color={color} />,
+          href: '../../account',
         }}
       />
     </Tabs>
