@@ -19,7 +19,7 @@ import {
   Mail,
   MessageCircle,
 } from 'lucide-react-native';
-import { BUSINESSES_BY_ID } from '../../data/businesses';
+import { BUSINESSES_BY_ID } from '../data/businesses';
 
 export default function BusinessScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();

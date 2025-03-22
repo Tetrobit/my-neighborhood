@@ -14,6 +14,7 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" options={{ title: 'Oops!' }} />
         <Stack.Screen name="auth" options={{ headerShown: false }} />
         <Stack.Screen name="account" options={{ headerShown: false }} />
+        <Stack.Screen name="business/[id]" options={{ headerShown: false, presentation: 'modal' }} />
       </Stack>
       <StatusBar style="auto" />
     </AuthProvider>
