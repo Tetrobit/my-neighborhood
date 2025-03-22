@@ -28,9 +28,10 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
 
 # typescript
 *.tsbuildinfo
 
-!expo-env.d.ts
+expo-env.d.ts

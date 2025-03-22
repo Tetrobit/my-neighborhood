@@ -1,0 +1,4 @@
+<platform name="android">
+    <preference name="AndroidWindowSplashScreenAnimatedIcon" value="resources/android/splash/splashscreen.xml" />
+    <preference name="AndroidWindowSplashScreenBackground" value="#FFFFFF" />
+</platform>
