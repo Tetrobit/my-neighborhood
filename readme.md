@@ -30,8 +30,8 @@
 
 1. Клонируйте репозиторий:
 ```bash
-git clone https://github.com/your-username/my-neighborhood.git
-cd my-neighborhood
+git clone https://github.com/Tetrobit/LocalHub.git
+cd LocalHub
 ```
 
 2. Установите зависимости:
@@ -44,6 +44,8 @@ yarn install
 3. Создайте файл `.env` в корне проекта на основе `.env.example`:
 ```env
 YANDEX_MAPS_API_KEY=your_api_key
+EXPO_PUBLIC_SUPABASE_URL=your_supabase_url
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your_supabase_key
 ```
 
 4. Запустите приложение:
@@ -82,7 +84,7 @@ yarn web
 ## 📁 Структура проекта
 
 ```
-my-neighborhood/
+localhub/
 ├── app/                    # Основной код приложения
 │   ├── (tabs)/            # Вкладки приложения
 │   ├── business/          # Страницы бизнесов
