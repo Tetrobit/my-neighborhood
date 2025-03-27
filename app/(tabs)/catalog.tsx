@@ -24,7 +24,7 @@ export default function CatalogScreen() {
   });
 
   const renderBusinessCard = ({ item: business }: { item: Business }) => (
-    <Link href={{ pathname: '/(tabs)/business/[id]', params: { id: business.id } }} asChild>
+    <Link href={{ pathname: '/business/[id]', params: { id: business.id } }} asChild>
       <Pressable style={styles.businessCard}>
         <Image source={{ uri: business.image }} style={styles.businessImage} />
         <View style={styles.businessContent}>
@@ -102,7 +102,7 @@ export default function CatalogScreen() {
               ]}
               onPress={() => setSelectedCategory(category.name)}
             >
-              <Text style={styles.categoryEmoji}>{category.icon}</Text>
+              {/* <Text style={styles.categoryEmoji}>{category.icon}</Text> */}
               <Text style={[
                 styles.categoryText,
                 selectedCategory === category.name && styles.categoryTextActive,
