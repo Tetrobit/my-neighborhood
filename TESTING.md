@@ -10,12 +10,6 @@
 - React Native Testing Library - библиотека для тестирования React Native компонентов
 - Jest Expo - пресет Jest для Expo проектов
 
-### Установка зависимостей
-
-```bash
-npm install --save-dev jest jest-expo @testing-library/react-native @testing-library/jest-native @types/jest
-```
-
 ### Конфигурация
 
 1. `jest.config.js` - основная конфигурация Jest
