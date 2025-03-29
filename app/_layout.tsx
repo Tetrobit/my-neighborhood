@@ -15,7 +15,16 @@ export default function RootLayout() {
         <Stack.Screen name="auth" options={{ headerShown: false }} />
         <Stack.Screen name="account" options={{ headerShown: false }} />
         <Stack.Screen name="business/[id]" options={{ headerShown: false, presentation: 'modal' }} />
+        <Stack.Screen name="map" options={{ headerShown: false }} />
         <Stack.Screen name="recycling/[id]" options={{ headerShown: false }} />
+      {/* <Tabs.Screen
+        name="map"
+        options={{
+          title: 'Карта',
+          tabBarIcon: ({ color, size }) => <MapPin size={size} color={color} />,
+          headerShown: false,
+        }}
+      /> */}
       </Stack>
       <StatusBar style="auto" />
     </AuthProvider>

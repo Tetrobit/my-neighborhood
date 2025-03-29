@@ -1,10 +1,19 @@
 import { View, Text, ScrollView, StyleSheet, Image, Pressable } from 'react-native';
 import { Link } from 'expo-router';
-import { Bell, MessageCircle, User } from 'lucide-react-native';
+import { Bell, MessageCircle, User, Store, Users, Calendar, Menu, Recycle, MapPin, Phone, Info } from 'lucide-react-native';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function HomeScreen() {
   const { user } = useAuth();
+  
+  const miniApps = [
+    { icon: Store, title: 'Каталог', href: '/(tabs)/catalog' },
+    { icon: Users, title: 'Сообщество', href: '/(tabs)/community' },
+    { icon: Calendar, title: 'События', href: '/(tabs)/events' },
+    { icon: Menu, title: 'Сервисы', href: '/(tabs)/services' },
+    { icon: Recycle, title: 'Переработка', href: '/recycling' },
+    { icon: MapPin, title: 'Карта', href: '/map' },
+  ];
   
   return (
     <View style={styles.container}>
@@ -35,6 +44,22 @@ export default function HomeScreen() {
       </View>
 
       <ScrollView style={styles.content}>
+        <View style={styles.miniAppsSection}>
+          <Text style={styles.sectionTitle}>Мини-приложения</Text>
+          <View style={styles.miniAppsGrid}>
+            {miniApps.map((app, index) => (
+              <Link key={index} href={app.href} asChild>
+                <Pressable style={styles.miniAppButton}>
+                  <View style={styles.miniAppIcon}>
+                    <app.icon size={24} color="#0891b2" />
+                  </View>
+                  <Text style={styles.miniAppText}>{app.title}</Text>
+                </Pressable>
+              </Link>
+            ))}
+          </View>
+        </View>
+
         <View style={styles.newsSection}>
           <Text style={styles.sectionTitle}>Новости района</Text>
           <View style={styles.newsCard}>
@@ -46,27 +71,6 @@ export default function HomeScreen() {
               <Text style={styles.newsTitle}>Открытие нового парка</Text>
               <Text style={styles.newsDescription}>В эту субботу состоится торжественное открытие обновленного городского парка...</Text>
             </View>
-          </View>
-        </View>
-
-        <View style={styles.quickActions}>
-          <Text style={styles.sectionTitle}>Быстрые действия</Text>
-          <View style={styles.actionGrid}>
-            <Link href="../events" asChild>
-              <Pressable style={styles.actionButton}>
-                <Text style={styles.actionText}>События</Text>
-              </Pressable>
-            </Link>
-            <Link href="../map" asChild>
-              <Pressable style={styles.actionButton}>
-                <Text style={styles.actionText}>Карта</Text>
-              </Pressable>
-            </Link>
-            <Link href="../services" asChild>
-              <Pressable style={styles.actionButton}>
-                <Text style={styles.actionText}>Услуги</Text>
-              </Pressable>
-            </Link>
           </View>
         </View>
       </ScrollView>
@@ -127,7 +131,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  newsSection: {
+  miniAppsSection: {
     padding: 16,
   },
   sectionTitle: {
@@ -135,6 +139,43 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#0f172a',
     marginBottom: 16,
+  },
+  miniAppsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  miniAppButton: {
+    width: '30%',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  miniAppIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#f0f9ff',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  miniAppText: {
+    fontSize: 14,
+    color: '#0f172a',
+    textAlign: 'center',
+  },
+  newsSection: {
+    padding: 16,
   },
   newsCard: {
     backgroundColor: '#ffffff',
@@ -167,26 +208,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#64748b',
     lineHeight: 20,
-  },
-  quickActions: {
-    padding: 16,
-  },
-  actionGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  actionButton: {
-    backgroundColor: '#0891b2',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    minWidth: '30%',
-  },
-  actionText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '500',
-    textAlign: 'center',
   },
 });
