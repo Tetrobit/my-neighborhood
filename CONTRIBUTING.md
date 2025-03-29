@@ -11,7 +11,7 @@
 
 2. **Создайте ветку для своих изменений**
    ```bash
-   git checkout -b feature/название-функции
+   git checkout -b feat/название-функции
    # или
    git checkout -b fix/описание-исправления
    ```
@@ -29,7 +29,7 @@
 
 5. **Отправьте изменения**
    ```bash
-   git push origin feature/название-функции
+   git push origin feat/название-функции
    ```
 
 6. **Создайте Pull Request**

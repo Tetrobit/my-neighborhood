@@ -46,7 +46,7 @@ yarn e2e:android
 ## Структура тестов
 
 ```
-my-neighborhood/
+MyLocal/
 ├── __tests__/                    # Интеграционные тесты
 ├── e2e/                         # E2E тесты
 └── src/

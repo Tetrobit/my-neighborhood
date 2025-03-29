@@ -215,13 +215,13 @@ git commit -m "fix"
 
 ### Ветки
 
-- Используйте feature/ для новых функций
+- Используйте feat/ для новых функций
 - Используйте fix/ для исправлений
 - Используйте hotfix/ для срочных исправлений
 
 ```bash
 # Правильно
-git checkout -b feature/user-profile
+git checkout -b feat/user-profile
 git checkout -b fix/map-loading
 git checkout -b hotfix/crash-fix
 
