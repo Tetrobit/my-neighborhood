@@ -49,7 +49,7 @@ export default function HomeScreen() {
                   style={styles.avatarImage}
                 />
               ) : (
-                <View style={styles.avatarPlaceholder}>
+                <View style={styles.avatarPlaceholder} testID="avatar-placeholder">
                   <User size={18} color="#64748b" />
                 </View>
               )}

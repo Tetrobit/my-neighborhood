@@ -22,7 +22,7 @@ export default function MiniAppsScreen() {
             {miniApps.map((app, index) => (
               <Link key={index} href={app.href} asChild>
                 <Pressable style={styles.miniAppButton}>
-                  <View style={styles.miniAppIcon}>
+                  <View style={styles.miniAppIcon} testID="mini-app-icon">
                     <app.icon size={24} color="#0891b2" />
                   </View>
                   <Text style={styles.miniAppText}>{app.title}</Text>
