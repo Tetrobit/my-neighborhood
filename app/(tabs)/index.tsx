@@ -1,18 +1,33 @@
 import { View, Text, ScrollView, StyleSheet, Image, Pressable } from 'react-native';
 import { Link } from 'expo-router';
-import { Bell, MessageCircle, User, Store, Users, Calendar, Menu, Recycle, MapPin, Phone, Info } from 'lucide-react-native';
+import { Bell, MessageCircle, User } from 'lucide-react-native';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function HomeScreen() {
   const { user } = useAuth();
   
-  const miniApps = [
-    { icon: Store, title: 'Каталог', href: '/(tabs)/catalog' },
-    { icon: Users, title: 'Сообщество', href: '/(tabs)/community' },
-    { icon: Calendar, title: 'События', href: '/(tabs)/events' },
-    { icon: Menu, title: 'Сервисы', href: '/(tabs)/services' },
-    { icon: Recycle, title: 'Переработка', href: '/recycling' },
-    { icon: MapPin, title: 'Карта', href: '/map' },
+  const news = [
+    {
+      id: 1,
+      title: 'Открытие нового парка',
+      description: 'В эту субботу состоится торжественное открытие обновленного городского парка. Приглашаем всех жителей района на праздничное мероприятие!',
+      image: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&q=80&w=800',
+      date: '25 марта 2024',
+    },
+    {
+      id: 2,
+      title: 'Новый пункт переработки',
+      description: 'В нашем районе открылся новый пункт приема вторсырья. Теперь жители могут сдавать пластик, бумагу и стекло в удобном месте.',
+      image: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80&w=800',
+      date: '23 марта 2024',
+    },
+    {
+      id: 3,
+      title: 'Фестиваль местных предпринимателей',
+      description: 'В следующем месяце пройдет фестиваль местных предпринимателей. Узнайте о новых бизнесах в вашем районе и получите специальные предложения.',
+      image: 'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&q=80&w=800',
+      date: '20 марта 2024',
+    },
   ];
   
   return (
@@ -44,34 +59,21 @@ export default function HomeScreen() {
       </View>
 
       <ScrollView style={styles.content}>
-        <View style={styles.miniAppsSection}>
-          <Text style={styles.sectionTitle}>Мини-приложения</Text>
-          <View style={styles.miniAppsGrid}>
-            {miniApps.map((app, index) => (
-              <Link key={index} href={app.href} asChild>
-                <Pressable style={styles.miniAppButton}>
-                  <View style={styles.miniAppIcon}>
-                    <app.icon size={24} color="#0891b2" />
-                  </View>
-                  <Text style={styles.miniAppText}>{app.title}</Text>
-                </Pressable>
-              </Link>
-            ))}
-          </View>
-        </View>
-
         <View style={styles.newsSection}>
           <Text style={styles.sectionTitle}>Новости района</Text>
-          <View style={styles.newsCard}>
-            <Image
-              source={{ uri: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&q=80&w=800' }}
-              style={styles.newsImage}
-            />
-            <View style={styles.newsContent}>
-              <Text style={styles.newsTitle}>Открытие нового парка</Text>
-              <Text style={styles.newsDescription}>В эту субботу состоится торжественное открытие обновленного городского парка...</Text>
+          {news.map((item) => (
+            <View key={item.id} style={styles.newsCard}>
+              <Image
+                source={{ uri: item.image }}
+                style={styles.newsImage}
+              />
+              <View style={styles.newsContent}>
+                <Text style={styles.newsDate}>{item.date}</Text>
+                <Text style={styles.newsTitle}>{item.title}</Text>
+                <Text style={styles.newsDescription}>{item.description}</Text>
+              </View>
             </View>
-          </View>
+          ))}
         </View>
       </ScrollView>
     </View>
@@ -131,7 +133,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  miniAppsSection: {
+  newsSection: {
     padding: 16,
   },
   sectionTitle: {
@@ -139,43 +141,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#0f172a',
     marginBottom: 16,
-  },
-  miniAppsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 12,
-  },
-  miniAppButton: {
-    width: '30%',
-    alignItems: 'center',
-    backgroundColor: '#ffffff',
-    padding: 16,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  miniAppIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#f0f9ff',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  miniAppText: {
-    fontSize: 14,
-    color: '#0f172a',
-    textAlign: 'center',
-  },
-  newsSection: {
-    padding: 16,
   },
   newsCard: {
     backgroundColor: '#ffffff',
@@ -197,6 +162,11 @@ const styles = StyleSheet.create({
   },
   newsContent: {
     padding: 16,
+  },
+  newsDate: {
+    fontSize: 14,
+    color: '#64748b',
+    marginBottom: 8,
   },
   newsTitle: {
     fontSize: 18,
