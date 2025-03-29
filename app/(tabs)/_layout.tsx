@@ -42,13 +42,6 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="map"
-        options={{
-          title: 'Карта',
-          tabBarIcon: ({ color, size }) => <MapPin size={size} color={color} />,
-        }}
-      />
-      <Tabs.Screen
         name="services"
         options={{
           title: 'Сервисы',

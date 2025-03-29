@@ -28,8 +28,8 @@ import {
   Clock
 } from 'lucide-react-native';
 
-import { RECYCLING_POINTS, MATERIAL_COLORS } from '../data/recyclingPoints';
-import { yandexMapHTML, handleWebViewMessage, formatRecyclingPointsForMap } from '../utils/yandexMaps';
+import { RECYCLING_POINTS, MATERIAL_COLORS } from './data/recyclingPoints';
+import { yandexMapHTML, handleWebViewMessage, formatRecyclingPointsForMap } from './utils/yandexMaps';
 
 // Yandex Maps API key - в реальном приложении храните в .env файле
 const YANDEX_API_KEY = '50e2f3f3-eeb0-4bf5-a45b-dcff8e53d266';
