@@ -61,7 +61,7 @@
     "expo": "^52.0.41",
     "expo-doctor": "^1.12.8",
     "jest": "^29.7.0",
-    "jest-expo": "^50.0.4",
+    "jest-expo": "~52.0.6",
     "jest-react-native": "^18.0.0",
     "typescript": "^5.3.3"
   }
