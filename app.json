@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "bolt-expo-nativewind",
-    "slug": "bolt-expo-nativewind",
+    "slug": "welocal",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -37,6 +37,12 @@
     },
     "android": {
       "package": "com.anonymous.boltexponativewind"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "69823605-c559-41a5-bff4-18695da92dbf"
+      }
+    },
+    "owner": "tetrobit"
   }
 }
