@@ -6,9 +6,11 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Image,
 } from 'react-native';
 import { router } from 'expo-router';
 import { authService } from '../utils/auth';
+import Logo from '../components/Logo';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -34,6 +36,7 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
+      <Logo />
       <Text style={styles.title}>Welcome Back</Text>
       <Text style={styles.subtitle}>Sign in to continue</Text>
 
@@ -67,7 +70,7 @@ export default function LoginScreen() {
 
         <TouchableOpacity
           style={styles.linkButton}
-          onPress={() => router.push('/register')}
+          onPress={() => router.push('/(auth)/register')}
         >
           <Text style={styles.linkText}>
             Don't have an account? Sign up

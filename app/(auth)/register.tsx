@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { authService } from '../utils/auth';
+import Logo from '../components/Logo';
 
 export default function RegisterScreen() {
   const [name, setName] = useState('');
@@ -35,6 +36,7 @@ export default function RegisterScreen() {
 
   return (
     <View style={styles.container}>
+      <Logo />
       <Text style={styles.title}>Create Account</Text>
       <Text style={styles.subtitle}>Sign up to get started</Text>
 
