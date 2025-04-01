@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Animated,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import { router } from 'expo-router';
 import { apiService } from '../utils/api';
@@ -72,58 +73,64 @@ export default function ProfileScreen() {
   }
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
-      <View style={styles.header}>
-        <View style={styles.avatarContainer}>
-          {profile.avatar ? (
-            <Image
-              source={{ uri: profile.avatar }}
-              style={styles.avatar}
-            />
-          ) : (
-            <View style={styles.avatarPlaceholder}>
-              <Text style={styles.avatarText}>
-                {(profile.name ?? '').charAt(0).toUpperCase()}
-              </Text>
-            </View>
-          )}
+    <SafeAreaView style={styles.safeArea}>
+      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+        <View style={styles.header}>
+          <View style={styles.avatarContainer}>
+            {profile.avatar ? (
+              <Image
+                source={{ uri: profile.avatar }}
+                style={styles.avatar}
+              />
+            ) : (
+              <View style={styles.avatarPlaceholder}>
+                <Text style={styles.avatarText}>
+                  {(profile.name ?? '').charAt(0).toUpperCase()}
+                </Text>
+              </View>
+            )}
+          </View>
+          <Text style={styles.name}>{profile.name}</Text>
+          <Text style={styles.email}>{profile.email}</Text>
         </View>
-        <Text style={styles.name}>{profile.name}</Text>
-        <Text style={styles.email}>{profile.email}</Text>
-      </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.section}>
-          <TouchableOpacity
-            style={styles.menuItem}
-            onPress={() => router.push('/profile/edit')}
-          >
-            <View style={styles.menuItemLeft}>
-              <Settings size={20} color="#0891b2" />
-              <Text style={styles.menuItemText}>Редактировать профиль</Text>
-            </View>
-            <ChevronRight size={20} color="#94a3b8" />
-          </TouchableOpacity>
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <View style={styles.section}>
+            <TouchableOpacity
+              style={styles.menuItem}
+              onPress={() => router.push('/profile/edit')}
+            >
+              <View style={styles.menuItemLeft}>
+                <Settings size={20} color="#0891b2" />
+                <Text style={styles.menuItemText}>Редактировать профиль</Text>
+              </View>
+              <ChevronRight size={20} color="#94a3b8" />
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.menuItem, styles.logoutButton]}
-            onPress={handleLogout}
-          >
-            <View style={styles.menuItemLeft}>
-              <LogOut size={20} color="#ef4444" />
-              <Text style={[styles.menuItemText, styles.logoutText]}>
-                Выйти
-              </Text>
-            </View>
-            <ChevronRight size={20} color="#94a3b8" />
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </Animated.View>
+            <TouchableOpacity
+              style={[styles.menuItem, styles.logoutButton]}
+              onPress={handleLogout}
+            >
+              <View style={styles.menuItemLeft}>
+                <LogOut size={20} color="#ef4444" />
+                <Text style={[styles.menuItemText, styles.logoutText]}>
+                  Выйти
+                </Text>
+              </View>
+              <ChevronRight size={20} color="#94a3b8" />
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </Animated.View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
   container: {
     flex: 1,
     backgroundColor: '#f8fafc',
@@ -137,17 +144,20 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     padding: 24,
+    paddingTop: 40,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
   },
   avatarContainer: {
-    marginBottom: 16,
+    marginBottom: 20,
   },
   avatar: {
     width: 120,
     height: 120,
     borderRadius: 60,
+    borderWidth: 3,
+    borderColor: '#f0f9ff',
   },
   avatarPlaceholder: {
     width: 120,
@@ -156,6 +166,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#0891b2',
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#f0f9ff',
   },
   avatarText: {
     fontSize: 48,
