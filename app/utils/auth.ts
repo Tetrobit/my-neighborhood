@@ -131,7 +131,6 @@ class AuthService {
     if (!this.accessToken) {
       this.accessToken = await SecureStore.getItemAsync('access_token');
     }
-    console.log(this.accessToken);
     return this.accessToken;
   }
 
@@ -144,7 +143,6 @@ class AuthService {
 
   async isAuthenticated(): Promise<boolean> {
     const token = await this.getToken();
-    console.log("isAuthenticated", token);
     return !!token;
   }
 }
