@@ -150,13 +150,13 @@ class ApiService {
         throw new Error(data.message || 'Request failed');
       }
 
-      return { data };
+      return { data, ok: response.ok, status: response.status };
     } catch (error) {
       const apiError: ApiError = {
         message: error instanceof Error ? error.message : 'Unknown error occurred',
         status: error instanceof Response ? error.status : undefined,
       };
-      return { data: null as T, error: apiError };
+      return { data: null as T, ok: false, status: error instanceof Response ? error.status : undefined, error: apiError };
     }
   }
 
@@ -197,14 +197,15 @@ class ApiService {
   }
 
   async updateProfile(data: Partial<User>): Promise<ApiResponse<User>> {
-    return this.request<User>('/api/auth/profile', {
+    const response = await this.request<User>('/api/auth/profile', {
       method: 'PUT',
       body: JSON.stringify(data),
     });
+    return response;
   }
 
   async isAuthenticated(): Promise<boolean> {
-    return (await this.request<boolean>('/api/protected')).error ? false : true;
+    return (await this.request<boolean>('/api/protected')).ok;
   }
 }
 

@@ -10,17 +10,12 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { apiService } from '@/app/utils/api';
-
-interface UserProfile {
-  id: string;
-  name: string;
-  email: string;
-  avatar?: string;
-}
+import { User } from '@/app/utils/types/api';
 
 export default function EditProfileScreen() {
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<User | null>(null);
   const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -30,14 +25,15 @@ export default function EditProfileScreen() {
 
   const loadProfile = async () => {
     try {
-      const user = await apiService.getCurrentUser();
-      if (user.data) {
-        setProfile(user.data);
-        setName(user.data.name);
-      } else {
-        router.replace('/(auth)/login');
+      const response = await apiService.getCurrentUser();
+      if (response.error) {
+        throw new Error(response.error.message);
       }
+      setProfile(response.data);
+      setName(response.data.name);
+      setPhone(response.data.phone);
     } catch (error) {
+      console.error('Error loading profile:', error);
       Alert.alert('Error', 'Failed to load profile');
     } finally {
       setLoading(false);
@@ -52,10 +48,19 @@ export default function EditProfileScreen() {
 
     try {
       setSaving(true);
-      // TODO: Implement profile update API call
+      const response = await apiService.updateProfile({
+        name: name.trim(),
+        phone: phone.trim(),
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message);
+      }
+
       Alert.alert('Success', 'Profile updated successfully');
       router.back();
     } catch (error) {
+      console.error('Error updating profile:', error);
       Alert.alert('Error', 'Failed to update profile');
     } finally {
       setSaving(false);
@@ -84,6 +89,15 @@ export default function EditProfileScreen() {
           onChangeText={setName}
           placeholder="Your name"
           autoCapitalize="words"
+        />
+
+        <Text style={styles.label}>Phone</Text>
+        <TextInput
+          style={styles.input}
+          value={phone}
+          onChangeText={setPhone}
+          placeholder="Your phone number"
+          keyboardType="phone-pad"
         />
 
         <Text style={styles.label}>Email</Text>

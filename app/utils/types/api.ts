@@ -23,5 +23,7 @@ export interface ApiError {
 
 export interface ApiResponse<T> {
   data: T;
+  ok: boolean;
+  status: number | undefined;
   error?: ApiError;
 } 

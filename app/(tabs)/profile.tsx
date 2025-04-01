@@ -24,7 +24,7 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     loadProfile();
-  }, []);
+  });
 
   const loadProfile = async () => {
     try {
