@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react-native';
-import HomeScreen from '@/app/(tabs)/index';
+import HomeScreen from '@/app/(tabs)/profile';
 import { useAuth } from '@/hooks/useAuth';
 
 // Mock the useAuth hook

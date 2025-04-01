@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Chrome as Home, Grid } from 'lucide-react-native';
+import { Blocks, User, House } from 'lucide-react-native';
 
 export default function TabLayout() {
   return (
@@ -17,14 +17,21 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Главная',
-          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+          tabBarIcon: ({ color, size }) => <House size={size} color={color} />,
         }}
       />
       <Tabs.Screen
         name="miniapps"
         options={{
-          title: 'Мини-приложения',
-          tabBarIcon: ({ color, size }) => <Grid size={size} color={color} />,
+          title: 'Сервисы',
+          tabBarIcon: ({ color, size }) => <Blocks size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: 'Профиль',
+          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
         }}
       />
     </Tabs>
