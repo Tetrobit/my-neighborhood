@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -8,10 +8,13 @@ import {
   Alert,
   ActivityIndicator,
   ScrollView,
+  SafeAreaView,
+  Animated,
 } from 'react-native';
 import { router } from 'expo-router';
 import { apiService } from '@/app/utils/api';
 import { User } from '@/app/utils/types/api';
+import { ArrowLeft } from 'lucide-react-native';
 
 export default function EditProfileScreen() {
   const [profile, setProfile] = useState<User | null>(null);
@@ -19,9 +22,15 @@ export default function EditProfileScreen() {
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     loadProfile();
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
   }, []);
 
   const loadProfile = async () => {
@@ -68,102 +77,165 @@ export default function EditProfileScreen() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text>Загрузка...</Text>
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0891b2" />
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.form}>
-        <View style={styles.field}>
-          <Text style={styles.label}>Имя</Text>
-          <TextInput
-            style={styles.input}
-            value={name}
-            onChangeText={setName}
-            placeholder="Введите ваше имя"
-            autoCapitalize="words"
-          />
+    <SafeAreaView style={styles.safeArea}>
+      <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+        <View style={styles.header}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <ArrowLeft size={24} color="#0f172a" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Редактировать профиль</Text>
         </View>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Email</Text>
-          <TextInput
-            style={[styles.input, styles.disabledInput]}
-            value={profile?.email}
-            editable={false}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-        </View>
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <View style={styles.form}>
+            <View style={styles.field}>
+              <Text style={styles.label}>Имя</Text>
+              <TextInput
+                style={styles.input}
+                value={name}
+                onChangeText={setName}
+                placeholder="Введите ваше имя"
+                autoCapitalize="words"
+                placeholderTextColor="#94a3b8"
+              />
+            </View>
 
-        <View style={styles.field}>
-          <Text style={styles.label}>Телефон</Text>
-          <TextInput
-            style={styles.input}
-            value={phone}
-            onChangeText={setPhone}
-            placeholder="Введите ваш телефон"
-            keyboardType="phone-pad"
-          />
-        </View>
+            <View style={styles.field}>
+              <Text style={styles.label}>Email</Text>
+              <TextInput
+                style={[styles.input, styles.disabledInput]}
+                value={profile?.email}
+                editable={false}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                placeholderTextColor="#94a3b8"
+              />
+            </View>
 
-        <TouchableOpacity
-          style={[styles.button, saving && styles.buttonDisabled]}
-          onPress={handleSave}
-          disabled={saving}
-        >
-          <Text style={styles.buttonText}>
-            {saving ? 'Сохранение...' : 'Сохранить изменения'}
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </ScrollView>
+            <View style={styles.field}>
+              <Text style={styles.label}>Телефон</Text>
+              <TextInput
+                style={styles.input}
+                value={phone}
+                onChangeText={setPhone}
+                placeholder="Введите ваш телефон"
+                keyboardType="phone-pad"
+                placeholderTextColor="#94a3b8"
+              />
+            </View>
+
+            <TouchableOpacity
+              style={[styles.button, saving && styles.buttonDisabled]}
+              onPress={handleSave}
+              disabled={saving}
+            >
+              {saving ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Text style={styles.buttonText}>Сохранить изменения</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </Animated.View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f8fafc',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f8fafc',
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 40,
+    paddingBottom: 16,
+    backgroundColor: '#ffffff',
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e5e5',
+  },
+  backButton: {
+    padding: 8,
+    marginRight: 16,
+  },
+  headerTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#0f172a',
+  },
+  content: {
+    flex: 1,
   },
   form: {
-    padding: 20,
-    gap: 20,
+    padding: 24,
+    paddingTop: 32,
+    gap: 24,
   },
   field: {
     gap: 8,
   },
   label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#64748b',
+    marginBottom: 4,
   },
   input: {
+    backgroundColor: '#ffffff',
     borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 12,
+    borderColor: '#e2e8f0',
+    borderRadius: 12,
+    padding: 16,
     fontSize: 16,
+    color: '#0f172a',
   },
   disabledInput: {
-    backgroundColor: '#f5f5f5',
-    color: '#666',
+    backgroundColor: '#f1f5f9',
+    color: '#64748b',
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: '#0891b2',
     padding: 16,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
   buttonDisabled: {
     opacity: 0.7,
   },
   buttonText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
   },

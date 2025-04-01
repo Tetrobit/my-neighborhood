@@ -1,38 +1,71 @@
-import { View, Text, ScrollView, StyleSheet, Image, Pressable } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable, Animated } from 'react-native';
 import { Href, Link } from 'expo-router';
-import { Store, Recycle, MapPin, LucideIcon } from 'lucide-react-native';
+import { Store, Recycle, MapPin, LucideIcon, ChevronRight } from 'lucide-react-native';
+import { useEffect, useRef } from 'react';
 
 export default function MiniAppsScreen() {
-  const miniApps: Array<{icon: LucideIcon, title: string, href: Href}> = [
-    { icon: Store, title: 'Бизнесы', href: '/business/1' },
-    { icon: Recycle, title: 'Переработка', href: '/recycling/1' },
-    { icon: MapPin, title: 'Карта', href: '/map' },
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
+  const miniApps: Array<{icon: LucideIcon, title: string, description: string, href: Href}> = [
+    { 
+      icon: Store, 
+      title: 'Бизнесы', 
+      description: 'Найдите местные магазины и услуги',
+      href: '/business/1' 
+    },
+    { 
+      icon: Recycle, 
+      title: 'Переработка', 
+      description: 'Пункты приема вторсырья',
+      href: '/recycling/1' 
+    },
+    { 
+      icon: MapPin, 
+      title: 'Карта', 
+      description: 'Интерактивная карта района',
+      href: '/map' 
+    },
   ];
   
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Мини-приложения</Text>
+        <View style={styles.headerLeft}>
+          <Text style={styles.headerTitle}>Сервисы</Text>
+          <Text style={styles.headerSubtitle}>Все важные функции в одном месте</Text>
+        </View>
       </View>
 
-      <ScrollView style={styles.content}>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.miniAppsSection}>
           <Text style={styles.sectionTitle}>Все приложения</Text>
           <View style={styles.miniAppsGrid}>
             {miniApps.map((app, index) => (
               <Link key={index} href={app.href} asChild>
                 <Pressable style={styles.miniAppButton}>
-                  <View style={styles.miniAppIcon} testID="mini-app-icon">
+                  <View style={styles.miniAppIcon}>
                     <app.icon size={24} color="#0891b2" />
                   </View>
-                  <Text style={styles.miniAppText}>{app.title}</Text>
+                  <View style={styles.miniAppContent}>
+                    <Text style={styles.miniAppTitle}>{app.title}</Text>
+                    <Text style={styles.miniAppDescription}>{app.description}</Text>
+                  </View>
+                  <ChevronRight size={20} color="#94a3b8" />
                 </Pressable>
               </Link>
             ))}
           </View>
         </View>
       </ScrollView>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -44,7 +77,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingHorizontal: 16,
     paddingTop: 60,
     paddingBottom: 16,
@@ -52,10 +85,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
   },
+  headerLeft: {
+    flex: 1,
+  },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#0f172a',
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: 16,
+    color: '#64748b',
   },
   content: {
     flex: 1,
@@ -70,16 +111,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   miniAppsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     gap: 12,
   },
   miniAppButton: {
-    width: '30%',
+    flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#ffffff',
     padding: 16,
-    borderRadius: 12,
+    borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -96,11 +135,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f9ff',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 8,
+    marginRight: 16,
   },
-  miniAppText: {
-    fontSize: 14,
+  miniAppContent: {
+    flex: 1,
+  },
+  miniAppTitle: {
+    fontSize: 16,
+    fontWeight: '600',
     color: '#0f172a',
-    textAlign: 'center',
+    marginBottom: 4,
+  },
+  miniAppDescription: {
+    fontSize: 14,
+    color: '#64748b',
   },
 }); 
