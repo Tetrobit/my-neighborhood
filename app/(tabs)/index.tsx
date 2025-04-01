@@ -1,10 +1,8 @@
 import { View, Text, ScrollView, StyleSheet, Image, Pressable } from 'react-native';
 import { Link } from 'expo-router';
 import { Bell, MessageCircle, User } from 'lucide-react-native';
-import { useAuth } from '@/hooks/useAuth';
 
 export default function HomeScreen() {
-  const { user } = useAuth();
   
   const news = [
     {
@@ -41,20 +39,6 @@ export default function HomeScreen() {
           <Pressable style={styles.iconButton}>
             <MessageCircle size={24} color="#0f172a" />
           </Pressable>
-          <Link href="../../account" asChild>
-            <Pressable style={styles.avatarButton}>
-              {user?.avatar_url ? (
-                <Image
-                  source={{ uri: user.avatar_url }}
-                  style={styles.avatarImage}
-                />
-              ) : (
-                <View style={styles.avatarPlaceholder} testID="avatar-placeholder">
-                  <User size={18} color="#64748b" />
-                </View>
-              )}
-            </Pressable>
-          </Link>
         </View>
       </View>
 
