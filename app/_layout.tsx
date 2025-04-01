@@ -52,6 +52,7 @@ export default function RootLayout() {
         <Stack.Screen name="business/[id]" options={{ headerShown: false, presentation: 'modal' }} />
         <Stack.Screen name="map" options={{ headerShown: false }} />
         <Stack.Screen name="recycling/[id]" options={{ headerShown: false }} />
+        <Stack.Screen name="profile/edit" options={{ headerShown: false }} />
       </Stack>
     </>
   );

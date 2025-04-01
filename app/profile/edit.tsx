@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
-import { authService } from '../../utils/auth';
+import { authService } from '@/app/utils/auth';
 
 interface UserProfile {
   id: string;
