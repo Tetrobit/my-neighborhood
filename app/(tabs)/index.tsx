@@ -1,9 +1,19 @@
-import { View, Text, ScrollView, StyleSheet, Image, Pressable } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, Pressable, Animated } from 'react-native';
 import { Link } from 'expo-router';
-import { Bell, MessageCircle, User } from 'lucide-react-native';
+import { Bell, MessageCircle, User, ChevronRight } from 'lucide-react-native';
+import { useEffect, useRef } from 'react';
 
 export default function HomeScreen() {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
   
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   const news = [
     {
       id: 1,
@@ -29,9 +39,12 @@ export default function HomeScreen() {
   ];
   
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Мой район</Text>
+        <View style={styles.headerLeft}>
+          <Text style={styles.headerTitle}>Мой район</Text>
+          <Text style={styles.headerSubtitle}>Добро пожаловать!</Text>
+        </View>
         <View style={styles.headerIcons}>
           <Pressable style={styles.iconButton}>
             <Bell size={24} color="#0f172a" />
@@ -42,11 +55,17 @@ export default function HomeScreen() {
         </View>
       </View>
 
-      <ScrollView style={styles.content}>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.newsSection}>
-          <Text style={styles.sectionTitle}>Новости района</Text>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Новости района</Text>
+            <Pressable style={styles.seeAllButton}>
+              <Text style={styles.seeAllText}>Все новости</Text>
+              <ChevronRight size={16} color="#0891b2" />
+            </Pressable>
+          </View>
           {news.map((item) => (
-            <View key={item.id} style={styles.newsCard}>
+            <Pressable key={item.id} style={styles.newsCard}>
               <Image
                 source={{ uri: item.image }}
                 style={styles.newsImage}
@@ -54,13 +73,13 @@ export default function HomeScreen() {
               <View style={styles.newsContent}>
                 <Text style={styles.newsDate}>{item.date}</Text>
                 <Text style={styles.newsTitle}>{item.title}</Text>
-                <Text style={styles.newsDescription}>{item.description}</Text>
+                <Text style={styles.newsDescription} numberOfLines={2}>{item.description}</Text>
               </View>
-            </View>
+            </Pressable>
           ))}
         </View>
       </ScrollView>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -72,7 +91,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingHorizontal: 16,
     paddingTop: 60,
     paddingBottom: 16,
@@ -80,10 +99,18 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
   },
+  headerLeft: {
+    flex: 1,
+  },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#0f172a',
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    fontSize: 16,
+    color: '#64748b',
   },
   headerIcons: {
     flexDirection: 'row',
@@ -92,27 +119,8 @@ const styles = StyleSheet.create({
   },
   iconButton: {
     padding: 8,
-  },
-  avatarButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    overflow: 'hidden',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarImage: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-  },
-  avatarPlaceholder: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: '#e2e8f0',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: '#f1f5f9',
+    borderRadius: 8,
   },
   content: {
     flex: 1,
@@ -120,15 +128,30 @@ const styles = StyleSheet.create({
   newsSection: {
     padding: 16,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: '600',
     color: '#0f172a',
-    marginBottom: 16,
+  },
+  seeAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  seeAllText: {
+    fontSize: 14,
+    color: '#0891b2',
+    fontWeight: '500',
   },
   newsCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 12,
+    borderRadius: 16,
     overflow: 'hidden',
     marginBottom: 16,
     shadowColor: '#000',

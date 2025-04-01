@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,9 +7,12 @@ import {
   Image,
   Alert,
   ActivityIndicator,
+  Animated,
+  ScrollView,
 } from 'react-native';
 import { router } from 'expo-router';
 import { apiService } from '../utils/api';
+import { Settings, LogOut, ChevronRight } from 'lucide-react-native';
 
 interface UserProfile {
   id: string;
@@ -21,10 +24,16 @@ interface UserProfile {
 export default function ProfileScreen() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     loadProfile();
-  });
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   const loadProfile = async () => {
     try {
@@ -53,7 +62,7 @@ export default function ProfileScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color="#0891b2" />
       </View>
     );
   }
@@ -63,112 +72,143 @@ export default function ProfileScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.header}>
-        {profile.avatar ? (
-          <Image
-            source={{ uri: profile.avatar }}
-            style={styles.avatar}
-          />
-        ) : (
-          <View style={styles.avatarPlaceholder}>
-            <Text style={styles.avatarText}>
-              {(profile.name ?? '').charAt(0).toUpperCase()}
-            </Text>
-          </View>
-        )}
+        <View style={styles.avatarContainer}>
+          {profile.avatar ? (
+            <Image
+              source={{ uri: profile.avatar }}
+              style={styles.avatar}
+            />
+          ) : (
+            <View style={styles.avatarPlaceholder}>
+              <Text style={styles.avatarText}>
+                {(profile.name ?? '').charAt(0).toUpperCase()}
+              </Text>
+            </View>
+          )}
+        </View>
         <Text style={styles.name}>{profile.name}</Text>
         <Text style={styles.email}>{profile.email}</Text>
       </View>
 
-      <View style={styles.section}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.push('/profile/edit')}
-        >
-          <Text style={styles.buttonText}>Редактировать профиль</Text>
-        </TouchableOpacity>
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={styles.section}>
+          <TouchableOpacity
+            style={styles.menuItem}
+            onPress={() => router.push('/profile/edit')}
+          >
+            <View style={styles.menuItemLeft}>
+              <Settings size={20} color="#0891b2" />
+              <Text style={styles.menuItemText}>Редактировать профиль</Text>
+            </View>
+            <ChevronRight size={20} color="#94a3b8" />
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[styles.button, styles.logoutButton]}
-          onPress={handleLogout}
-        >
-          <Text style={[styles.buttonText, styles.logoutButtonText]}>
-            Выйти
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+          <TouchableOpacity
+            style={[styles.menuItem, styles.logoutButton]}
+            onPress={handleLogout}
+          >
+            <View style={styles.menuItemLeft}>
+              <LogOut size={20} color="#ef4444" />
+              <Text style={[styles.menuItemText, styles.logoutText]}>
+                Выйти
+              </Text>
+            </View>
+            <ChevronRight size={20} color="#94a3b8" />
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f8fafc',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#f8fafc',
   },
   header: {
     alignItems: 'center',
-    padding: 20,
+    padding: 24,
+    backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: '#e5e5e5',
+  },
+  avatarContainer: {
+    marginBottom: 16,
   },
   avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginBottom: 16,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
   },
   avatarPlaceholder: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: '#007AFF',
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#0891b2',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 16,
   },
   avatarText: {
-    fontSize: 40,
-    color: '#fff',
+    fontSize: 48,
+    color: '#ffffff',
     fontWeight: 'bold',
   },
   name: {
     fontSize: 24,
     fontWeight: 'bold',
+    color: '#0f172a',
     marginBottom: 8,
   },
   email: {
     fontSize: 16,
-    color: '#666',
+    color: '#64748b',
+  },
+  content: {
+    flex: 1,
   },
   section: {
-    padding: 20,
-    gap: 16,
-  },
-  button: {
-    backgroundColor: '#007AFF',
     padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
+    gap: 8,
   },
-  buttonText: {
-    color: '#fff',
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  menuItemLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  menuItemText: {
     fontSize: 16,
-    fontWeight: '600',
+    color: '#0f172a',
+    fontWeight: '500',
   },
   logoutButton: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ff3b30',
+    marginTop: 8,
   },
-  logoutButtonText: {
-    color: '#ff3b30',
+  logoutText: {
+    color: '#ef4444',
   },
 }); 

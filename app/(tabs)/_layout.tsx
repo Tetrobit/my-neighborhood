@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router';
 import { Blocks, User, House } from 'lucide-react-native';
+import { Platform } from 'react-native';
 
 export default function TabLayout() {
   return (
@@ -9,9 +10,19 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: '#ffffff',
           borderTopColor: '#e5e5e5',
+          height: Platform.OS === 'ios' ? 75 : 55,
+          paddingBottom: Platform.OS === 'ios' ? 28 : 8,
+          // paddingTop: 8,
+          // elevation: 0,
+          // shadowOpacity: 0,
         },
         tabBarActiveTintColor: '#0891b2',
-        tabBarInactiveTintColor: '#64748b',
+        tabBarInactiveTintColor: '#94a3b8',
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
+        },
+        tabBarHideOnKeyboard: true,
       }}>
       <Tabs.Screen
         name="index"
