@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Stack, Slot, useRouter, useSegments, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useFrameworkReady } from '@/hooks/useFrameworkReady';
-import { authService } from './utils/auth';
+import { apiService } from './utils/api';
 
 export default function RootLayout() {
   useFrameworkReady();
@@ -30,7 +30,7 @@ export default function RootLayout() {
 
   const checkAuth = async () => {
     try {
-      const authenticated = await authService.isAuthenticated();
+      const authenticated = await apiService.isAuthenticated();
       setIsAuthenticated(authenticated);
     } catch (error) {
       console.error('Error checking auth:', error);

@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { router } from 'expo-router';
-import { authService } from '../utils/auth';
+import { apiService } from '../utils/api';
 import Logo from '../components/Logo';
 
 export default function RegisterScreen() {
@@ -25,7 +25,7 @@ export default function RegisterScreen() {
 
     try {
       setLoading(true);
-      await authService.register({ name, email, password });
+      await apiService.register(name, email, password);
       router.replace('/(tabs)');
     } catch (error) {
       Alert.alert('Error', 'Registration failed. Please try again.');

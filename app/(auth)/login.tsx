@@ -9,14 +9,14 @@ import {
   Image,
 } from 'react-native';
 import { router } from 'expo-router';
-import { authService } from '../utils/auth';
+import { apiService } from '../utils/api';
 import Logo from '../components/Logo';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-
+  console.log('LoginScreen');
   const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please fill in all fields');
@@ -25,7 +25,7 @@ export default function LoginScreen() {
 
     try {
       setLoading(true);
-      await authService.login({ email, password });
+      await apiService.login(email, password);
       router.replace('/(tabs)');
     } catch (error) {
       Alert.alert('Error', 'Invalid email or password');

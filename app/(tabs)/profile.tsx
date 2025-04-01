@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
-import { authService } from '@/app/utils/auth';
+import { apiService } from '../utils/api';
 
 interface UserProfile {
   id: string;
@@ -28,9 +28,9 @@ export default function ProfileScreen() {
 
   const loadProfile = async () => {
     try {
-      const user = await authService.getCurrentUser();
+      const user = await apiService.getCurrentUser();
       if (user) {
-        setProfile(user);
+        setProfile(user.data);
       } else {
         router.replace('/(auth)/login');
       }
@@ -44,7 +44,7 @@ export default function ProfileScreen() {
 
   const handleLogout = async () => {
     try {
-      await authService.logout();
+      await apiService.logout();
       router.replace('/(auth)/login');
     } catch (error) {
       Alert.alert('Error', 'Failed to logout');
@@ -74,7 +74,7 @@ export default function ProfileScreen() {
         ) : (
           <View style={styles.avatarPlaceholder}>
             <Text style={styles.avatarText}>
-              {profile.name.charAt(0).toUpperCase()}
+              {(profile.name ?? '').charAt(0).toUpperCase()}
             </Text>
           </View>
         )}

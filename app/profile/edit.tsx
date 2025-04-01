@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { router } from 'expo-router';
-import { authService } from '@/app/utils/auth';
+import { apiService } from '@/app/utils/api';
 
 interface UserProfile {
   id: string;
@@ -30,10 +30,10 @@ export default function EditProfileScreen() {
 
   const loadProfile = async () => {
     try {
-      const user = await authService.getCurrentUser();
-      if (user) {
-        setProfile(user);
-        setName(user.name);
+      const user = await apiService.getCurrentUser();
+      if (user.data) {
+        setProfile(user.data);
+        setName(user.data.name);
       } else {
         router.replace('/(auth)/login');
       }
