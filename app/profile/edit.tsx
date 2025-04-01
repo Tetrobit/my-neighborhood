@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  ScrollView,
 } from 'react-native';
 import { router } from 'expo-router';
 import { apiService } from '@/app/utils/api';
@@ -33,8 +34,7 @@ export default function EditProfileScreen() {
       setName(response.data.name);
       setPhone(response.data.phone);
     } catch (error) {
-      console.error('Error loading profile:', error);
-      Alert.alert('Error', 'Failed to load profile');
+      Alert.alert('Ошибка', 'Не удалось загрузить профиль');
     } finally {
       setLoading(false);
     }
@@ -42,7 +42,7 @@ export default function EditProfileScreen() {
 
   const handleSave = async () => {
     if (!name.trim()) {
-      Alert.alert('Error', 'Name cannot be empty');
+      Alert.alert('Ошибка', 'Пожалуйста, введите имя');
       return;
     }
 
@@ -57,11 +57,10 @@ export default function EditProfileScreen() {
         throw new Error(response.error.message);
       }
 
-      Alert.alert('Success', 'Profile updated successfully');
+      Alert.alert('😎', 'Профиль успешно обновлен');
       router.back();
     } catch (error) {
-      console.error('Error updating profile:', error);
-      Alert.alert('Error', 'Failed to update profile');
+      Alert.alert('Ошибка', 'Не удалось обновить профиль');
     } finally {
       setSaving(false);
     }
@@ -69,43 +68,47 @@ export default function EditProfileScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
+      <View style={styles.container}>
+        <Text>Загрузка...</Text>
       </View>
     );
   }
 
-  if (!profile) {
-    return null;
-  }
-
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.form}>
-        <Text style={styles.label}>Name</Text>
-        <TextInput
-          style={styles.input}
-          value={name}
-          onChangeText={setName}
-          placeholder="Your name"
-          autoCapitalize="words"
-        />
+        <View style={styles.field}>
+          <Text style={styles.label}>Имя</Text>
+          <TextInput
+            style={styles.input}
+            value={name}
+            onChangeText={setName}
+            placeholder="Введите ваше имя"
+            autoCapitalize="words"
+          />
+        </View>
 
-        <Text style={styles.label}>Phone</Text>
-        <TextInput
-          style={styles.input}
-          value={phone}
-          onChangeText={setPhone}
-          placeholder="Your phone number"
-          keyboardType="phone-pad"
-        />
+        <View style={styles.field}>
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={[styles.input, styles.disabledInput]}
+            value={profile?.email}
+            editable={false}
+            autoCapitalize="none"
+            keyboardType="email-address"
+          />
+        </View>
 
-        <Text style={styles.label}>Email</Text>
-        <TextInput
-          style={[styles.input, styles.disabledInput]}
-          value={profile.email}
-          editable={false}
-        />
+        <View style={styles.field}>
+          <Text style={styles.label}>Телефон</Text>
+          <TextInput
+            style={styles.input}
+            value={phone}
+            onChangeText={setPhone}
+            placeholder="Введите ваш телефон"
+            keyboardType="phone-pad"
+          />
+        </View>
 
         <TouchableOpacity
           style={[styles.button, saving && styles.buttonDisabled]}
@@ -113,11 +116,11 @@ export default function EditProfileScreen() {
           disabled={saving}
         >
           <Text style={styles.buttonText}>
-            {saving ? 'Saving...' : 'Save Changes'}
+            {saving ? 'Сохранение...' : 'Сохранить изменения'}
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -125,29 +128,25 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    padding: 20,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
   },
   form: {
+    padding: 20,
+    gap: 20,
+  },
+  field: {
     gap: 8,
   },
   label: {
     fontSize: 16,
     fontWeight: '600',
-    marginBottom: 4,
+    color: '#333',
   },
   input: {
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
-    padding: 16,
+    padding: 12,
     fontSize: 16,
-    marginBottom: 16,
   },
   disabledInput: {
     backgroundColor: '#f5f5f5',
@@ -158,7 +157,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 8,
+    marginTop: 20,
   },
   buttonDisabled: {
     opacity: 0.7,

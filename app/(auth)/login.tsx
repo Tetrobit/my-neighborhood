@@ -9,8 +9,8 @@ import {
   Image,
 } from 'react-native';
 import { router } from 'expo-router';
-import { apiService } from '../utils/api';
-import Logo from '../components/Logo';
+import { apiService } from '@/app/utils/api';
+import Logo from '@/app/components/Logo';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -19,7 +19,7 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert('Ошибка', 'Пожалуйста, заполните все поля');
       return;
     }
 
@@ -28,7 +28,7 @@ export default function LoginScreen() {
       await apiService.login(email, password);
       router.replace('/(tabs)');
     } catch (error) {
-      Alert.alert('Error', 'Invalid email or password');
+      Alert.alert('Ошибка', 'Неверный email или пароль');
     } finally {
       setLoading(false);
     }
@@ -37,8 +37,8 @@ export default function LoginScreen() {
   return (
     <View style={styles.container}>
       <Logo />
-      <Text style={styles.title}>Welcome Back</Text>
-      <Text style={styles.subtitle}>Sign in to continue</Text>
+      <Text style={styles.title}>С возвращением</Text>
+      <Text style={styles.subtitle}>Войдите, чтобы продолжить</Text>
 
       <View style={styles.form}>
         <TextInput
@@ -52,7 +52,7 @@ export default function LoginScreen() {
 
         <TextInput
           style={styles.input}
-          placeholder="Password"
+          placeholder="Пароль"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -64,7 +64,7 @@ export default function LoginScreen() {
           disabled={loading}
         >
           <Text style={styles.buttonText}>
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? 'Вход...' : 'Войти'}
           </Text>
         </TouchableOpacity>
 
@@ -73,7 +73,7 @@ export default function LoginScreen() {
           onPress={() => router.push('/(auth)/register')}
         >
           <Text style={styles.linkText}>
-            Don't have an account? Sign up
+            Нет аккаунта? Зарегистрироваться
           </Text>
         </TouchableOpacity>
       </View>

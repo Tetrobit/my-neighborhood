@@ -35,8 +35,7 @@ export default function ProfileScreen() {
         router.replace('/(auth)/login');
       }
     } catch (error) {
-      console.error('Error loading profile:', error);
-      Alert.alert('Error', 'Failed to load profile');
+      Alert.alert('Ошибка', 'Не удалось загрузить профиль');
     } finally {
       setLoading(false);
     }
@@ -47,7 +46,7 @@ export default function ProfileScreen() {
       await apiService.logout();
       router.replace('/(auth)/login');
     } catch (error) {
-      Alert.alert('Error', 'Failed to logout');
+      Alert.alert('Ошибка', 'Не удалось выйти');
     }
   };
 
@@ -87,7 +86,7 @@ export default function ProfileScreen() {
           style={styles.button}
           onPress={() => router.push('/profile/edit')}
         >
-          <Text style={styles.buttonText}>Edit Profile</Text>
+          <Text style={styles.buttonText}>Редактировать профиль</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -95,7 +94,7 @@ export default function ProfileScreen() {
           onPress={handleLogout}
         >
           <Text style={[styles.buttonText, styles.logoutButtonText]}>
-            Logout
+            Выйти
           </Text>
         </TouchableOpacity>
       </View>

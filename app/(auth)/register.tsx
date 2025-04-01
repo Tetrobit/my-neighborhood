@@ -19,7 +19,7 @@ export default function RegisterScreen() {
 
   const handleRegister = async () => {
     if (!name || !email || !password) {
-      Alert.alert('Error', 'Please fill in all fields');
+      Alert.alert('Ошибка', 'Пожалуйста, заполните все поля');
       return;
     }
 
@@ -29,10 +29,10 @@ export default function RegisterScreen() {
       if (response.ok) {
         router.replace('/(tabs)');
       } else {
-        Alert.alert('Error', response.error?.message || 'Registration failed. Please try again.');
+        Alert.alert('Ошибка', 'Ошибка регистрации. Пожалуйста, попробуйте снова.');
       }
     } catch (error) {
-      Alert.alert('Error', 'Registration failed. Please try again.');
+      Alert.alert('Ошибка', 'Ошибка регистрации. Пожалуйста, попробуйте снова.');
     } finally {
       setLoading(false);
     }
@@ -41,13 +41,13 @@ export default function RegisterScreen() {
   return (
     <View style={styles.container}>
       <Logo />
-      <Text style={styles.title}>Create Account</Text>
-      <Text style={styles.subtitle}>Sign up to get started</Text>
+      <Text style={styles.title}>Создать аккаунт</Text>
+      <Text style={styles.subtitle}>Зарегистрируйтесь, чтобы начать</Text>
 
       <View style={styles.form}>
         <TextInput
           style={styles.input}
-          placeholder="Full Name"
+          placeholder="Полное имя"
           value={name}
           onChangeText={setName}
           autoCapitalize="words"
@@ -64,7 +64,7 @@ export default function RegisterScreen() {
 
         <TextInput
           style={styles.input}
-          placeholder="Password"
+          placeholder="Пароль"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
@@ -76,7 +76,7 @@ export default function RegisterScreen() {
           disabled={loading}
         >
           <Text style={styles.buttonText}>
-            {loading ? 'Creating Account...' : 'Create Account'}
+            {loading ? 'Регистрация...' : 'Зарегистрироваться'}
           </Text>
         </TouchableOpacity>
 
@@ -85,7 +85,7 @@ export default function RegisterScreen() {
           onPress={() => router.push('/(auth)/login')}
         >
           <Text style={styles.linkText}>
-            Already have an account? Sign in
+            Уже есть аккаунт? Войти
           </Text>
         </TouchableOpacity>
       </View>
@@ -145,4 +145,4 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     fontSize: 14,
   },
-}); 
+});
