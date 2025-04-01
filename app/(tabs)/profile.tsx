@@ -85,7 +85,7 @@ export default function ProfileScreen() {
       <View style={styles.section}>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => router.push('/(tabs)/profile/edit')}
+          onPress={() => router.push('/profile/edit')}
         >
           <Text style={styles.buttonText}>Edit Profile</Text>
         </TouchableOpacity>

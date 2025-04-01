@@ -23,12 +23,12 @@ export default function TabLayout() {
       <Tabs.Screen
         name="miniapps"
         options={{
-          title: 'Мини-приложения',
+          title: 'Сервисы',
           tabBarIcon: ({ color, size }) => <Blocks size={size} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="profile/index"
+        name="profile"
         options={{
           title: 'Профиль',
           tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
