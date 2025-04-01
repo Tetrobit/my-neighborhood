@@ -49,8 +49,8 @@ export default function EditProfileScreen() {
     try {
       setSaving(true);
       const response = await apiService.updateProfile({
-        name: name.trim(),
-        phone: phone.trim(),
+        name: name?.trim(),
+        phone: phone?.trim(),
       });
 
       if (response.error) {

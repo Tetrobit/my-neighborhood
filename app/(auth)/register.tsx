@@ -25,8 +25,12 @@ export default function RegisterScreen() {
 
     try {
       setLoading(true);
-      await apiService.register(name, email, password);
-      router.replace('/(tabs)');
+      const response = await apiService.register(name, email, password);
+      if (response.ok) {
+        router.replace('/(tabs)');
+      } else {
+        Alert.alert('Error', response.error?.message || 'Registration failed. Please try again.');
+      }
     } catch (error) {
       Alert.alert('Error', 'Registration failed. Please try again.');
     } finally {

@@ -177,10 +177,16 @@ class ApiService {
     email: string,
     password: string
   ): Promise<ApiResponse<AuthResponse>> {
-    return this.request<AuthResponse>('/api/auth/register', {
+    const response = await this.request<AuthResponse>('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify({ name, email, password }),
     }, false);
+
+    if (response.ok) {
+      await this.saveTokens(response.data);
+    }
+
+    return response;
   }
 
   async logout(): Promise<void> {
