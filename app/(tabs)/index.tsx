@@ -88,7 +88,7 @@ export default function HomeScreen() {
             <Pressable 
               key={message.id} 
               style={styles.messageCard}
-              onPress={() => router.push('/messages')}
+              onPress={() => router.push(`/chat/${message.id}`)}
             >
               <Image source={{ uri: message.avatar }} style={styles.messageAvatar} />
               <View style={styles.messageContent}>

@@ -44,7 +44,7 @@ export default function MessagesScreen() {
   const renderItem = ({ item }: { item: Conversation }) => (
     <Pressable 
       style={styles.conversationItem}
-      onPress={() => router.push('/(tabs)/messages')}
+      onPress={() => router.push(`/chat/${item.id}`)}
     >
       <Image source={{ uri: item.avatar }} style={styles.avatar} />
       <View style={styles.conversationContent}>
