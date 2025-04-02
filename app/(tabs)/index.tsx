@@ -38,6 +38,25 @@ export default function HomeScreen() {
       date: '20 марта 2024',
     },
   ];
+
+  const recentMessages = [
+    {
+      id: 1,
+      name: 'Администрация района',
+      lastMessage: 'Спасибо за ваше обращение! Мы рассмотрим его в ближайшее время.',
+      time: '10:30',
+      unread: true,
+      avatar: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&q=80&w=800',
+    },
+    {
+      id: 2,
+      name: 'Служба поддержки',
+      lastMessage: 'Ваше обращение №12345 принято в работу',
+      time: 'Вчера',
+      unread: false,
+      avatar: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80&w=800',
+    },
+  ];
   
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
@@ -50,13 +69,42 @@ export default function HomeScreen() {
           <Pressable style={styles.iconButton} onPress={() => router.push('/notifications')}>
             <Bell size={24} color="#0f172a" />
           </Pressable>
-          <Pressable style={styles.iconButton}>
+          <Pressable style={styles.iconButton} onPress={() => router.push('/messages')}>
             <MessageCircle size={24} color="#0f172a" />
           </Pressable>
         </View>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        <View style={styles.messagesSection}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Сообщения</Text>
+            <Pressable style={styles.seeAllButton} onPress={() => router.push('/messages')}>
+              <Text style={styles.seeAllText}>Все сообщения</Text>
+              <ChevronRight size={16} color="#0891b2" />
+            </Pressable>
+          </View>
+          {recentMessages.map((message) => (
+            <Pressable 
+              key={message.id} 
+              style={styles.messageCard}
+              onPress={() => router.push('/messages')}
+            >
+              <Image source={{ uri: message.avatar }} style={styles.messageAvatar} />
+              <View style={styles.messageContent}>
+                <View style={styles.messageHeader}>
+                  <Text style={styles.messageName}>{message.name}</Text>
+                  <Text style={styles.messageTime}>{message.time}</Text>
+                </View>
+                <View style={styles.messageFooter}>
+                  <Text style={styles.messageText} numberOfLines={1}>{message.lastMessage}</Text>
+                  {message.unread && <View style={styles.unreadBadge} />}
+                </View>
+              </View>
+            </Pressable>
+          ))}
+        </View>
+
         <View style={styles.newsSection}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Новости района</Text>
@@ -126,7 +174,7 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
   },
-  newsSection: {
+  messagesSection: {
     padding: 16,
   },
   sectionHeader: {
@@ -149,6 +197,65 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#0891b2',
     fontWeight: '500',
+  },
+  messageCard: {
+    flexDirection: 'row',
+    padding: 12,
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  messageAvatar: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 12,
+  },
+  messageContent: {
+    flex: 1,
+  },
+  messageHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  messageName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0f172a',
+  },
+  messageTime: {
+    fontSize: 14,
+    color: '#64748b',
+  },
+  messageFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  messageText: {
+    fontSize: 14,
+    color: '#64748b',
+    flex: 1,
+    marginRight: 8,
+  },
+  unreadBadge: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#0891b2',
+  },
+  newsSection: {
+    padding: 16,
   },
   newsCard: {
     backgroundColor: '#ffffff',
