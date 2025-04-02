@@ -31,13 +31,12 @@ export default function NotificationsScreen() {
   ];
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.backButton}>
           <ChevronLeft size={24} color="#0f172a" />
         </Pressable>
         <Text style={styles.headerTitle}>Уведомления</Text>
-        <View style={{ width: 40 }} />
       </View>
 
       <ScrollView style={styles.content}>
@@ -62,7 +61,7 @@ export default function NotificationsScreen() {
           </Pressable>
         ))}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -74,10 +73,12 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 60,
+    paddingBottom: 16,
+    backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: '#e5e5e5',
   },
   backButton: {
     padding: 8,
