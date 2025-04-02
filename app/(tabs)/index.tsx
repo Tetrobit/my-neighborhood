@@ -1,10 +1,11 @@
 import { View, Text, ScrollView, StyleSheet, Image, Pressable, Animated } from 'react-native';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { Bell, MessageCircle, User, ChevronRight } from 'lucide-react-native';
 import { useEffect, useRef } from 'react';
 
 export default function HomeScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const router = useRouter();
   
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -46,7 +47,7 @@ export default function HomeScreen() {
           <Text style={styles.headerSubtitle}>Добро пожаловать!</Text>
         </View>
         <View style={styles.headerIcons}>
-          <Pressable style={styles.iconButton}>
+          <Pressable style={styles.iconButton} onPress={() => router.push('/notifications')}>
             <Bell size={24} color="#0f172a" />
           </Pressable>
           <Pressable style={styles.iconButton}>
