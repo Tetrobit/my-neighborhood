@@ -1,11 +1,15 @@
 import { View, Text, ScrollView, StyleSheet, Image, Pressable, Animated } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { Bell, MessageCircle, User, ChevronRight } from 'lucide-react-native';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { POSTS, Post as PostType } from '../data/posts';
+import Post from '../components/Post';
+import { Share } from 'react-native';
 
 export default function HomeScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const router = useRouter();
+  const [posts, setPosts] = useState<PostType[]>(POSTS);
   
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -15,29 +19,58 @@ export default function HomeScreen() {
     }).start();
   }, []);
 
-  const news = [
-    {
-      id: 1,
-      title: 'Открытие нового парка',
-      description: 'В эту субботу состоится торжественное открытие обновленного городского парка. Приглашаем всех жителей района на праздничное мероприятие!',
-      image: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&q=80&w=800',
-      date: '25 марта 2024',
-    },
-    {
-      id: 2,
-      title: 'Новый пункт переработки',
-      description: 'В нашем районе открылся новый пункт приема вторсырья. Теперь жители могут сдавать пластик, бумагу и стекло в удобном месте.',
-      image: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80&w=800',
-      date: '23 марта 2024',
-    },
-    {
-      id: 3,
-      title: 'Фестиваль местных предпринимателей',
-      description: 'В следующем месяце пройдет фестиваль местных предпринимателей. Узнайте о новых бизнесах в вашем районе и получите специальные предложения.',
-      image: 'https://images.unsplash.com/photo-1552581234-26160f608093?auto=format&fit=crop&q=80&w=800',
-      date: '20 марта 2024',
-    },
-  ];
+  const handleLike = (postId: string) => {
+    setPosts(prevPosts => 
+      prevPosts.map(post => 
+        post.id === postId
+          ? { 
+              ...post, 
+              likes: post.isLiked ? post.likes - 1 : post.likes + 1,
+              isLiked: !post.isLiked 
+            }
+          : post
+      )
+    );
+  };
+
+  const handleComment = (postId: string, text: string) => {
+    setPosts(prevPosts =>
+      prevPosts.map(post =>
+        post.id === postId
+          ? {
+              ...post,
+              comments: [
+                ...post.comments,
+                {
+                  id: Date.now().toString(),
+                  user: {
+                    id: 'current-user',
+                    name: 'Вы',
+                    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100',
+                    type: 'person'
+                  },
+                  text,
+                  createdAt: new Date().toISOString()
+                }
+              ]
+            }
+          : post
+      )
+    );
+  };
+
+  const handleShare = async (postId: string) => {
+    const post = posts.find(p => p.id === postId);
+    if (post) {
+      try {
+        await Share.share({
+          message: `${post.content}\n\nОпубликовано пользователем ${post.author.name} в приложении WeLocal`,
+        });
+      } catch (error) {
+        console.error('Error sharing:', error);
+      }
+    }
+  };
 
   const recentMessages = [
     {
@@ -57,25 +90,34 @@ export default function HomeScreen() {
       avatar: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80&w=800',
     },
   ];
-  
+
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.headerTitle}>Мой район</Text>
-          <Text style={styles.headerSubtitle}>Добро пожаловать!</Text>
+          <Text style={styles.headerSubtitle}>Будьте в курсе событий</Text>
         </View>
         <View style={styles.headerIcons}>
-          <Pressable style={styles.iconButton} onPress={() => router.push('/notifications')}>
-            <Bell size={24} color="#0f172a" />
-          </Pressable>
-          <Pressable style={styles.iconButton} onPress={() => router.push('/messages')}>
-            <MessageCircle size={24} color="#0f172a" />
-          </Pressable>
+          <Link href="/notifications" asChild>
+            <Pressable style={styles.iconButton}>
+              <Bell size={24} color="#0f172a" />
+            </Pressable>
+          </Link>
+          <Link href="/messages" asChild>
+            <Pressable style={styles.iconButton}>
+              <MessageCircle size={24} color="#0f172a" />
+            </Pressable>
+          </Link>
+          <Link href="/profile" asChild>
+            <Pressable style={styles.iconButton}>
+              <User size={24} color="#0f172a" />
+            </Pressable>
+          </Link>
         </View>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.content}>
         <View style={styles.messagesSection}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Сообщения</Text>
@@ -105,7 +147,7 @@ export default function HomeScreen() {
           ))}
         </View>
 
-        <View style={styles.newsSection}>
+        <View style={styles.postsSection}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Новости района</Text>
             <Pressable style={styles.seeAllButton}>
@@ -113,18 +155,14 @@ export default function HomeScreen() {
               <ChevronRight size={16} color="#0891b2" />
             </Pressable>
           </View>
-          {news.map((item) => (
-            <Pressable key={item.id} style={styles.newsCard}>
-              <Image
-                source={{ uri: item.image }}
-                style={styles.newsImage}
-              />
-              <View style={styles.newsContent}>
-                <Text style={styles.newsDate}>{item.date}</Text>
-                <Text style={styles.newsTitle}>{item.title}</Text>
-                <Text style={styles.newsDescription} numberOfLines={2}>{item.description}</Text>
-              </View>
-            </Pressable>
+          {posts.map(post => (
+            <Post
+              key={post.id}
+              post={post}
+              onLike={handleLike}
+              onComment={handleComment}
+              onShare={handleShare}
+            />
           ))}
         </View>
       </ScrollView>
@@ -175,6 +213,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   messagesSection: {
+    padding: 16,
+  },
+  postsSection: {
     padding: 16,
   },
   sectionHeader: {
@@ -253,45 +294,5 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: '#0891b2',
-  },
-  newsSection: {
-    padding: 16,
-  },
-  newsCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 16,
-    overflow: 'hidden',
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
-  },
-  newsImage: {
-    width: '100%',
-    height: 200,
-  },
-  newsContent: {
-    padding: 16,
-  },
-  newsDate: {
-    fontSize: 14,
-    color: '#64748b',
-    marginBottom: 8,
-  },
-  newsTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#0f172a',
-    marginBottom: 8,
-  },
-  newsDescription: {
-    fontSize: 14,
-    color: '#64748b',
-    lineHeight: 20,
   },
 });
