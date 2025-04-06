@@ -4,6 +4,7 @@ import { Heart, MessageCircle, Share2, Building2, User as UserIcon } from 'lucid
 import { Post as PostType, User } from '../data/posts';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { useRouter } from 'expo-router';
 
 interface PostProps {
   post: PostType;
@@ -15,6 +16,7 @@ interface PostProps {
 export default function Post({ post, onLike, onComment, onShare }: PostProps) {
   const [isCommenting, setIsCommenting] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const router = useRouter();
 
   const handleLike = () => {
     onLike?.(post.id);
@@ -32,23 +34,55 @@ export default function Post({ post, onLike, onComment, onShare }: PostProps) {
     onShare?.(post.id);
   };
 
+  const navigateToProfile = (userId: string) => {
+    router.push({
+      pathname: '/(tabs)/profile/[id]',
+      params: { id: userId }
+    });
+  };
+
+  const navigateToChat = (targetUser: User) => {
+    router.push({
+      pathname: '/messages',
+      params: { 
+        userId: targetUser.id,
+        userName: targetUser.name,
+        userAvatar: targetUser.avatar,
+        userType: targetUser.type
+      }
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={{ uri: post.author.avatar }} style={styles.avatar} />
+        <Pressable onPress={() => navigateToProfile(post.author.id)}>
+          <Image source={{ uri: post.author.avatar }} style={styles.avatar} />
+        </Pressable>
         <View style={styles.authorInfo}>
-          <View style={styles.authorNameContainer}>
+          <Pressable onPress={() => navigateToProfile(post.author.id)} style={styles.authorNameContainer}>
             <Text style={styles.authorName}>{post.author.name}</Text>
             {post.author.type === 'organization' ? (
               <Building2 size={16} color="#0891b2" />
             ) : (
               <UserIcon size={16} color="#64748b" />
             )}
-          </View>
+          </Pressable>
           <Text style={styles.time}>
             {formatDistanceToNow(new Date(post.createdAt), { locale: ru, addSuffix: true })}
           </Text>
         </View>
+        {post.author.type !== 'organization' && (
+          <Pressable 
+            onPress={() => navigateToChat(post.author)}
+            style={({ pressed }) => [
+              styles.messageButton,
+              pressed && styles.messageButtonPressed
+            ]}
+          >
+            <MessageCircle size={20} color="#0891b2" />
+          </Pressable>
+        )}
       </View>
 
       <Text style={styles.content}>{post.content}</Text>
@@ -81,9 +115,33 @@ export default function Post({ post, onLike, onComment, onShare }: PostProps) {
         <View style={styles.comments}>
           {post.comments.map(comment => (
             <View key={comment.id} style={styles.comment}>
-              <Image source={{ uri: comment.user.avatar }} style={styles.commentAvatar} />
+              <Pressable onPress={() => navigateToProfile(comment.user.id)} style={styles.commentAvatarContainer}>
+                <Image source={{ uri: comment.user.avatar }} style={styles.commentAvatar} />
+              </Pressable>
               <View style={styles.commentContent}>
-                <Text style={styles.commentAuthor}>{comment.user.name}</Text>
+                <View style={styles.commentHeader}>
+                  <Pressable onPress={() => navigateToProfile(comment.user.id)}>
+                    <View style={styles.commentAuthorContainer}>
+                      <Text style={styles.commentAuthor}>{comment.user.name}</Text>
+                      {comment.user.type === 'organization' ? (
+                        <Building2 size={14} color="#0891b2" />
+                      ) : (
+                        <UserIcon size={14} color="#64748b" />
+                      )}
+                    </View>
+                  </Pressable>
+                  {comment.user.type !== 'organization' && (
+                    <Pressable 
+                      onPress={() => navigateToChat(comment.user)}
+                      style={({ pressed }) => [
+                        styles.commentMessageButton,
+                        pressed && styles.commentMessageButtonPressed
+                      ]}
+                    >
+                      <MessageCircle size={16} color="#0891b2" />
+                    </Pressable>
+                  )}
+                </View>
                 <Text style={styles.commentText}>{comment.text}</Text>
                 <Text style={styles.commentTime}>
                   {formatDistanceToNow(new Date(comment.createdAt), { locale: ru, addSuffix: true })}
@@ -201,17 +259,30 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 12,
   },
+  commentAvatarContainer: {
+    marginRight: 8,
+  },
   commentAvatar: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    marginRight: 8,
   },
   commentContent: {
     flex: 1,
     backgroundColor: '#f1f5f9',
     padding: 8,
     borderRadius: 8,
+  },
+  commentHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  commentAuthorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   commentAuthor: {
     fontSize: 14,
@@ -254,5 +325,21 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 14,
     fontWeight: '600',
+  },
+  messageButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: '#f1f5f9',
+  },
+  messageButtonPressed: {
+    backgroundColor: '#e2e8f0',
+  },
+  commentMessageButton: {
+    padding: 4,
+    borderRadius: 16,
+    backgroundColor: '#f1f5f9',
+  },
+  commentMessageButtonPressed: {
+    backgroundColor: '#e2e8f0',
   },
 }); 
