@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, StyleSheet, Pressable, Animated } from 'react-native';
 import { Href, Link } from 'expo-router';
-import { Store, Recycle, MapPin, LucideIcon, ChevronRight, Wrench, Briefcase, Calendar } from 'lucide-react-native';
+import { Store, Recycle, MapPin, LucideIcon, ChevronRight, Wrench, Briefcase, Calendar, ClipboardList } from 'lucide-react-native';
 import { useEffect, useRef } from 'react';
 
 export default function MiniAppsScreen() {
@@ -51,6 +51,12 @@ export default function MiniAppsScreen() {
       description: 'Интерактивная карта района',
       href: '/map' 
     },
+    {
+      icon: ClipboardList,
+      title: 'Опросы',
+      description: 'Участвуйте в опросах и голосованиях',
+      href: '/surveys'
+    }
   ];
   
   return (
