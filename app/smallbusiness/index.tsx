@@ -190,7 +190,7 @@ export default function SmallBusinessScreen() {
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable onPress={() => router.push('/')} style={styles.backButton}>
           <ChevronLeft size={24} color="#0f172a" />
         </Pressable>
         <Text style={styles.headerTitle}>Малый бизнес</Text>

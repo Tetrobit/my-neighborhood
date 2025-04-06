@@ -172,7 +172,7 @@ export default function BusinessScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable onPress={() => router.push('/smallbusiness')} style={styles.backButton}>
           <ChevronLeft size={24} color="#0f172a" />
         </Pressable>
         <Text style={styles.headerTitle}>{business.name}</Text>
