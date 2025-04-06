@@ -144,6 +144,7 @@ export default function LocalServicesScreen() {
                 styles.categoryButtonText,
                 selectedCategory === category.id && styles.categoryButtonTextActive,
               ]}
+              numberOfLines={1}
             >
               {category.name}
             </Text>
@@ -215,25 +216,39 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
     borderBottomColor: '#e5e5e5',
+    height: 60,
   },
   categoriesContent: {
-    padding: 16,
-    gap: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   categoryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
     borderRadius: 20,
     backgroundColor: '#f1f5f9',
-    marginRight: 8,
+    marginRight: 10,
+    minWidth: 80,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 1,
   },
   categoryButtonActive: {
     backgroundColor: '#0891b2',
   },
   categoryButtonText: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#64748b',
+    textAlign: 'center',
   },
   categoryButtonTextActive: {
     color: '#ffffff',
@@ -259,7 +274,9 @@ const styles = StyleSheet.create({
   },
   serviceImage: {
     width: 120,
-    height: '100%',
+    height: 120,
+    borderTopLeftRadius: 16,
+    borderBottomLeftRadius: 16,
   },
   serviceContent: {
     flex: 1,

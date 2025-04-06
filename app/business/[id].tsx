@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   Image,
   Pressable,
   Linking,
+  Modal,
+  TouchableOpacity,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import {
@@ -17,13 +19,67 @@ import {
   ChevronLeft,
   Globe,
   Mail,
-  MessageCircle,
+  Calendar,
+  CheckCircle,
+  X,
 } from 'lucide-react-native';
 import { BUSINESSES_BY_ID } from '../data/businesses';
 
 export default function BusinessScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const business = BUSINESSES_BY_ID[id];
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  
+  // Генерируем даты на неделю вперед
+  const getDates = () => {
+    const dates = [];
+    const days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+    const months = ['янв', 'фев', 'мар', 'апр', 'май', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+    
+    for (let i = 0; i < 7; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      dates.push({
+        day: days[date.getDay()],
+        date: date.getDate(),
+        month: months[date.getMonth()],
+        full: `${date.getDate()} ${months[date.getMonth()]}`
+      });
+    }
+    
+    return dates;
+  };
+  
+  // Генерируем доступное время
+  const getTimes = () => {
+    const times = [];
+    const [openHour, openMinute] = business.openHours.split(' - ')[0].split(':').map(Number);
+    const [closeHour, closeMinute] = business.openHours.split(' - ')[1].split(':').map(Number);
+    
+    for (let h = openHour; h < closeHour; h += 1) {
+      times.push(`${h.toString().padStart(2, '0')}:00`);
+      if (h + 1 < closeHour) {
+        times.push(`${h.toString().padStart(2, '0')}:30`);
+      }
+    }
+    
+    return times;
+  };
+  
+  const dates = getDates();
+  const times = getTimes();
+
+  const handleSubmitRequest = () => {
+    if (selectedDate && selectedTime) {
+      // Здесь можно добавить логику отправки заявки
+      alert(`Заявка отправлена на ${selectedDate} ${selectedTime}`);
+      setModalVisible(false);
+    } else {
+      alert('Пожалуйста, выберите дату и время');
+    }
+  };
 
   if (!business) {
     return (
@@ -72,6 +128,13 @@ export default function BusinessScreen() {
 
           {business.description && (
             <Text style={styles.description}>{business.description}</Text>
+          )}
+
+          {business.price && (
+            <View style={styles.priceRow}>
+              <Text style={styles.priceLabel}>Цена:</Text>
+              <Text style={styles.priceValue}>{business.price}</Text>
+            </View>
           )}
 
           <View style={styles.detailsContainer}>
@@ -123,11 +186,86 @@ export default function BusinessScreen() {
       </ScrollView>
 
       <View style={styles.footer}>
-        <Pressable style={styles.messageButton}>
-          <MessageCircle size={20} color="#ffffff" />
-          <Text style={styles.messageButtonText}>Написать сообщение</Text>
+        <Pressable style={styles.messageButton} onPress={() => setModalVisible(true)}>
+          <Calendar size={20} color="#ffffff" />
+          <Text style={styles.messageButtonText}>Подать заявку</Text>
         </Pressable>
       </View>
+      
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Выберите время</Text>
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
+                <X size={24} color="#0f172a" />
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.dateContainer}>
+              <Text style={styles.sectionTitle}>Дата</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {dates.map((date, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.dateButton,
+                      selectedDate === date.full && styles.selectedDateButton
+                    ]}
+                    onPress={() => setSelectedDate(date.full)}
+                  >
+                    <Text style={styles.dateDay}>{date.day}</Text>
+                    <Text style={[
+                      styles.dateNumber,
+                      selectedDate === date.full && styles.selectedDateText
+                    ]}>
+                      {date.date}
+                    </Text>
+                    <Text style={styles.dateMonth}>{date.month}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+            
+            <View style={styles.timeContainer}>
+              <Text style={styles.sectionTitle}>Время</Text>
+              <ScrollView style={{maxHeight: 200}}>
+                <View style={styles.timeGrid}>
+                  {times.map((time, index) => (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.timeButton,
+                        selectedTime === time && styles.selectedTimeButton
+                      ]}
+                      onPress={() => setSelectedTime(time)}
+                    >
+                      <Text style={[
+                        styles.timeText,
+                        selectedTime === time && styles.selectedTimeText
+                      ]}>
+                        {time}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
+            
+            <TouchableOpacity 
+              style={styles.submitButton}
+              onPress={handleSubmitRequest}
+            >
+              <Text style={styles.submitButtonText}>Отправить заявку</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -194,6 +332,21 @@ const styles = StyleSheet.create({
     color: '#0f172a',
     lineHeight: 20,
     marginBottom: 16,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  priceLabel: {
+    fontSize: 14,
+    color: '#64748b',
+    marginRight: 8,
+  },
+  priceValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0891b2',
   },
   detailsContainer: {
     gap: 12,
@@ -276,5 +429,104 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContainer: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    paddingHorizontal: 16,
+    paddingBottom: 24,
+    maxHeight: '80%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e5e5e5',
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#0f172a',
+  },
+  dateContainer: {
+    marginTop: 16,
+  },
+  dateButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+    marginRight: 12,
+    borderRadius: 12,
+    width: 80,
+    backgroundColor: '#f1f5f9',
+  },
+  selectedDateButton: {
+    backgroundColor: '#0891b2',
+  },
+  dateDay: {
+    fontSize: 12,
+    color: '#64748b',
+    marginBottom: 4,
+  },
+  dateNumber: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#0f172a',
+    marginBottom: 2,
+  },
+  dateMonth: {
+    fontSize: 12,
+    color: '#64748b',
+  },
+  selectedDateText: {
+    color: '#ffffff',
+  },
+  timeContainer: {
+    marginTop: 24,
+  },
+  timeGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  timeButton: {
+    width: '30%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: '#f1f5f9',
+  },
+  selectedTimeButton: {
+    backgroundColor: '#0891b2',
+  },
+  timeText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#0f172a',
+  },
+  selectedTimeText: {
+    color: '#ffffff',
+  },
+  submitButton: {
+    backgroundColor: '#0891b2',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 24,
+  },
+  submitButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
   },
 }); 
