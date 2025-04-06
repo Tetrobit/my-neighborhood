@@ -1,7 +1,17 @@
+// В начале файла, после импортов
+export interface Product {
+  id: string;
+  name: string;
+  price: string;
+  image?: string;
+  description?: string; // Добавляем поле описания для товара
+}
+
 export interface Business {
   id: string;
   name: string;
   category: string;
+  subcategory?: string;
   rating: number;
   reviewCount: number;
   image: string;
@@ -11,6 +21,8 @@ export interface Business {
   website?: string;
   email?: string;
   description?: string;
+  price?: string;
+  products?: Product[];
   reviews?: Array<{
     id: string;
     author: string;
@@ -20,9 +32,80 @@ export interface Business {
   }>;
 }
 
+// URL плейсхолдера для случаев, когда URL изображения отсутствует
+export const DEFAULT_IMAGE = 'https://via.placeholder.com/400x400/e2e8f0/64748b?text=Нет+изображения';
+
+// Функция для проверки и получения валидного URL изображения
+export const getValidImageUrl = (imageUrl?: string): string => {
+  if (!imageUrl || imageUrl.trim() === '') {
+    return DEFAULT_IMAGE;
+  }
+  return imageUrl;
+};
+
 export const BUSINESSES: Business[] = [
   {
     id: '1',
+    name: 'Кафе "Утро"',
+    category: 'Рестораны',
+    rating: 4.7,
+    reviewCount: 215,
+    image: 'https://images.unsplash.com/photo-1606836576983-8b458e75221d?w=400',
+    address: 'ул. Ленина, 15',
+    openHours: '08:00 - 22:00',
+    phone: '+7 (999) 123-45-67',
+    website: 'www.utro-cafe.ru',
+    email: 'info@utro-cafe.ru',
+    description: 'Уютное кафе с домашней атмосферой. Завтраки весь день, свежая выпечка, ароматный кофе.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Авокадо тост',
+        price: '320 руб',
+        image: 'https://images.unsplash.com/photo-1603046891744-76e6300f5ef9?w=400',
+        description: 'Свежий авокадо, тост с маслом и яйцом.'
+      },
+      {
+        id: 'p2',
+        name: 'Омлет с овощами',
+        price: '280 руб',
+        image: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400',
+        description: 'Омлет с овощами и сыром.'
+      },
+      {
+        id: 'p3',
+        name: 'Круассан с миндалем',
+        price: '180 руб',
+        image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400',
+        description: 'Круассан с миндалем и шоколадом.'
+      },
+      {
+        id: 'p4',
+        name: 'Латте',
+        price: '210 руб',
+        image: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=400',
+        description: 'Латте с молоком и эспрессо.'
+      }
+    ],
+    reviews: [
+      {
+        id: '1',
+        author: 'Ирина К.',
+        rating: 5,
+        date: '2024-03-15',
+        text: 'Отличное место для завтрака. Очень вкусные круассаны и кофе. Приятный персонал.',
+      },
+      {
+        id: '2',
+        author: 'Александр М.',
+        rating: 4,
+        date: '2024-03-10',
+        text: 'Хорошее качество еды, но иногда долго ждать заказ в часы пик.',
+      },
+    ],
+  },
+  {
+    id: '2',
     name: 'Кафе "У Дома"',
     category: 'Рестораны',
     rating: 4.8,
@@ -185,6 +268,32 @@ export const BUSINESSES: Business[] = [
     website: 'www.master-auto.ru',
     email: 'service@master-auto.ru',
     description: 'Профессиональный автосервис с современным оборудованием. Выполняем все виды ремонта и технического обслуживания.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Замена масла',
+        price: 'от 1500 руб',
+        image: 'https://images.unsplash.com/photo-1487754180451-c456f719a3bf?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Диагностика',
+        price: 'от 1000 руб',
+        image: 'https://images.unsplash.com/photo-1632823471565-1c05e5584ca0?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Ремонт двигателя',
+        price: 'от 10000 руб',
+        image: 'https://images.unsplash.com/photo-1507977500142-8546347e707a?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Шиномонтаж',
+        price: 'от 2400 руб',
+        image: 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?w=400'
+      }
+    ],
     reviews: [
       {
         id: '1',
@@ -1524,7 +1633,864 @@ export const BUSINESSES: Business[] = [
   },
 ];
 
-export const BUSINESSES_BY_ID = BUSINESSES.reduce((acc, business) => {
+export const LOCAL_SERVICE_CATEGORIES = [
+  { id: 'plumbing', name: 'Сантехники', icon: 'droplet' },
+  { id: 'repair', name: 'Ремонтники', icon: 'hammer' },
+  { id: 'cleaning', name: 'Уборка', icon: 'sparkles' },
+  { id: 'handyman', name: 'Муж на час', icon: 'wrench' },
+  { id: 'electric', name: 'Электрики', icon: 'zap' },
+  { id: 'delivery', name: 'Доставка', icon: 'truck' },
+  { id: 'babysitting', name: 'Няни', icon: 'baby' },
+  { id: 'gardening', name: 'Садовники', icon: 'flower' },
+];
+
+// Добавляем новые бизнесы для местных служб
+export const LOCAL_SERVICES: Business[] = [
+  {
+    id: 'ls1',
+    name: 'Сантехник Алексей',
+    category: 'Местные службы',
+    subcategory: 'plumbing',
+    rating: 4.9,
+    reviewCount: 143,
+    image: 'https://images.unsplash.com/photo-1580256081112-e49377338b7f?w=400',
+    address: 'ул. Водопроводная, 10',
+    openHours: '08:00 - 20:00',
+    phone: '+7 (999) 123-45-67',
+    email: 'alexey@plumber.ru',
+    price: '1000 руб/час',
+    description: 'Ремонт сантехники любой сложности. Установка и замена труб, раковин, ванн, унитазов. Устранение протечек.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Устранение течи',
+        price: 'от 1500 руб',
+        image: 'https://images.unsplash.com/photo-1542013936693-884638332954?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Установка смесителя',
+        price: 'от 1200 руб',
+        image: 'https://images.unsplash.com/photo-1546170358-ae4b5660a4b5?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Замена труб',
+        price: 'от 3000 руб',
+        image: 'https://images.unsplash.com/photo-1674027444872-0e1ebb3ec84a?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Установка унитаза',
+        price: 'от 2500 руб',
+        image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400'
+      }
+    ],
+    reviews: [
+      {
+        id: '1',
+        author: 'Мария К.',
+        rating: 5,
+        date: '2024-03-20',
+        text: 'Быстро и качественно устранил протечку. Рекомендую!',
+      },
+      {
+        id: '2',
+        author: 'Иван П.',
+        rating: 5,
+        date: '2024-03-15',
+        text: 'Отличный специалист, все сделал в срок',
+      },
+    ],
+  },
+  {
+    id: 'ls2',
+    name: 'Клининговая служба "Чистота"',
+    category: 'Местные службы',
+    subcategory: 'cleaning',
+    rating: 4.7,
+    reviewCount: 215,
+    image: 'https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=400',
+    address: 'ул. Блестящая, 25',
+    openHours: '08:00 - 20:00',
+    phone: '+7 (999) 456-78-90',
+    website: 'www.chistota-service.ru',
+    email: 'order@chistota-service.ru',
+    price: 'от 1500 руб',
+    description: 'Профессиональная уборка квартир, домов и офисов. Генеральная и поддерживающая уборка. Мойка окон и балконов.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Ольга В.',
+        rating: 5,
+        date: '2024-03-18',
+        text: 'Отличное качество уборки, квартира сияет!',
+      },
+      {
+        id: '2',
+        author: 'Петр С.',
+        rating: 4,
+        date: '2024-03-14',
+        text: 'Хорошо убрали, но немного опоздали',
+      },
+    ],
+  },
+  {
+    id: 'ls3',
+    name: 'Мастер Виктор',
+    category: 'Местные службы',
+    subcategory: 'handyman',
+    rating: 4.8,
+    reviewCount: 178,
+    image: 'https://images.unsplash.com/photo-1613322801994-4a64d3f9ae38?w=400',
+    address: 'ул. Мастеровая, 15',
+    openHours: '09:00 - 21:00',
+    phone: '+7 (999) 789-01-23',
+    email: 'viktor@master.ru',
+    price: '800 руб/час',
+    description: 'Мелкий бытовой ремонт: установка и сборка мебели, замена розеток, навеска полок и картин, ремонт замков и многое другое.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Сборка мебели',
+        price: 'от 1000 руб',
+        image: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Навес полок',
+        price: 'от 700 руб',
+        image: 'https://images.unsplash.com/photo-1526887644541-4bb7ba163c26?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Замена замков',
+        price: 'от 1200 руб',
+        image: 'https://images.unsplash.com/photo-1617301535504-55596fa002f3?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Установка светильников',
+        price: 'от 800 руб',
+        image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400'
+      }
+    ],
+    reviews: [
+      {
+        id: '1',
+        author: 'Анна М.',
+        rating: 5,
+        date: '2024-03-19',
+        text: 'Виктор - настоящий профессионал! Быстро собрал шкаф и повесил полки.',
+      },
+      {
+        id: '2',
+        author: 'Дмитрий К.',
+        rating: 5,
+        date: '2024-03-17',
+        text: 'Качественно, быстро и недорого. Рекомендую!',
+      },
+    ],
+  },
+  {
+    id: 'ls4',
+    name: 'Ремонтная бригада "Новый дом"',
+    category: 'Местные службы',
+    subcategory: 'repair',
+    rating: 4.6,
+    reviewCount: 124,
+    image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400',
+    address: 'пр. Строителей, 8',
+    openHours: '08:00 - 19:00',
+    phone: '+7 (999) 234-56-78',
+    website: 'www.newhouse-remont.ru',
+    email: 'info@newhouse-remont.ru',
+    price: 'от 3000 руб/м²',
+    description: 'Профессиональный ремонт квартир и домов. Косметический и капитальный ремонт, отделочные работы, электрика, сантехника.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Сергей Н.',
+        rating: 5,
+        date: '2024-03-16',
+        text: 'Отличная работа! Ремонт выполнен качественно и в срок.',
+      },
+      {
+        id: '2',
+        author: 'Елена В.',
+        rating: 4,
+        date: '2024-03-12',
+        text: 'Хорошее качество ремонта, но были небольшие задержки.',
+      },
+    ],
+  },
+  {
+    id: 'ls5',
+    name: 'Электрик Игорь',
+    category: 'Местные службы',
+    subcategory: 'electric',
+    rating: 4.9,
+    reviewCount: 156,
+    image: 'https://images.unsplash.com/photo-1619454016518-697bc231e7bb?w=400',
+    address: 'ул. Энергетиков, 42',
+    openHours: '08:00 - 21:00',
+    phone: '+7 (999) 345-67-89',
+    email: 'igor@elektrik.ru',
+    price: '1200 руб/час',
+    description: 'Электромонтажные работы любой сложности. Замена проводки, установка розеток и выключателей, подключение техники.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Андрей П.',
+        rating: 5,
+        date: '2024-03-20',
+        text: 'Профессионал своего дела! Быстро нашел и устранил проблему.',
+      },
+      {
+        id: '2',
+        author: 'Ирина С.',
+        rating: 5,
+        date: '2024-03-18',
+        text: 'Очень довольна работой, все сделано аккуратно и качественно.',
+      },
+    ],
+  },
+  {
+    id: 'ls6',
+    name: 'Служба доставки "Быстрая посылка"',
+    category: 'Местные службы',
+    subcategory: 'delivery',
+    rating: 4.5,
+    reviewCount: 210,
+    image: 'https://images.unsplash.com/photo-1605249935718-8a5c8b5b6a85?w=400',
+    address: 'ул. Курьерская, 30',
+    openHours: '09:00 - 22:00',
+    phone: '+7 (999) 456-78-90',
+    website: 'www.fast-delivery.ru',
+    email: 'order@fast-delivery.ru',
+    price: 'от 200 руб',
+    description: 'Курьерская доставка документов, посылок и товаров по городу. Быстро, надежно, конфиденциально.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Максим К.',
+        rating: 5,
+        date: '2024-03-19',
+        text: 'Очень быстрая доставка! Вежливый курьер, всё отлично.',
+      },
+      {
+        id: '2',
+        author: 'Наталья В.',
+        rating: 4,
+        date: '2024-03-17',
+        text: 'Хороший сервис, но немного задержали доставку.',
+      },
+    ],
+  },
+  {
+    id: 'ls7',
+    name: 'Няня Елена',
+    category: 'Местные службы',
+    subcategory: 'babysitting',
+    rating: 4.9,
+    reviewCount: 178,
+    image: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=400',
+    address: 'ул. Детская, 15',
+    openHours: '08:00 - 20:00',
+    phone: '+7 (999) 567-89-01',
+    email: 'elena@babysitter.ru',
+    price: '300 руб/час',
+    description: 'Профессиональная няня с педагогическим образованием и опытом работы более 10 лет. Забота о детях любого возраста, развивающие занятия, помощь с домашними заданиями.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Ольга М.',
+        rating: 5,
+        date: '2024-03-15',
+        text: 'Елена - замечательная няня! Дети её обожают. Всегда пунктуальна и ответственна.',
+      },
+      {
+        id: '2',
+        author: 'Сергей В.',
+        rating: 5,
+        date: '2024-03-10',
+        text: 'Очень рады, что нашли такую отличную няню. Рекомендуем всем!',
+      },
+    ],
+  },
+  {
+    id: 'ls8',
+    name: 'Садовник Павел',
+    category: 'Местные службы',
+    subcategory: 'gardening',
+    rating: 4.8,
+    reviewCount: 132,
+    image: 'https://images.unsplash.com/photo-1592494804071-faea15d93a8a?w=400',
+    address: 'ул. Садовая, 42',
+    openHours: '07:00 - 19:00',
+    phone: '+7 (999) 678-90-12',
+    email: 'pavel@garden.ru',
+    price: 'от 2000 руб',
+    description: 'Профессиональный уход за садом и участком. Стрижка газонов, обрезка деревьев, посадка растений, ландшафтный дизайн. Многолетний опыт работы с частными участками и коттеджными поселками.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Марина К.',
+        rating: 5,
+        date: '2024-03-18',
+        text: 'Павел преобразил наш участок! Очень доволены работой и результатом.',
+      },
+      {
+        id: '2',
+        author: 'Алексей Д.',
+        rating: 4,
+        date: '2024-03-12',
+        text: 'Хорошая работа по уходу за садом, есть замечания по срокам.',
+      },
+    ],
+  },
+];
+
+export const SMALL_BUSINESS_CATEGORIES = [
+  { id: 'bakery', name: 'Пекарни', icon: 'cake' },
+  { id: 'confectionery', name: 'Кондитеры', icon: 'cookie' },
+  { id: 'fruits', name: 'Фрукты и овощи', icon: 'apple' },
+  { id: 'clothes', name: 'Шоурумы', icon: 'shirt' },
+  { id: 'handmade', name: 'Хендмейд', icon: 'scissors' },
+  { id: 'florist', name: 'Флористы', icon: 'flower' },
+  { id: 'cosmetics', name: 'Косметика', icon: 'spray-can' },
+  { id: 'crafts', name: 'Ремесленники', icon: 'hammer' },
+];
+
+// Добавляем бизнесы для раздела Малый бизнес
+export const SMALL_BUSINESSES: Business[] = [
+  {
+    id: 'sb1',
+    name: 'Пекарня "Свежий хлеб"',
+    category: 'Малый бизнес',
+    subcategory: 'bakery',
+    rating: 4.8,
+    reviewCount: 156,
+    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400',
+    address: 'ул. Хлебная, 15',
+    openHours: '07:00 - 19:00',
+    phone: '+7 (999) 123-45-67',
+    email: 'info@freshbread.ru',
+    price: 'от 50 руб',
+    description: 'Свежая выпечка и хлеб каждый день. Используем только натуральные ингредиенты и традиционные рецепты.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Хлеб пшеничный',
+        price: '60 руб',
+        image: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc7c?w=400',
+        description: 'Свежеиспеченный хлеб из отборной пшеничной муки. Хрустящая корочка и мягкий мякиш.'
+      },
+      {
+        id: 'p2',
+        name: 'Багет французский',
+        price: '80 руб',
+        image: 'https://images.unsplash.com/photo-1597079910443-60c43fc4eb4e?w=400',
+        description: 'Классический французский багет с хрустящей корочкой, приготовленный по традиционному рецепту.'
+      },
+      {
+        id: 'p3',
+        name: 'Булочка с корицей',
+        price: '70 руб',
+        image: 'https://images.unsplash.com/photo-1509365465985-25d11c17e812?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Хлеб ржаной',
+        price: '65 руб',
+        image: 'https://images.unsplash.com/photo-1604934128857-5d7e80d1a114?w=400'
+      }
+    ],
+    reviews: [
+      {
+        id: '1',
+        author: 'Ольга К.',
+        rating: 5,
+        date: '2024-03-20',
+        text: 'Лучшая пекарня в районе! Очень вкусный хлеб и булочки.',
+      },
+      {
+        id: '2',
+        author: 'Сергей П.',
+        rating: 5,
+        date: '2024-03-15',
+        text: 'Прекрасная выпечка, всегда свежая и ароматная.',
+      },
+    ],
+  },
+  {
+    id: 'sb2',
+    name: 'Кондитерская "Сладкие мечты"',
+    category: 'Малый бизнес',
+    subcategory: 'confectionery',
+    rating: 4.9,
+    reviewCount: 198,
+    image: 'https://images.unsplash.com/photo-1587314168485-3236d6710123?w=400',
+    address: 'пр. Кондитерский, 8',
+    openHours: '09:00 - 20:00',
+    phone: '+7 (999) 234-56-78',
+    website: 'www.sweetdreams.ru',
+    email: 'orders@sweetdreams.ru',
+    price: 'от 200 руб',
+    description: 'Торты и пирожные ручной работы на заказ. Десерты из натуральных ингредиентов. Индивидуальный подход к каждому клиенту.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Торт "Наполеон"',
+        price: '1200 руб',
+        image: 'https://images.unsplash.com/photo-1547414368-ac947d00b91d?w=400',
+        description: 'Классический слоеный торт с нежным заварным кремом. Вес 1 кг, диаметр 20 см.'
+      },
+      {
+        id: 'p2',
+        name: 'Эклеры с ванильным кремом',
+        price: '150 руб/шт',
+        image: 'https://images.unsplash.com/photo-1605985719957-eeff38a0b57c?w=400',
+        description: 'Французские пирожные из заварного теста с нежным ванильным кремом внутри.'
+      },
+      {
+        id: 'p3',
+        name: 'Маффины шоколадные',
+        price: '120 руб/шт',
+        image: 'https://images.unsplash.com/photo-1604413191066-4dd20bedf486?w=400',
+        description: 'Шоколадные маффины с кусочками настоящего бельгийского шоколада. Вес 80 г.'
+      },
+      {
+        id: 'p4',
+        name: 'Чизкейк классический',
+        price: '950 руб',
+        image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400',
+        description: 'Нежный чизкейк с песочной основой и творожной начинкой. Вес 800 г, диаметр 18 см.'
+      }
+    ],
+    reviews: [
+      {
+        id: '1',
+        author: 'Марина Н.',
+        rating: 5,
+        date: '2024-03-19',
+        text: 'Заказывала торт на день рождения, все были в восторге. Очень вкусно и красиво!',
+      },
+      {
+        id: '2',
+        author: 'Иван С.',
+        rating: 5,
+        date: '2024-03-17',
+        text: 'Великолепный вкус и дизайн. Спасибо за прекрасный торт!',
+      },
+    ],
+  },
+  {
+    id: 'sb3',
+    name: 'Фруктовый рай',
+    category: 'Малый бизнес',
+    subcategory: 'fruits',
+    rating: 4.7,
+    reviewCount: 145,
+    image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400',
+    address: 'ул. Садовая, 25',
+    openHours: '08:00 - 20:00',
+    phone: '+7 (999) 345-67-89',
+    email: 'fruitparadise@mail.ru',
+    price: 'от 100 руб/кг',
+    description: 'Свежие фрукты и овощи с местных ферм. Доставка по району. Специальные предложения и сезонные скидки.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Яблоки сезонные',
+        price: '120 руб/кг',
+        image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Бананы',
+        price: '90 руб/кг',
+        image: 'https://images.unsplash.com/photo-1603833665858-e61d17a86224?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Груши',
+        price: '150 руб/кг',
+        image: 'https://images.unsplash.com/photo-1514756331096-242fdeb70d4a?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Авокадо',
+        price: '120 руб/шт',
+        image: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400'
+      }
+    ],
+    reviews: [
+      {
+        id: '1',
+        author: 'Алексей М.',
+        rating: 5,
+        date: '2024-03-18',
+        text: 'Очень свежие фрукты, всегда хорошее качество.',
+      },
+      {
+        id: '2',
+        author: 'Елена В.',
+        rating: 4,
+        date: '2024-03-16',
+        text: 'Хорошие цены и отличное качество товаров.',
+      },
+    ],
+  },
+  {
+    id: 'sb4',
+    name: 'Шоурум "Модный квартал"',
+    category: 'Малый бизнес',
+    subcategory: 'clothes',
+    rating: 4.6,
+    reviewCount: 123,
+    image: 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=400',
+    address: 'пр. Модный, 17',
+    openHours: '10:00 - 21:00',
+    phone: '+7 (999) 456-78-90',
+    website: 'www.fashion-quarter.ru',
+    email: 'info@fashion-quarter.ru',
+    price: 'от 1500 руб',
+    description: 'Уникальная одежда от местных дизайнеров. Индивидуальный стиль, качественные материалы. Возможность пошива на заказ.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Платье летнее',
+        price: '3500 руб',
+        image: 'https://images.unsplash.com/photo-1550639525-c97d455acf70?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Джинсы классические',
+        price: '4200 руб',
+        image: 'https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Блуза шелковая',
+        price: '2800 руб',
+        image: 'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Пальто демисезонное',
+        price: '8500 руб',
+        image: 'https://images.unsplash.com/photo-1520012218364-3dbe62c99bee?w=400'
+      },
+      {
+        id: 'p5',
+        name: 'Футболка принт',
+        price: '1900 руб',
+        image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400'
+      },
+      {
+        id: 'p6',
+        name: 'Юбка миди',
+        price: '3200 руб',
+        image: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=400'
+      }
+    ],
+    reviews: [
+      {
+        id: '1',
+        author: 'Наталья К.',
+        rating: 5,
+        date: '2024-03-17',
+        text: 'Прекрасный выбор одежды, внимательные консультанты.',
+      },
+      {
+        id: '2',
+        author: 'Дмитрий С.',
+        rating: 4,
+        date: '2024-03-15',
+        text: 'Отличное качество, но хотелось бы больший выбор размеров.',
+      },
+    ],
+  },
+  {
+    id: 'sb5',
+    name: 'Мастерская "Творческие руки"',
+    category: 'Малый бизнес',
+    subcategory: 'handmade',
+    rating: 4.9,
+    reviewCount: 167,
+    image: 'https://images.unsplash.com/photo-1560421683-6856ea585c78?w=400',
+    address: 'ул. Ремесленная, 10',
+    openHours: '10:00 - 19:00',
+    phone: '+7 (999) 567-89-01',
+    email: 'creative@hands.ru',
+    price: 'от 500 руб',
+    description: 'Уникальные изделия ручной работы. Сувениры, украшения, элементы декора, подарки на любой вкус. Проводим мастер-классы для детей и взрослых.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Брошь ручной работы',
+        price: '1200 руб',
+        image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Керамическая ваза',
+        price: '3500 руб',
+        image: 'https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Вязаный плед',
+        price: '5800 руб',
+        image: 'https://images.unsplash.com/photo-1584286595398-556c0a5fda86?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Шкатулка из дерева',
+        price: '2400 руб',
+        image: 'https://images.unsplash.com/photo-1614771100434-e301a13301f0?w=400'
+      },
+      {
+        id: 'p5',
+        name: 'Мягкая игрушка',
+        price: '1500 руб',
+        image: 'https://images.unsplash.com/photo-1556012018-50c5c0da73bf?w=400'
+      }
+    ],
+    reviews: [
+      {
+        id: '1',
+        author: 'Анна М.',
+        rating: 5,
+        date: '2024-03-19',
+        text: 'Замечательный магазин с прекрасными изделиями ручной работы!',
+      },
+      {
+        id: '2',
+        author: 'Павел К.',
+        rating: 5,
+        date: '2024-03-18',
+        text: 'Посетил мастер-класс, очень понравилось. Теперь хожу сюда регулярно.',
+      },
+    ],
+  },
+  {
+    id: 'sb6',
+    name: 'Цветочная студия "Флора"',
+    category: 'Малый бизнес',
+    subcategory: 'florist',
+    rating: 4.8,
+    reviewCount: 178,
+    image: 'https://images.unsplash.com/photo-1561181286-d3fee3785613?w=400',
+    address: 'ул. Цветочная, 7',
+    openHours: '08:00 - 20:00',
+    phone: '+7 (999) 678-90-12',
+    website: 'www.flora-studio.ru',
+    email: 'flora@flowers.ru',
+    price: 'от 800 руб',
+    description: 'Авторские букеты и композиции на любой случай. Доставка цветов по району. Оформление праздников и мероприятий.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Букет "Весенний"',
+        price: '2800 руб',
+        image: 'https://images.unsplash.com/photo-1615280825886-fa817c0a06cc?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Букет из роз',
+        price: '3500 руб',
+        image: 'https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Композиция в коробке',
+        price: '4200 руб',
+        image: 'https://images.unsplash.com/photo-1589244158828-58aa58451322?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Свадебный букет',
+        price: '5500 руб',
+        image: 'https://images.unsplash.com/photo-1525257831700-d95230b98239?w=400'
+      },
+      {
+        id: 'p5',
+        name: 'Комнатное растение',
+        price: '1800 руб',
+        image: 'https://images.unsplash.com/photo-1463320898484-cdee8141c787?w=400'
+      },
+      {
+        id: 'p6',
+        name: 'Кашпо керамическое',
+        price: '1200 руб',
+        image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400'
+      }
+    ],
+    reviews: [
+      {
+        id: '1',
+        author: 'Ирина П.',
+        rating: 5,
+        date: '2024-03-16',
+        text: 'Великолепные букеты! Заказывала несколько раз, всегда отличное качество.',
+      },
+      {
+        id: '2',
+        author: 'Михаил Н.',
+        rating: 4,
+        date: '2024-03-14',
+        text: 'Хорошее качество цветов, немного дороговато.',
+      },
+    ],
+  },
+  {
+    id: 'sb7',
+    name: 'Натуральная косметика "Чистая красота"',
+    category: 'Малый бизнес',
+    subcategory: 'cosmetics',
+    rating: 4.7,
+    reviewCount: 145,
+    image: 'https://images.unsplash.com/photo-1556760544-74068565f05c?w=400',
+    address: 'пр. Косметический, 5',
+    openHours: '10:00 - 20:00',
+    phone: '+7 (999) 789-01-23',
+    website: 'www.pure-beauty.ru',
+    email: 'sales@pure-beauty.ru',
+    price: 'от 300 руб',
+    description: 'Натуральная косметика ручной работы. Мыло, крема, маски, скрабы без консервантов и химических добавок. Все ингредиенты из экологически чистых источников.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Мыло ручной работы',
+        price: '320 руб',
+        image: 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2dc?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Крем для лица',
+        price: '890 руб',
+        image: 'https://images.unsplash.com/photo-1614806687528-1dfdffe71544?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Маска для волос',
+        price: '760 руб',
+        image: 'https://images.unsplash.com/photo-1629132798392-73aa74d9a3f0?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Скраб для тела',
+        price: '650 руб',
+        image: 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=400'
+      },
+      {
+        id: 'p5',
+        name: 'Натуральный дезодорант',
+        price: '420 руб',
+        image: 'https://images.unsplash.com/photo-1624984673484-3c6abe0d5799?w=400'
+      },
+      {
+        id: 'p6',
+        name: 'Гидролат розы',
+        price: '480 руб',
+        image: 'https://images.unsplash.com/photo-1616394371306-349156489212?w=400'
+      },
+      {
+        id: 'p7',
+        name: 'Набор мини-масел',
+        price: '1200 руб',
+        image: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=400'
+      }
+    ],
+    reviews: [
+      {
+        id: '1',
+        author: 'Светлана К.',
+        rating: 5,
+        date: '2024-03-15',
+        text: 'Прекрасная натуральная косметика! Пользуюсь постоянно.',
+      },
+      {
+        id: '2',
+        author: 'Анастасия Д.',
+        rating: 4,
+        date: '2024-03-13',
+        text: 'Очень понравилось мыло ручной работы, кожа стала намного лучше.',
+      },
+    ],
+  },
+  {
+    id: 'sb8',
+    name: 'Кузница "Мастер Калинин"',
+    category: 'Малый бизнес',
+    subcategory: 'crafts',
+    rating: 4.9,
+    reviewCount: 132,
+    image: 'https://images.unsplash.com/photo-1521336635000-8f8673ad9e42?w=400',
+    address: 'ул. Кузнечная, 3',
+    openHours: '09:00 - 18:00',
+    phone: '+7 (999) 890-12-34',
+    email: 'master@kalinin.ru',
+    price: 'от 2000 руб',
+    description: 'Авторские кованые изделия ручной работы. Элементы интерьера, садовая мебель, ограждения, подарки. Индивидуальные заказы любой сложности.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Подставка для цветов',
+        price: '3800 руб',
+        image: 'https://images.unsplash.com/photo-1609097828576-3b620e86039a?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Настенный светильник',
+        price: '5200 руб',
+        image: 'https://images.unsplash.com/photo-1586804199509-ccf13a8fb245?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Каминный набор',
+        price: '12500 руб',
+        image: 'https://images.unsplash.com/photo-1631156425715-25f6a0f9bba3?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Садовая скамейка',
+        price: '18000 руб',
+        image: 'https://images.unsplash.com/photo-1588949654121-9a42008b0ba0?w=400'
+      },
+      {
+        id: 'p5',
+        name: 'Декоративная решетка',
+        price: '7500 руб',
+        image: 'https://images.unsplash.com/photo-1646845856890-0809a13591e6?w=400'
+      }
+    ],
+    reviews: [
+      {
+        id: '1',
+        author: 'Виктор М.',
+        rating: 5,
+        date: '2024-03-18',
+        text: 'Заказывал кованую подставку для цветов. Отличная работа!',
+      },
+      {
+        id: '2',
+        author: 'Андрей П.',
+        rating: 5,
+        date: '2024-03-16',
+        text: 'Настоящее мастерство. Рекомендую всем, кто ценит ручной труд.',
+      },
+    ],
+  },
+];
+
+// Объединяем все бизнесы в один массив
+export const ALL_BUSINESSES = [...BUSINESSES, ...LOCAL_SERVICES, ...SMALL_BUSINESSES];
+
+// Используем объединенный массив для создания BUSINESSES_BY_ID
+export const BUSINESSES_BY_ID: Record<string, Business> = ALL_BUSINESSES.reduce((acc, business) => {
   acc[business.id] = business;
   return acc;
 }, {} as Record<string, Business>);
@@ -1539,4 +2505,160 @@ export const CATEGORIES = [
   { id: 'entertainment', name: 'Развлечения', icon: 'gamepad' },
   { id: 'auto', name: 'Авто', icon: 'car' },
   { id: 'services', name: 'Услуги', icon: 'briefcase' },
-]; 
+  { id: 'localservices', name: 'Местные службы', icon: 'tools' },
+];
+
+// Группируем бизнесы по категориям для удобства фильтрации
+export const BUSINESSES_BY_CATEGORY: Record<string, Business[]> = {
+  'Бизнесы': BUSINESSES.filter(b => b.category === 'Бизнесы'),
+  'Услуги': BUSINESSES.filter(b => b.category === 'Услуги'),
+  'Образование': BUSINESSES.filter(b => b.category === 'Образование'),
+  'Развлечения': BUSINESSES.filter(b => b.category === 'Развлечения'),
+  'Авто': BUSINESSES.filter(b => b.category === 'Авто'),
+  'Местные службы': LOCAL_SERVICES,
+  'Малый бизнес': SMALL_BUSINESSES,
+};
+
+// Категории мероприятий
+export const EVENT_CATEGORIES = [
+  { id: 'entertainment', name: 'Развлечения' },
+  { id: 'education', name: 'Образование' },
+  { id: 'sport', name: 'Спорт' },
+  { id: 'culture', name: 'Культура' },
+  { id: 'charity', name: 'Благотворительность' },
+  { id: 'networking', name: 'Нетворкинг' },
+  { id: 'kids', name: 'Для детей' },
+  { id: 'other', name: 'Другое' },
+];
+
+// Данные мероприятий
+export const EVENTS: Business[] = [
+  {
+    id: 'event1',
+    name: 'Фестиваль уличной еды',
+    category: 'События',
+    subcategory: 'entertainment',
+    rating: 4.8,
+    reviewCount: 120,
+    image: 'https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=400',
+    address: 'Городская площадь',
+    openHours: '12 мая, 12:00 - 20:00',
+    phone: '+7 (999) 123-45-67',
+    website: 'www.foodfest.ru',
+    email: 'info@foodfest.ru',
+    description: 'Крупнейший гастрономический фестиваль города. Более 30 ресторанов и шеф-поваров представят свои лучшие блюда. Мастер-классы, живая музыка и развлечения.',
+    price: 'Вход свободный',
+  },
+  {
+    id: 'event2',
+    name: 'Мастер-класс по живописи',
+    category: 'События',
+    subcategory: 'education',
+    rating: 4.9,
+    reviewCount: 45,
+    image: 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400',
+    address: 'Арт-студия "Палитра", ул. Центральная, 25',
+    openHours: '15 мая, 18:00 - 20:30',
+    phone: '+7 (999) 234-56-78',
+    website: 'www.palitra-studio.ru',
+    email: 'art@palitra-studio.ru',
+    description: 'Мастер-класс для начинающих художников. Вы научитесь основам акриловой живописи и создадите свою первую картину под руководством опытного художника.',
+    price: '1 500 руб',
+  },
+  {
+    id: 'event3',
+    name: 'Благотворительный забег',
+    category: 'События',
+    subcategory: 'sport',
+    rating: 4.7,
+    reviewCount: 87,
+    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400',
+    address: 'Городской парк',
+    openHours: '20 мая, 09:00 - 12:00',
+    phone: '+7 (999) 345-67-89',
+    website: 'www.charity-run.ru',
+    email: 'info@charity-run.ru',
+    description: 'Благотворительный забег в поддержку детского дома. Дистанции 5 и 10 км. Все собранные средства будут направлены на приобретение спортивного инвентаря для детей.',
+    price: 'Регистрация от 500 руб',
+  },
+  {
+    id: 'event4',
+    name: 'Театральная постановка "Вишневый сад"',
+    category: 'События',
+    subcategory: 'culture',
+    rating: 4.9,
+    reviewCount: 103,
+    image: 'https://images.unsplash.com/photo-1503095396549-807759245b35?w=400',
+    address: 'Городской театр, пр. Ленина, 42',
+    openHours: '25 мая, 19:00 - 21:30',
+    phone: '+7 (999) 456-78-90',
+    website: 'www.city-theater.ru',
+    email: 'tickets@city-theater.ru',
+    description: 'Премьера спектакля по пьесе А.П. Чехова "Вишневый сад". Постановка заслуженного режиссера России Ивана Петрова.',
+    price: 'от 800 до 2 500 руб',
+  },
+  {
+    id: 'event5',
+    name: 'Бизнес-форум "Новые горизонты"',
+    category: 'События',
+    subcategory: 'networking',
+    rating: 4.6,
+    reviewCount: 78,
+    image: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400',
+    address: 'Конференц-центр "Прогресс", ул. Индустриальная, 10',
+    openHours: '30 мая, 10:00 - 18:00',
+    phone: '+7 (999) 567-89-01',
+    website: 'www.business-forum.ru',
+    email: 'info@business-forum.ru',
+    description: 'Ежегодный бизнес-форум, объединяющий предпринимателей и инвесторов. Выступления экспертов, панельные дискуссии, нетворкинг.',
+    price: 'от 3 000 руб',
+  },
+  {
+    id: 'event6',
+    name: 'Детский праздник "Волшебный мир"',
+    category: 'События',
+    subcategory: 'kids',
+    rating: 4.8,
+    reviewCount: 65,
+    image: 'https://images.unsplash.com/photo-1472162072942-cd5147eb3902?w=400',
+    address: 'Детский центр "Радуга", ул. Солнечная, 7',
+    openHours: '1 июня, 11:00 - 15:00',
+    phone: '+7 (999) 678-90-12',
+    website: 'www.kids-center.ru',
+    email: 'info@kids-center.ru',
+    description: 'Праздник для детей от 3 до 10 лет. Аниматоры, мастер-классы, шоу мыльных пузырей, аквагрим и много других развлечений.',
+    price: '500 руб за ребенка, взрослые бесплатно',
+  },
+  {
+    id: 'event7',
+    name: 'Благотворительный аукцион',
+    category: 'События',
+    subcategory: 'charity',
+    rating: 4.7,
+    reviewCount: 42,
+    image: 'https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?w=400',
+    address: 'Галерея искусств, пр. Мира, 15',
+    openHours: '5 июня, 18:00 - 21:00',
+    phone: '+7 (999) 789-01-23',
+    website: 'www.charity-auction.ru',
+    email: 'info@charity-auction.ru',
+    description: 'Благотворительный аукцион в поддержку детей с ограниченными возможностями. На аукционе будут представлены работы известных художников и предметы искусства.',
+    price: 'Вход по приглашениям',
+  },
+  {
+    id: 'event8',
+    name: 'Мастер-класс по фотографии',
+    category: 'События',
+    subcategory: 'education',
+    rating: 4.5,
+    reviewCount: 33,
+    image: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400',
+    address: 'Фотостудия "Объектив", ул. Первомайская, 20',
+    openHours: '10 июня, 14:00 - 17:00',
+    phone: '+7 (999) 890-12-34',
+    website: 'www.photo-studio.ru',
+    email: 'info@photo-studio.ru',
+    description: 'Мастер-класс от профессионального фотографа. Основы композиции, работа со светом, портретная съемка. Практическая часть с моделью.',
+    price: '2 000 руб',
+  }
+];

@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, StyleSheet, Pressable, Animated } from 'react-native';
 import { Href, Link } from 'expo-router';
-import { Store, Recycle, MapPin, LucideIcon, ChevronRight, Wheat, Gift } from 'lucide-react-native';
+import { Store, Recycle, MapPin, LucideIcon, ChevronRight, Wheat, Gift, Wrench, Briefcase, Calendar, ClipboardList } from 'lucide-react-native';
 import { useEffect, useRef } from 'react';
 
 export default function MiniAppsScreen() {
@@ -20,6 +20,24 @@ export default function MiniAppsScreen() {
       title: 'Бизнесы', 
       description: 'Найдите местные магазины и услуги',
       href: '/business/1' 
+    },
+    { 
+      icon: Wrench, 
+      title: 'Местные службы', 
+      description: 'Сантехники, ремонтники, уборка и другие услуги',
+      href: '/localservices' 
+    },
+    { 
+      icon: Briefcase, 
+      title: 'Малый бизнес', 
+      description: 'Поддержите местных предпринимателей',
+      href: '/smallbusiness' as any
+    },
+    { 
+      icon: Calendar, 
+      title: 'Мероприятия', 
+      description: 'Афиша событий вашего района',
+      href: '/events' as any
     },
     { 
       icon: Recycle, 
@@ -44,6 +62,12 @@ export default function MiniAppsScreen() {
       description: 'Обмен ненужными вещами с соседями',
       href: '/freemarket'
     },
+    {
+      icon: ClipboardList,
+      title: 'Опросы',
+      description: 'Участвуйте в опросах и голосованиях',
+      href: '/surveys'
+    }
   ];
   
   return (

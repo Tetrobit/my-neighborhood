@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, FlatList, TextInput, Pressable, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TextInput, Pressable, KeyboardAvoidingView, Platform, Image } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { ArrowLeft, Send } from 'lucide-react-native';
 import { useState, useEffect, useRef } from 'react';
@@ -9,6 +9,9 @@ interface Message {
   text: string;
   isUser: boolean;
   timestamp: string;
+  userId?: string;
+  userAvatar?: string;
+  userName?: string;
 }
 
 export default function ChatScreen() {
@@ -45,22 +48,38 @@ export default function ChatScreen() {
         text: 'Здравствуйте! Чем могу помочь?',
         isUser: false,
         timestamp: '10:30',
+        userId: 'admin1',
+        userAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32',
+        userName: 'Администратор'
       },
       {
         id: 2,
         text: 'Добрый день! У меня вопрос по поводу субботника',
         isUser: true,
         timestamp: '10:31',
+        userId: 'user1',
+        userAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=32',
+        userName: 'Вы'
       },
       {
         id: 3,
         text: 'Конечно, я готов ответить на ваши вопросы',
         isUser: false,
         timestamp: '10:32',
+        userId: 'admin1',
+        userAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32',
+        userName: 'Администратор'
       },
     ];
     setMessages(mockMessages);
   }, []);
+
+  const navigateToProfile = (userId: string) => {
+    router.push({
+      pathname: '/(tabs)/profile/[id]',
+      params: { id: userId }
+    });
+  };
 
   const sendMessage = () => {
     if (message.trim()) {
@@ -69,6 +88,9 @@ export default function ChatScreen() {
         text: message,
         isUser: true,
         timestamp: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+        userId: 'user1',
+        userAvatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=32',
+        userName: 'Вы'
       };
       setMessages([...messages, newMessage]);
       setMessage('');
@@ -80,6 +102,9 @@ export default function ChatScreen() {
           text: 'Спасибо за ваше сообщение. Мы рассмотрим его в ближайшее время.',
           isUser: false,
           timestamp: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' }),
+          userId: 'admin1',
+          userAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32',
+          userName: 'Администратор'
         };
         setMessages(prev => [...prev, response]);
       }, 1000);
@@ -94,10 +119,20 @@ export default function ChatScreen() {
         { opacity: fadeAnim }
       ]}
     >
+      {!item.isUser && (
+        <Pressable onPress={() => item.userId && navigateToProfile(item.userId)} style={styles.avatarContainer}>
+          <Image source={{ uri: item.userAvatar }} style={styles.avatar} />
+        </Pressable>
+      )}
       <View style={[
         styles.messageBubble,
         item.isUser ? styles.userBubble : styles.otherBubble
       ]}>
+        {!item.isUser && (
+          <Pressable onPress={() => item.userId && navigateToProfile(item.userId)}>
+            <Text style={styles.userName}>{item.userName}</Text>
+          </Pressable>
+        )}
         <Text style={styles.messageText}>{item.text}</Text>
         <Text style={styles.timestamp}>{item.timestamp}</Text>
       </View>
@@ -176,16 +211,26 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   messageContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
     marginBottom: 16,
-    maxWidth: '80%',
+  },
+  avatarContainer: {
+    marginRight: 8,
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
   },
   userMessage: {
-    alignSelf: 'flex-end',
+    justifyContent: 'flex-end',
   },
   otherMessage: {
-    alignSelf: 'flex-start',
+    justifyContent: 'flex-start',
   },
   messageBubble: {
+    maxWidth: '70%',
     padding: 12,
     borderRadius: 16,
     shadowColor: '#000',
@@ -205,18 +250,25 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderBottomLeftRadius: 4,
   },
+  userName: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#0f172a',
+    marginBottom: 4,
+  },
   messageText: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#0f172a',
     marginBottom: 4,
   },
   timestamp: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#64748b',
     alignSelf: 'flex-end',
   },
   inputContainer: {
     flexDirection: 'row',
+    alignItems: 'flex-end',
     padding: 16,
     backgroundColor: '#ffffff',
     borderTopWidth: 1,
@@ -228,17 +280,13 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 8,
-    maxHeight: 100,
     marginRight: 8,
-    fontSize: 16,
+    fontSize: 14,
+    color: '#0f172a',
+    maxHeight: 100,
   },
   sendButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#f1f5f9',
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 8,
   },
   sendButtonDisabled: {
     opacity: 0.5,

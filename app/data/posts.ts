@@ -19,27 +19,27 @@ export interface Post {
   image?: string;
   createdAt: string;
   likes: number;
-  comments: Comment[];
   isLiked?: boolean;
+  comments: Comment[];
 }
 
 export const USERS: User[] = [
   {
-    id: '1',
+    id: 'admin1',
     name: 'Администрация района',
-    avatar: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&q=80&w=800',
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
     type: 'organization'
   },
   {
-    id: '2',
-    name: 'Анна Петрова',
-    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&q=80&w=100',
+    id: 'anna1',
+    name: 'Анна Михайлова',
+    avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400',
     type: 'person'
   },
   {
-    id: '3',
-    name: 'Иван Смирнов',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=100',
+    id: 'ivan1',
+    name: 'Иван Петров',
+    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
     type: 'person'
   }
 ];

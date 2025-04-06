@@ -1,5 +1,6 @@
 import { WebViewMessageEvent } from 'react-native-webview';
 import { RecyclingPoint } from '../data/recyclingPoints';
+import { MATERIAL_COLORS } from '../data/recyclingPoints';
 
 // HTML-шаблон для Яндекс Карт
 export const yandexMapHTML = (apiKey: string) => `
@@ -14,106 +15,183 @@ export const yandexMapHTML = (apiKey: string) => `
             height: 100%;
             padding: 0;
             margin: 0;
+            overflow: hidden;
         }
     </style>
+</head>
+<body>
+    <div id="map"></div>
     <script src="https://api-maps.yandex.ru/2.1/?apikey=${apiKey}&lang=ru_RU" type="text/javascript"></script>
     <script type="text/javascript">
-        var map;
-        var markers = [];
-        var userLocationMarker;
-        
-        function init() {
-            map = new ymaps.Map('map', {
-                center: [55.76, 37.64], // Москва
-                zoom: 12,
-                controls: ['zoomControl']
-            });
-            
-            // Отправляем сообщение в React Native о готовности карты
-            window.ReactNativeWebView.postMessage(JSON.stringify({
-                type: 'MAP_READY'
-            }));
+        // Глобальные переменные
+        let map = null;
+        let markers = [];
+        let userLocationMarker = null;
+        let currentRoute = null;
+        let isMapReady = false;
+
+        // Функция для отправки сообщений в React Native
+        function postMessageToRN(message) {
+            if (window.ReactNativeWebView) {
+                window.ReactNativeWebView.postMessage(JSON.stringify(message));
+            }
         }
-        
-        // Добавление маркеров на карту
-        function addMarkers(points) {
-            // Очищаем предыдущие маркеры
-            clearMarkers();
-            
-            points.forEach(function(point) {
-                var marker = new ymaps.Placemark(
-                    point.coordinates,
-                    {
-                        hintContent: point.name,
-                        balloonContent: createBalloonContent(point)
-                    },
-                    {
-                        preset: 'islands#greenDotIcon',
-                        iconColor: point.iconColor || '#0891b2'
+
+        // Инициализация карты
+        function initMap() {
+            try {
+                ymaps.ready(() => {
+                    try {
+                        map = new ymaps.Map('map', {
+                            center: [55.76, 37.64],
+                            zoom: 12,
+                            controls: ['zoomControl']
+                        });
+
+                        map.behaviors.disable('scrollZoom');
+                        map.behaviors.disable('dblClickZoom');
+
+                        isMapReady = true;
+                        postMessageToRN({ type: 'MAP_READY' });
+                    } catch (error) {
+                        console.error('Ошибка при создании карты:', error);
+                        postMessageToRN({ 
+                            type: 'ERROR', 
+                            message: 'Ошибка при создании карты: ' + error.message 
+                        });
                     }
-                );
-                
-                marker.id = point.id;
-                markers.push(marker);
-                map.geoObjects.add(marker);
-                
-                marker.events.add('click', function() {
-                    window.ReactNativeWebView.postMessage(JSON.stringify({
-                        type: 'MARKER_CLICK',
-                        id: point.id
-                    }));
                 });
-            });
-            
-            // Устанавливаем зум и центр, чтобы охватить все маркеры
-            if (markers.length > 0) {
-                map.setBounds(map.geoObjects.getBounds(), {
-                    checkZoomRange: true,
-                    zoomMargin: 30
+            } catch (error) {
+                console.error('Ошибка при инициализации API карт:', error);
+                postMessageToRN({ 
+                    type: 'ERROR', 
+                    message: 'Ошибка при инициализации API карт: ' + error.message 
                 });
             }
         }
-        
-        // Очистка маркеров с карты
+
+        // Добавление маркеров на карту
+        function addMarkers(points) {
+            if (!isMapReady || !map) {
+                console.warn('Карта не готова');
+                return;
+            }
+
+            try {
+                // Очищаем текущие маркеры
+                clearMarkers();
+
+                if (!points || !Array.isArray(points) || points.length === 0) {
+                    console.warn('Нет точек для отображения');
+                    return;
+                }
+
+                const bounds = new ymaps.GeoObjectCollection();
+
+                points.forEach(point => {
+                    if (!point.coordinates || !Array.isArray(point.coordinates)) {
+                        console.warn('Некорректные координаты для точки:', point);
+                        return;
+                    }
+
+                    const marker = new ymaps.Placemark(
+                        point.coordinates,
+                        {
+                            hintContent: point.name,
+                            balloonContent: createBalloonContent(point)
+                        },
+                        {
+                            preset: 'islands#circleIcon',
+                            iconColor: point.iconColor || '#0891b2'
+                        }
+                    );
+
+                    marker.events.add('click', () => {
+                        postMessageToRN({
+                            type: 'MARKER_CLICK',
+                            id: point.id
+                        });
+                    });
+
+                    markers.push(marker);
+                    bounds.add(marker);
+                    map.geoObjects.add(marker);
+                });
+
+                // Устанавливаем границы карты, чтобы видеть все маркеры
+                if (markers.length > 0) {
+                    map.setBounds(bounds.getBounds(), {
+                        checkZoomRange: true,
+                        zoomMargin: 30
+                    });
+                }
+            } catch (error) {
+                console.error('Ошибка при добавлении маркеров:', error);
+                postMessageToRN({ 
+                    type: 'ERROR', 
+                    message: 'Ошибка при добавлении маркеров: ' + error.message 
+                });
+            }
+        }
+
+        // Очистка маркеров
         function clearMarkers() {
-            markers.forEach(function(marker) {
-                map.geoObjects.remove(marker);
+            markers.forEach(marker => {
+                if (map) {
+                    map.geoObjects.remove(marker);
+                }
             });
             markers = [];
         }
-        
-        // Добавление отметки текущей локации пользователя
-        function addUserLocation(coords) {
-            if (userLocationMarker) {
-                map.geoObjects.remove(userLocationMarker);
+
+        // Добавление маркера местоположения пользователя
+        function addUserLocation(coordinates) {
+            if (!isMapReady || !map) {
+                console.warn('Карта не готова');
+                return;
             }
-            
-            userLocationMarker = new ymaps.Placemark(
-                coords,
-                {
-                    hintContent: 'Вы здесь'
-                },
-                {
-                    preset: 'islands#blueCircleDotIcon'
+
+            try {
+                if (!coordinates || !Array.isArray(coordinates)) {
+                    throw new Error('Некорректные координаты');
                 }
-            );
-            
-            map.geoObjects.add(userLocationMarker);
-            map.setCenter(coords);
+
+                if (userLocationMarker) {
+                    map.geoObjects.remove(userLocationMarker);
+                }
+
+                userLocationMarker = new ymaps.Placemark(
+                    coordinates,
+                    {
+                        hintContent: 'Вы здесь'
+                    },
+                    {
+                        preset: 'islands#geolocationIcon',
+                        iconColor: '#1976D2'
+                    }
+                );
+
+                map.geoObjects.add(userLocationMarker);
+                map.setCenter(coordinates, 14);
+            } catch (error) {
+                console.error('Ошибка при добавлении локации пользователя:', error);
+                postMessageToRN({ 
+                    type: 'ERROR', 
+                    message: 'Ошибка при добавлении локации пользователя: ' + error.message 
+                });
+            }
         }
-        
-        // Создание HTML для всплывающей подсказки
+
+        // Создание содержимого балуна
         function createBalloonContent(point) {
-            var materialsHtml = '';
-            if (point.materials && point.materials.length) {
-                materialsHtml = '<p><strong>Принимает:</strong> ' + point.materials.join(', ') + '</p>';
-            }
-            
-            var phoneHtml = '';
-            if (point.phone) {
-                phoneHtml = '<p><strong>Телефон:</strong> ' + point.phone + '</p>';
-            }
-            
+            const materialsHtml = point.materials && point.materials.length
+                ? '<p><strong>Принимает:</strong> ' + point.materials.join(', ') + '</p>'
+                : '';
+
+            const phoneHtml = point.phone
+                ? '<p><strong>Телефон:</strong> ' + point.phone + '</p>'
+                : '';
+
             return '<div style="font-family: Arial; max-width: 250px">' +
                    '<h3 style="margin-top: 0">' + point.name + '</h3>' +
                    '<p><strong>Адрес:</strong> ' + point.address + '</p>' +
@@ -121,149 +199,200 @@ export const yandexMapHTML = (apiKey: string) => `
                    '<p><strong>Режим работы:</strong> ' + point.workingHours + '</p>' +
                    phoneHtml +
                    (point.description ? '<p>' + point.description + '</p>' : '') +
-                   '<button style="background-color: #0891b2; color: white; border: none; padding: 8px 12px; ' +
-                   'border-radius: 4px; cursor: pointer;" ' +
-                   'onclick="showDetails(\'' + point.id + '\')">Подробнее</button>' +
+                   '<button onclick="showDetails(\'' + point.id + '\')" ' +
+                   'style="background-color: #0891b2; color: white; border: none; ' +
+                   'padding: 8px 12px; border-radius: 4px; cursor: pointer; width: 100%;">' +
+                   'Подробнее</button>' +
                    '</div>';
         }
-        
-        // Обработка клика по кнопке "Подробнее"
+
+        // Показать подробности о точке
         function showDetails(id) {
-            window.ReactNativeWebView.postMessage(JSON.stringify({
+            postMessageToRN({
                 type: 'SHOW_DETAILS',
                 id: id
-            }));
-        }
-        
-        // Получение маршрута до точки
-        function buildRoute(fromCoords, toCoords) {
-            ymaps.route([
-                fromCoords,
-                toCoords
-            ]).then(function (route) {
-                if (window.currentRoute) {
-                    map.geoObjects.remove(window.currentRoute);
-                }
-                window.currentRoute = route;
-                map.geoObjects.add(route);
-                
-                // Отправить дистанцию и время в React Native
-                var activeRoute = route.getActiveRoute();
-                var distance = activeRoute.properties.get("distance");
-                var duration = activeRoute.properties.get("duration");
-                
-                window.ReactNativeWebView.postMessage(JSON.stringify({
-                    type: 'ROUTE_INFO',
-                    distance: distance.text,
-                    duration: duration.text
-                }));
-                
-                // Установить границы карты, чтобы маршрут был виден
-                map.setBounds(route.getBounds(), {
-                    checkZoomRange: true,
-                    zoomMargin: 30
-                });
             });
         }
-        
-        // Обработчик сообщений из React Native
-        window.handleMessage = function(message) {
-            var data = JSON.parse(message);
-            switch(data.type) {
-                case 'ADD_MARKERS':
-                    addMarkers(data.points);
-                    break;
-                case 'USER_LOCATION':
-                    addUserLocation(data.coords);
-                    break;
-                case 'BUILD_ROUTE':
-                    buildRoute(data.from, data.to);
-                    break;
-                case 'CLEAR_ROUTE':
-                    if (window.currentRoute) {
-                        map.geoObjects.remove(window.currentRoute);
-                        window.currentRoute = null;
+
+        // Построение маршрута
+        function buildRoute(from, to) {
+            if (!isMapReady || !map) {
+                console.warn('Карта не готова');
+                return;
+            }
+
+            try {
+                if (!from || !to || !Array.isArray(from) || !Array.isArray(to)) {
+                    throw new Error('Некорректные координаты маршрута');
+                }
+
+                // Удаляем предыдущий маршрут
+                if (currentRoute) {
+                    map.geoObjects.remove(currentRoute);
+                    currentRoute = null;
+                }
+
+                ymaps.route([from, to], {
+                    mapStateAutoApply: true
+                }).then(route => {
+                    currentRoute = route;
+                    map.geoObjects.add(route);
+
+                    const activeRoute = route.getActiveRoute();
+                    if (activeRoute) {
+                        const distance = activeRoute.properties.get("distance");
+                        const duration = activeRoute.properties.get("duration");
+
+                        postMessageToRN({
+                            type: 'ROUTE_INFO',
+                            distance: distance.text,
+                            duration: duration.text
+                        });
+
+                        map.setBounds(route.getBounds(), {
+                            checkZoomRange: true,
+                            zoomMargin: 30
+                        });
                     }
-                    break;
+                }).catch(error => {
+                    console.error('Ошибка при построении маршрута:', error);
+                    postMessageToRN({ 
+                        type: 'ERROR', 
+                        message: 'Ошибка при построении маршрута: ' + error.message 
+                    });
+                });
+            } catch (error) {
+                console.error('Ошибка при вызове построения маршрута:', error);
+                postMessageToRN({ 
+                    type: 'ERROR', 
+                    message: 'Ошибка при вызове построения маршрута: ' + error.message 
+                });
+            }
+        }
+
+        // Очистка маршрута
+        function clearRoute() {
+            if (currentRoute && map) {
+                map.geoObjects.remove(currentRoute);
+                currentRoute = null;
+            }
+        }
+
+        // Обработчик сообщений из React Native
+        window.handleMessage = function(messageStr) {
+            try {
+                const data = JSON.parse(messageStr);
+                
+                switch(data.type) {
+                    case 'ADD_MARKERS':
+                        addMarkers(data.points);
+                        break;
+                    case 'USER_LOCATION':
+                        addUserLocation(data.coords);
+                        break;
+                    case 'BUILD_ROUTE':
+                        buildRoute(data.from, data.to);
+                        break;
+                    case 'CLEAR_ROUTE':
+                        clearRoute();
+                        break;
+                    default:
+                        console.warn('Неизвестный тип сообщения:', data.type);
+                }
+            } catch (error) {
+                console.error('Ошибка при обработке сообщения:', error);
+                postMessageToRN({ 
+                    type: 'ERROR', 
+                    message: 'Ошибка при обработке сообщения: ' + error.message 
+                });
             }
         };
-        
-        ymaps.ready(init);
+
+        // Запускаем инициализацию карты
+        initMap();
     </script>
-</head>
-<body>
-    <div id="map"></div>
 </body>
 </html>
 `;
 
-// Функция для обработки сообщений от WebView
+// Обработчик сообщений от WebView
 export function handleWebViewMessage(
-  event: WebViewMessageEvent,
-  onMarkerClick: (id: string) => void,
-  onMapReady: () => void,
-  onShowDetails: (id: string) => void,
-  onRouteInfo?: (distance: string, duration: string) => void
+    event: WebViewMessageEvent,
+    onMarkerClick: (id: string) => void,
+    onMapReady: () => void,
+    onShowDetails: (id: string) => void,
+    onRouteInfo?: (distance: string, duration: string) => void,
+    onError?: (message: string) => void
 ) {
-  try {
-    const data = JSON.parse(event.nativeEvent.data);
-    
-    switch (data.type) {
-      case 'MARKER_CLICK':
-        onMarkerClick(data.id);
-        break;
-      case 'MAP_READY':
-        onMapReady();
-        break;
-      case 'SHOW_DETAILS':
-        onShowDetails(data.id);
-        break;
-      case 'ROUTE_INFO':
-        if (onRouteInfo) {
-          onRouteInfo(data.distance, data.duration);
+    try {
+        const data = JSON.parse(event.nativeEvent.data);
+        
+        switch (data.type) {
+            case 'MARKER_CLICK':
+                onMarkerClick(data.id);
+                break;
+            case 'MAP_READY':
+                onMapReady();
+                break;
+            case 'SHOW_DETAILS':
+                onShowDetails(data.id);
+                break;
+            case 'ROUTE_INFO':
+                if (onRouteInfo) {
+                    onRouteInfo(data.distance, data.duration);
+                }
+                break;
+            case 'ERROR':
+                if (onError) {
+                    onError(data.message);
+                } else {
+                    console.error('Ошибка карты:', data.message);
+                }
+                break;
         }
-        break;
+    } catch (error) {
+        console.error('Ошибка обработки сообщения от WebView:', error);
     }
-  } catch (error) {
-    console.error('Error parsing message from WebView:', error);
-  }
 }
 
-// Функция для отправки сообщений в WebView
+// Форматирование точек для карты
 export function formatRecyclingPointsForMap(
-  points: RecyclingPoint[],
-  selectedMaterials?: string[]
+    points: RecyclingPoint[],
+    selectedMaterials?: string[]
 ) {
-  // Если выбраны материалы, фильтруем точки
-  const filteredPoints = selectedMaterials && selectedMaterials.length > 0
-    ? points.filter(point => 
-        point.materials.some(material => selectedMaterials.includes(material))
-      )
-    : points;
-    
-  return filteredPoints.map(point => ({
-    id: point.id,
-    name: point.name,
-    address: point.address,
-    coordinates: [point.coordinates[1], point.coordinates[0]], // Преобразуем [lon, lat] в [lat, lon] для Яндекс.Карт
-    materials: point.materials,
-    description: point.description,
-    workingHours: point.workingHours,
-    phone: point.phone,
-    iconColor: getIconColorForPoint(point)
-  }));
+    try {
+        const filteredPoints = selectedMaterials && selectedMaterials.length > 0
+            ? points.filter(point => 
+                point.materials.some(material => selectedMaterials.includes(material))
+            )
+            : points;
+            
+        return filteredPoints.map(point => ({
+            id: point.id,
+            name: point.name,
+            address: point.address,
+            coordinates: [point.coordinates[1], point.coordinates[0]], // [lat, lon] для Яндекс.Карт
+            materials: point.materials,
+            description: point.description,
+            workingHours: point.workingHours,
+            phone: point.phone,
+            iconColor: getIconColorForPoint(point)
+        }));
+    } catch (error) {
+        console.error('Ошибка форматирования точек:', error);
+        return [];
+    }
 }
 
-// Функция для определения цвета маркера в зависимости от принимаемых материалов
+// Определение цвета маркера
 function getIconColorForPoint(point: RecyclingPoint): string {
-  // Если точка принимает только один тип материалов, используем его цвет
-  if (point.materials.length === 1) {
-    return MATERIAL_COLORS[point.materials[0]] || '#0891b2';
-  }
-  
-  // Иначе используем цвет по умолчанию
-  return '#0891b2';
-}
-
-// Импортируем цвета материалов
-import { MATERIAL_COLORS } from '../data/recyclingPoints'; 
+    try {
+        if (point.materials.length === 1) {
+            return MATERIAL_COLORS[point.materials[0]] || '#0891b2';
+        }
+        return '#0891b2';
+    } catch (error) {
+        console.error('Ошибка определения цвета маркера:', error);
+        return '#0891b2';
+    }
+} 
