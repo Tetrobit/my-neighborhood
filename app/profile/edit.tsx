@@ -14,7 +14,7 @@ import {
 import { router } from 'expo-router';
 import { apiService } from '@/app/utils/api';
 import { User } from '@/app/utils/types/api';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, Store } from 'lucide-react-native';
 
 export default function EditProfileScreen() {
   const [profile, setProfile] = useState<User | null>(null);
@@ -73,6 +73,10 @@ export default function EditProfileScreen() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handleFarmManagement = () => {
+    router.push('/profile/farms');
   };
 
   if (loading) {
@@ -144,6 +148,13 @@ export default function EditProfileScreen() {
               ) : (
                 <Text style={styles.buttonText}>Сохранить изменения</Text>
               )}
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.button, styles.farmButton]}
+              onPress={handleFarmManagement}
+            >
+              <Store size={20} color="#ffffff" style={styles.farmIcon} />
+              <Text style={styles.buttonText}>Управление фермой</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -238,5 +249,14 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  farmButton: {
+    backgroundColor: '#2ecc71',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  farmIcon: {
+    marginRight: 8,
   },
 }); 
