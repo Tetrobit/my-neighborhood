@@ -19,6 +19,14 @@ import {
   MapPin,
   X,
   LucideIcon,
+  Droplet,
+  Hammer,
+  Sparkles,
+  Wrench,
+  Zap,
+  Truck,
+  Baby,
+  Flower,
 } from 'lucide-react-native';
 import { LOCAL_SERVICES, LOCAL_SERVICE_CATEGORIES } from '../data/businesses';
 
@@ -71,6 +79,20 @@ export default function LocalServicesScreen() {
 
   const handleServicePress = (service: Service) => {
     router.push(`/business/${service.id}`);
+  };
+
+  const getIconForCategory = (categoryId: string): LucideIcon => {
+    switch (categoryId) {
+      case 'plumbing': return Droplet;
+      case 'repair': return Hammer;
+      case 'cleaning': return Sparkles;
+      case 'handyman': return Wrench;
+      case 'electric': return Zap;
+      case 'delivery': return Truck;
+      case 'babysitting': return Baby;
+      case 'gardening': return Flower;
+      default: return Wrench;
+    }
   };
 
   const renderServiceCard = ({ item }: { item: Service }) => (
@@ -130,26 +152,34 @@ export default function LocalServicesScreen() {
         style={styles.categoriesContainer}
         contentContainerStyle={styles.categoriesContent}
       >
-        {LOCAL_SERVICE_CATEGORIES.map((category) => (
-          <Pressable
-            key={category.id}
-            style={[
-              styles.categoryButton,
-              selectedCategory === category.id && styles.categoryButtonActive,
-            ]}
-            onPress={() => handleCategoryPress(category.id)}
-          >
-            <Text
+        {LOCAL_SERVICE_CATEGORIES.map((category) => {
+          const IconComponent = getIconForCategory(category.id);
+          return (
+            <Pressable
+              key={category.id}
               style={[
-                styles.categoryButtonText,
-                selectedCategory === category.id && styles.categoryButtonTextActive,
+                styles.categoryButton,
+                selectedCategory === category.id && styles.categoryButtonActive,
               ]}
-              numberOfLines={1}
+              onPress={() => handleCategoryPress(category.id)}
             >
-              {category.name}
-            </Text>
-          </Pressable>
-        ))}
+              <IconComponent 
+                size={16} 
+                color={selectedCategory === category.id ? '#ffffff' : '#64748b'} 
+                style={styles.categoryIcon}
+              />
+              <Text
+                style={[
+                  styles.categoryButtonText,
+                  selectedCategory === category.id && styles.categoryButtonTextActive,
+                ]}
+                numberOfLines={1}
+              >
+                {category.name}
+              </Text>
+            </Pressable>
+          );
+        })}
       </ScrollView>
 
       <FlatList
@@ -226,12 +256,13 @@ const styles = StyleSheet.create({
   },
   categoryButton: {
     paddingHorizontal: 14,
-    paddingVertical: 6,
+    paddingVertical: 8,
     borderRadius: 20,
     backgroundColor: '#f1f5f9',
     marginRight: 10,
-    minWidth: 80,
+    minWidth: 90,
     alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -240,9 +271,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 1,
     elevation: 1,
+    height: 36,
+    flexDirection: 'row',
   },
   categoryButtonActive: {
     backgroundColor: '#0891b2',
+  },
+  categoryIcon: {
+    marginRight: 6,
   },
   categoryButtonText: {
     fontSize: 14,

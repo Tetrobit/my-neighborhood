@@ -74,7 +74,7 @@ export default function BusinessScreen() {
   const handleSubmitRequest = () => {
     if (selectedDate && selectedTime) {
       // Здесь можно добавить логику отправки заявки
-      alert(`Заявка отправлена на ${selectedDate} ${selectedTime}`);
+      alert('Запись подтверждена\n\nСервис свяжется с вами для согласования');
       setModalVisible(false);
     } else {
       alert('Пожалуйста, выберите дату и время');
