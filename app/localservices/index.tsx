@@ -114,7 +114,9 @@ export default function LocalServicesScreen() {
           </Text>
           <View style={styles.serviceDetails}>
             <MapPin size={14} color="#64748b" />
-            <Text style={styles.serviceAddress}>{item.address}</Text>
+            <Text style={styles.serviceAddress} numberOfLines={1}>
+              {item.address}
+            </Text>
           </View>
         </View>
         <View style={styles.priceContainer}>
@@ -335,12 +337,12 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3,
     elevation: 3,
-    marginBottom: 10,
-    height: 150,
+    marginBottom: 12,
+    height: 140,
   },
   serviceImage: {
-    width: 130,
-    height: 150,
+    width: 120,
+    height: 140,
     borderTopLeftRadius: 16,
     borderBottomLeftRadius: 16,
   },
@@ -357,12 +359,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#0f172a',
-    marginBottom: 6,
+    marginBottom: 4,
+    flexShrink: 1,
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 4,
   },
   rating: {
     fontSize: 14,
@@ -377,25 +380,26 @@ const styles = StyleSheet.create({
   },
   serviceCategory: {
     fontSize: 14,
+    fontWeight: '500',
     color: '#64748b',
-    marginBottom: 6,
+    marginBottom: 3,
   },
   serviceDetails: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
   },
   serviceAddress: {
     fontSize: 12,
     color: '#64748b',
     marginLeft: 4,
+    flex: 1,
   },
   priceContainer: {
     alignSelf: 'flex-start',
-    marginTop: 4,
+    marginTop: 3,
   },
   servicePrice: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
     color: '#0891b2',
   },
