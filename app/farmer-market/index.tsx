@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, SafeAreaView, TouchableOpacity, Text } from 'react-native';
 import { router } from 'expo-router';
-import { ChevronLeft, Settings, ShoppingCart } from 'lucide-react-native';
+import { ChevronLeft, ShoppingCart } from 'lucide-react-native';
 import { FarmerList } from '../../components/FarmerList';
 import { ProductList } from '../../components/ProductList';
 import { OrderForm } from '../../components/OrderForm';
@@ -183,9 +183,6 @@ export default function FarmerMarket() {
         </Text>
         {!selectedFarmer && !selectedProduct && (
           <View style={styles.headerButtons}>
-            <TouchableOpacity onPress={handleDashboardPress} style={styles.dashboardButton}>
-              <Settings size={24} color="#0891b2" />
-            </TouchableOpacity>
             <TouchableOpacity 
               onPress={() => setIsCartVisible(true)} 
               style={styles.cartButton}
@@ -266,9 +263,6 @@ const styles = StyleSheet.create({
   headerButtons: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  dashboardButton: {
-    marginRight: 16,
   },
   cartButton: {
     position: 'relative',
