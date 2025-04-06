@@ -1,21 +1,76 @@
-import { View, Text, StyleSheet, Pressable, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, TextInput, ScrollView, Modal } from 'react-native';
 import { router } from 'expo-router';
-import { ArrowLeft, Image as ImageIcon } from 'lucide-react-native';
+import { ArrowLeft, Image as ImageIcon, ChevronDown } from 'lucide-react-native';
 import { useState } from 'react';
+
+const categories = [
+  'Одежда',
+  'Электроника',
+  'Мебель',
+  'Книги',
+  'Спорт',
+  'Детские товары',
+  'Другое'
+];
 
 export default function AddProductScreen() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [price, setPrice] = useState('');
   const [address, setAddress] = useState('');
   const [phone, setPhone] = useState('');
+  const [category, setCategory] = useState('');
+  const [showCategories, setShowCategories] = useState(false);
 
   const handleSubmit = () => {
     // Здесь будет логика сохранения товара
+    console.log({ title, description, price, address, phone, category });
     router.back();
   };
 
   return (
     <View style={styles.container}>
+      <Modal
+        visible={showCategories}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowCategories(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Выберите категорию</Text>
+              <Pressable 
+                onPress={() => setShowCategories(false)}
+                style={styles.modalCloseButton}
+              >
+                <Text style={styles.modalCloseText}>Закрыть</Text>
+              </Pressable>
+            </View>
+            <ScrollView style={styles.modalList}>
+              {categories.map((cat) => (
+                <Pressable
+                  key={cat}
+                  style={[
+                    styles.modalItem,
+                    category === cat && styles.modalItemSelected
+                  ]}
+                  onPress={() => {
+                    setCategory(cat);
+                    setShowCategories(false);
+                  }}
+                >
+                  <Text style={[
+                    styles.modalItemText,
+                    category === cat && styles.modalItemTextSelected
+                  ]}>{cat}</Text>
+                </Pressable>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
       <View style={styles.header}>
         <Pressable onPress={() => router.back()} style={styles.backButton}>
           <ArrowLeft size={24} color="#0f172a" />
@@ -50,6 +105,30 @@ export default function AddProductScreen() {
               multiline
               numberOfLines={4}
               textAlignVertical="top"
+            />
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Категория</Text>
+            <Pressable 
+              style={styles.categorySelector}
+              onPress={() => setShowCategories(true)}
+            >
+              <Text style={[styles.categoryText, !category && styles.placeholderText]}>
+                {category || 'Выберите категорию'}
+              </Text>
+              <ChevronDown size={20} color="#64748b" />
+            </Pressable>
+          </View>
+
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Цена</Text>
+            <TextInput
+              style={styles.input}
+              value={price}
+              onChangeText={setPrice}
+              placeholder="Укажите цену или 'Бесплатно'"
+              keyboardType="default"
             />
           </View>
 
@@ -148,6 +227,74 @@ const styles = StyleSheet.create({
   },
   textArea: {
     height: 120,
+  },
+  categorySelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#ffffff',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 8,
+    padding: 12,
+  },
+  categoryText: {
+    fontSize: 16,
+    color: '#0f172a',
+  },
+  placeholderText: {
+    color: '#64748b',
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-end',
+  },
+  modalContent: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
+    maxHeight: '70%',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#0f172a',
+  },
+  modalCloseButton: {
+    padding: 8,
+  },
+  modalCloseText: {
+    color: '#0891b2',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  modalList: {
+    padding: 8,
+  },
+  modalItem: {
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
+  },
+  modalItemSelected: {
+    backgroundColor: '#f0f9ff',
+  },
+  modalItemText: {
+    fontSize: 16,
+    color: '#0f172a',
+  },
+  modalItemTextSelected: {
+    color: '#0891b2',
+    fontWeight: '500',
   },
   submitButton: {
     backgroundColor: '#0891b2',
