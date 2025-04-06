@@ -33,6 +33,7 @@ type Product = {
   name: string;
   price: string;
   image?: string;
+  description?: string;
 };
 
 const ProductItem = ({ product, businessId }: { product: Product, businessId: string }) => {
@@ -100,6 +101,10 @@ export default function ProductsScreen() {
     setSearchQuery('');
   };
 
+  const handleBackPress = () => {
+    router.push(`/business/${businessId}` as any);
+  };
+
   if (!business || !business.products) {
     return (
       <View style={styles.container}>
@@ -112,7 +117,7 @@ export default function ProductsScreen() {
     <SafeAreaView style={styles.safeArea}>
       <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
         <View style={styles.header}>
-          <Pressable onPress={() => router.back()} style={styles.backButton}>
+          <Pressable onPress={handleBackPress} style={styles.backButton}>
             <ChevronLeft size={24} color="#0f172a" />
           </Pressable>
           <View style={styles.headerTitleContainer}>

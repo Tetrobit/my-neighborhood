@@ -1,4 +1,12 @@
 // В начале файла, после импортов
+export interface Product {
+  id: string;
+  name: string;
+  price: string;
+  image?: string;
+  description?: string; // Добавляем поле описания для товара
+}
+
 export interface Business {
   id: string;
   name: string;
@@ -14,12 +22,7 @@ export interface Business {
   email?: string;
   description?: string;
   price?: string;
-  products?: Array<{
-    id: string;
-    name: string;
-    price: string;
-    image?: string;
-  }>;
+  products?: Product[];
   reviews?: Array<{
     id: string;
     author: string;
@@ -59,25 +62,29 @@ export const BUSINESSES: Business[] = [
         id: 'p1',
         name: 'Авокадо тост',
         price: '320 руб',
-        image: 'https://images.unsplash.com/photo-1603046891744-76e6300f5ef9?w=400'
+        image: 'https://images.unsplash.com/photo-1603046891744-76e6300f5ef9?w=400',
+        description: 'Свежий авокадо, тост с маслом и яйцом.'
       },
       {
         id: 'p2',
         name: 'Омлет с овощами',
         price: '280 руб',
-        image: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400'
+        image: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400',
+        description: 'Омлет с овощами и сыром.'
       },
       {
         id: 'p3',
         name: 'Круассан с миндалем',
         price: '180 руб',
-        image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400'
+        image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400',
+        description: 'Круассан с миндалем и шоколадом.'
       },
       {
         id: 'p4',
         name: 'Латте',
         price: '210 руб',
-        image: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=400'
+        image: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=400',
+        description: 'Латте с молоком и эспрессо.'
       }
     ],
     reviews: [
@@ -1976,13 +1983,15 @@ export const SMALL_BUSINESSES: Business[] = [
         id: 'p1',
         name: 'Хлеб пшеничный',
         price: '60 руб',
-        image: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc7c?w=400'
+        image: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc7c?w=400',
+        description: 'Свежеиспеченный хлеб из отборной пшеничной муки. Хрустящая корочка и мягкий мякиш.'
       },
       {
         id: 'p2',
         name: 'Багет французский',
         price: '80 руб',
-        image: 'https://images.unsplash.com/photo-1597079910443-60c43fc4eb4e?w=400'
+        image: 'https://images.unsplash.com/photo-1597079910443-60c43fc4eb4e?w=400',
+        description: 'Классический французский багет с хрустящей корочкой, приготовленный по традиционному рецепту.'
       },
       {
         id: 'p3',
@@ -2034,25 +2043,29 @@ export const SMALL_BUSINESSES: Business[] = [
         id: 'p1',
         name: 'Торт "Наполеон"',
         price: '1200 руб',
-        image: 'https://images.unsplash.com/photo-1547414368-ac947d00b91d?w=400'
+        image: 'https://images.unsplash.com/photo-1547414368-ac947d00b91d?w=400',
+        description: 'Классический слоеный торт с нежным заварным кремом. Вес 1 кг, диаметр 20 см.'
       },
       {
         id: 'p2',
         name: 'Эклеры с ванильным кремом',
         price: '150 руб/шт',
-        image: 'https://images.unsplash.com/photo-1605985719957-eeff38a0b57c?w=400'
+        image: 'https://images.unsplash.com/photo-1605985719957-eeff38a0b57c?w=400',
+        description: 'Французские пирожные из заварного теста с нежным ванильным кремом внутри.'
       },
       {
         id: 'p3',
         name: 'Маффины шоколадные',
         price: '120 руб/шт',
-        image: 'https://images.unsplash.com/photo-1604413191066-4dd20bedf486?w=400'
+        image: 'https://images.unsplash.com/photo-1604413191066-4dd20bedf486?w=400',
+        description: 'Шоколадные маффины с кусочками настоящего бельгийского шоколада. Вес 80 г.'
       },
       {
         id: 'p4',
         name: 'Чизкейк классический',
         price: '950 руб',
-        image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400'
+        image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400',
+        description: 'Нежный чизкейк с песочной основой и творожной начинкой. Вес 800 г, диаметр 18 см.'
       }
     ],
     reviews: [

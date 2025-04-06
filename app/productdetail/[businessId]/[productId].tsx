@@ -45,6 +45,10 @@ export default function ProductDetailScreen() {
     setImageError(true);
   };
 
+  const handleBackPress = () => {
+    router.push(`/products/${businessId}` as any);
+  };
+
   const handleCall = () => {
     if (business?.phone) {
       Linking.openURL(`tel:${business.phone}`);
@@ -77,7 +81,7 @@ export default function ProductDetailScreen() {
     <SafeAreaView style={styles.safeArea}>
       <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
         <View style={styles.header}>
-          <Pressable onPress={() => router.back()} style={styles.backButton}>
+          <Pressable onPress={handleBackPress} style={styles.backButton}>
             <ChevronLeft size={24} color="#0f172a" />
           </Pressable>
           <View style={styles.headerTitleContainer}>
@@ -135,11 +139,11 @@ export default function ProductDetailScreen() {
               </Pressable>
             </View>
             
-            {business.description && (
+            {product.description && (
               <>
                 <View style={styles.separator} />
-                <Text style={styles.sectionTitle}>Описание</Text>
-                <Text style={styles.descriptionText}>{business.description}</Text>
+                <Text style={styles.sectionTitle}>Описание товара</Text>
+                <Text style={styles.descriptionText}>{product.description}</Text>
               </>
             )}
             
@@ -185,7 +189,7 @@ export default function ProductDetailScreen() {
               onPress={() => router.push(`/business/${businessId}` as any)}
             >
               <ShoppingBag size={20} color="#ffffff" />
-              <Text style={styles.buttonText}>Все товары</Text>
+              <Text style={styles.buttonText}>Вернуться в магазин</Text>
             </Pressable>
           </View>
         </SafeAreaView>
