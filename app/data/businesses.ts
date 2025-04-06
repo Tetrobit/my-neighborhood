@@ -14,6 +14,12 @@ export interface Business {
   email?: string;
   description?: string;
   price?: string;
+  products?: Array<{
+    id: string;
+    name: string;
+    price: string;
+    image?: string;
+  }>;
   reviews?: Array<{
     id: string;
     author: string;
@@ -1831,6 +1837,32 @@ export const SMALL_BUSINESSES: Business[] = [
     email: 'info@freshbread.ru',
     price: 'от 50 руб',
     description: 'Свежая выпечка и хлеб каждый день. Используем только натуральные ингредиенты и традиционные рецепты.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Хлеб пшеничный',
+        price: '60 руб',
+        image: 'https://images.unsplash.com/photo-1549931319-a545dcf3bc7c?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Багет французский',
+        price: '80 руб',
+        image: 'https://images.unsplash.com/photo-1597079910443-60c43fc4eb4e?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Булочка с корицей',
+        price: '70 руб',
+        image: 'https://images.unsplash.com/photo-1509365465985-25d11c17e812?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Хлеб ржаной',
+        price: '65 руб',
+        image: 'https://images.unsplash.com/photo-1604934128857-5d7e80d1a114?w=400'
+      }
+    ],
     reviews: [
       {
         id: '1',
@@ -1863,6 +1895,32 @@ export const SMALL_BUSINESSES: Business[] = [
     email: 'orders@sweetdreams.ru',
     price: 'от 200 руб',
     description: 'Торты и пирожные ручной работы на заказ. Десерты из натуральных ингредиентов. Индивидуальный подход к каждому клиенту.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Торт "Наполеон"',
+        price: '1200 руб',
+        image: 'https://images.unsplash.com/photo-1547414368-ac947d00b91d?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Эклеры с ванильным кремом',
+        price: '150 руб/шт',
+        image: 'https://images.unsplash.com/photo-1605985719957-eeff38a0b57c?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Маффины шоколадные',
+        price: '120 руб/шт',
+        image: 'https://images.unsplash.com/photo-1604413191066-4dd20bedf486?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Чизкейк классический',
+        price: '950 руб',
+        image: 'https://images.unsplash.com/photo-1551024506-0bccd828d307?w=400'
+      }
+    ],
     reviews: [
       {
         id: '1',
@@ -1894,6 +1952,32 @@ export const SMALL_BUSINESSES: Business[] = [
     email: 'fruitparadise@mail.ru',
     price: 'от 100 руб/кг',
     description: 'Свежие фрукты и овощи с местных ферм. Доставка по району. Специальные предложения и сезонные скидки.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Яблоки сезонные',
+        price: '120 руб/кг',
+        image: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Бананы',
+        price: '90 руб/кг',
+        image: 'https://images.unsplash.com/photo-1603833665858-e61d17a86224?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Груши',
+        price: '150 руб/кг',
+        image: 'https://images.unsplash.com/photo-1514756331096-242fdeb70d4a?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Авокадо',
+        price: '120 руб/шт',
+        image: 'https://images.unsplash.com/photo-1523049673857-eb18f1d7b578?w=400'
+      }
+    ],
     reviews: [
       {
         id: '1',

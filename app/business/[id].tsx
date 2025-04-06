@@ -13,6 +13,7 @@ import {
   SafeAreaView,
   ImageErrorEventData,
   NativeSyntheticEvent,
+  FlatList,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import {
@@ -27,11 +28,37 @@ import {
   CheckCircle,
   X,
   Image as ImageIcon,
+  Map,
 } from 'lucide-react-native';
 import { BUSINESSES_BY_ID, DEFAULT_IMAGE, getValidImageUrl } from '../data/businesses';
 
 // Константа для URL плейсхолдера
 const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/800x400/e2e8f0/64748b?text=Нет+изображения';
+
+// Добавляем компонент для отображения товаров
+const ProductItem = ({ product }: { product: { id: string, name: string, price: string, image?: string } }) => {
+  const [imageError, setImageError] = useState(false);
+  
+  const handleImageError = (e: NativeSyntheticEvent<ImageErrorEventData>) => {
+    setImageError(true);
+  };
+  
+  const imageUrl = imageError ? DEFAULT_IMAGE : (product.image ? product.image : DEFAULT_IMAGE);
+  
+  return (
+    <View style={styles.productItem}>
+      <Image 
+        source={{ uri: imageUrl }} 
+        style={styles.productImage}
+        onError={handleImageError}
+      />
+      <View style={styles.productContent}>
+        <Text style={styles.productName}>{product.name}</Text>
+        <Text style={styles.productPrice}>{product.price}</Text>
+      </View>
+    </View>
+  );
+};
 
 export default function BusinessScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -123,6 +150,11 @@ export default function BusinessScreen() {
     }
   };
 
+  // Обработчик для показа на карте
+  const handleShowOnMap = () => {
+    alert(`Показ на карте будет доступен в ближайшее время.\nАдрес: ${business.address}`);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -185,6 +217,20 @@ export default function BusinessScreen() {
               </Pressable>
             )}
           </View>
+
+          {/* Добавляем отображение товаров для малого бизнеса */}
+          {business.products && business.products.length > 0 && business.category === 'Малый бизнес' && (
+            <View style={styles.productsSection}>
+              <Text style={styles.sectionTitle}>Товары</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View style={styles.productsContainer}>
+                  {business.products.map(product => (
+                    <ProductItem key={product.id} product={product} />
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
+          )}
         </View>
 
         {business.reviews && business.reviews.length > 0 && (
@@ -208,10 +254,23 @@ export default function BusinessScreen() {
       </ScrollView>
 
       <SafeAreaView style={styles.footer}>
-        <Pressable style={styles.messageButton} onPress={() => setModalVisible(true)}>
-          <Calendar size={20} color="#ffffff" />
-          <Text style={styles.messageButtonText}>Подать заявку</Text>
-        </Pressable>
+        {business.category === 'Малый бизнес' ? (
+          <View style={styles.footerButtonsContainer}>
+            <Pressable style={styles.callButton} onPress={handleCall}>
+              <Phone size={20} color="#ffffff" />
+              <Text style={styles.buttonText}>Связаться</Text>
+            </Pressable>
+            <Pressable style={styles.mapButton} onPress={handleShowOnMap}>
+              <Map size={20} color="#ffffff" />
+              <Text style={styles.buttonText}>Показать на карте</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <Pressable style={styles.messageButton} onPress={() => setModalVisible(true)}>
+            <Calendar size={20} color="#ffffff" />
+            <Text style={styles.messageButtonText}>Подать заявку</Text>
+          </Pressable>
+        )}
       </SafeAreaView>
       
       <Modal
@@ -632,5 +691,77 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  // Стили для отображения товаров
+  productsSection: {
+    marginTop: 16,
+  },
+  productsContainer: {
+    flexDirection: 'row',
+    paddingVertical: 8,
+  },
+  productItem: {
+    width: 140,
+    marginRight: 12,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  productImage: {
+    width: '100%',
+    height: 100,
+    resizeMode: 'cover',
+  },
+  productContent: {
+    padding: 8,
+  },
+  productName: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#0f172a',
+    marginBottom: 4,
+  },
+  productPrice: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#0891b2',
+  },
+  
+  // Стили для футера с кнопками
+  footerButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+  },
+  callButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0891b2',
+    borderRadius: 8,
+    paddingVertical: 12,
+    marginRight: 8,
+  },
+  mapButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#10b981',
+    borderRadius: 8,
+    paddingVertical: 12,
+    marginLeft: 8,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginLeft: 8,
   },
 }); 

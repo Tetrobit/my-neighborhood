@@ -31,7 +31,7 @@ export default function MiniAppsScreen() {
       icon: Briefcase, 
       title: 'Малый бизнес', 
       description: 'Поддержите местных предпринимателей',
-      href: '/smallbusiness' 
+      href: '/smallbusiness' as any
     },
     { 
       icon: Recycle, 
