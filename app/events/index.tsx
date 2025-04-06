@@ -112,135 +112,11 @@ const EventCard = ({ item, onPress }: { item: Event; onPress: () => void }) => {
   );
 };
 
-// Компонент для детальной информации о мероприятии
-const EventDetailModal = ({ visible, event, onClose }: { visible: boolean; event: Event | null; onClose: () => void }) => {
-  if (!event) return null;
-  
-  const [imageError, setImageError] = useState(false);
-  
-  const handleImageError = (e: NativeSyntheticEvent<ImageErrorEventData>) => {
-    setImageError(true);
-  };
-  
-  const imageUrl = imageError ? DEFAULT_IMAGE : getValidImageUrl(event.image);
-  
-  // Форматирование цены (например, "500 руб" -> "500 ₽")
-  const formatPrice = (price: string | undefined): string => {
-    if (!price) return 'Бесплатно';
-    
-    // Если цена содержит слово "бесплатно" (регистр не важен)
-    if (price.toLowerCase().includes('бесплатно')) {
-      return 'Бесплатно';
-    }
-    
-    // Если цена имеет формат "X руб за Y, Z бесплатно"
-    if (price.includes('руб') && price.includes('бесплатно')) {
-      return price.replace('руб', '₽');
-    }
-    
-    // Простая замена "руб" на символ рубля
-    return price.replace('руб', '₽');
-  };
-  
-  return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}
-    >
-      <View style={styles.detailModalOverlay}>
-        <View style={styles.detailModalContainer}>
-          <View style={styles.detailModalHeader}>
-            <Text style={styles.detailModalTitle}>{event.name}</Text>
-            <Pressable onPress={onClose}>
-              <X size={24} color="#0f172a" />
-            </Pressable>
-          </View>
-          
-          <ScrollView style={styles.detailModalContent}>
-            <Image 
-              source={{ uri: imageUrl }} 
-              style={styles.detailModalImage}
-              onError={handleImageError}
-            />
-            
-            <View style={styles.detailSection}>
-              <View style={styles.detailRatingContainer}>
-                <Star size={20} color="#FFB800" fill="#FFB800" />
-                <Text style={styles.detailRating}>{event.rating}</Text>
-                <Text style={styles.detailReviewCount}>({event.reviewCount})</Text>
-              </View>
-              
-              <View style={styles.detailCategoryContainer}>
-                <Text style={styles.detailCategory}>
-                  {EVENT_CATEGORIES.find(cat => cat.id === event.subcategory)?.name}
-                </Text>
-              </View>
-            </View>
-            
-            <View style={styles.detailSection}>
-              <View style={styles.detailRow}>
-                <Clock size={18} color="#64748b" />
-                <Text style={styles.detailRowText}>{event.openHours}</Text>
-              </View>
-              
-              <View style={styles.detailRow}>
-                <MapPin size={18} color="#64748b" />
-                <Text style={styles.detailRowText}>{event.address}</Text>
-              </View>
-              
-              <View style={styles.detailRow}>
-                <Phone size={18} color="#64748b" />
-                <Text style={styles.detailRowText}>{event.phone}</Text>
-              </View>
-              
-              {event.price && (
-                <View style={styles.detailPriceContainer}>
-                  <Text style={styles.detailPrice}>{formatPrice(event.price)}</Text>
-                </View>
-              )}
-            </View>
-            
-            <View style={styles.detailSection}>
-              <Text style={styles.detailSectionTitle}>Описание</Text>
-              <Text style={styles.detailDescription}>{event.description}</Text>
-            </View>
-            
-            <View style={styles.detailActionButtons}>
-              <Pressable 
-                style={styles.detailContactButton}
-                onPress={() => Linking.openURL(`tel:${event.phone}`)}
-              >
-                <Phone size={20} color="#ffffff" />
-                <Text style={styles.detailContactButtonText}>Связаться с организатором</Text>
-              </Pressable>
-              
-              <Pressable 
-                style={styles.detailMapButton}
-                onPress={() => Alert.alert(
-                  "Показать на карте",
-                  `Функция отображения "${event.name}" на карте будет доступна в ближайшее время.`,
-                  [{ text: "ОК", onPress: () => console.log("OK Pressed") }]
-                )}
-              >
-                <MapIcon size={20} color="#ffffff" />
-                <Text style={styles.detailMapButtonText}>Показать на карте</Text>
-              </Pressable>
-            </View>
-          </ScrollView>
-        </View>
-      </View>
-    </Modal>
-  );
-};
-
 export default function EventsScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [filteredEvents, setFilteredEvents] = useState(EVENTS);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [createSuccess, setCreateSuccess] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
   
@@ -300,8 +176,11 @@ export default function EventsScreen() {
   };
 
   const handleEventPress = (event: Event) => {
-    // Вместо Alert, открываем модальное окно с подробной информацией
-    setSelectedEvent(event);
+    // Переходим на страницу с детальной информацией
+    router.push({
+      pathname: '/eventdetail/[id]',
+      params: { id: event.id }
+    });
   };
 
   const handleCallOrganizer = (phone: string) => {
@@ -678,13 +557,6 @@ export default function EventsScreen() {
           <Text style={styles.successText}>Мероприятие успешно создано!</Text>
         </View>
       )}
-
-      {/* Модальное окно с детальной информацией о выбранном мероприятии */}
-      <EventDetailModal 
-        visible={selectedEvent !== null}
-        event={selectedEvent}
-        onClose={() => setSelectedEvent(null)}
-      />
     </Animated.View>
   );
 }
@@ -1066,141 +938,5 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '500',
-  },
-  // Стили для модального окна с деталями мероприятия
-  detailModalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  detailModalContainer: {
-    width: '92%',
-    maxHeight: '90%',
-    backgroundColor: '#ffffff',
-    borderRadius: 12,
-    overflow: 'hidden',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  detailModalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-  },
-  detailModalTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#0f172a',
-    flex: 1,
-    marginRight: 16,
-  },
-  detailModalContent: {
-    flex: 1,
-  },
-  detailModalImage: {
-    width: '100%',
-    height: 240,
-    resizeMode: 'cover',
-  },
-  detailSection: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
-  },
-  detailRatingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  detailRating: {
-    marginLeft: 4,
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#0f172a',
-  },
-  detailReviewCount: {
-    marginLeft: 2,
-    fontSize: 16,
-    color: '#64748b',
-  },
-  detailCategoryContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  detailCategory: {
-    fontSize: 16,
-    color: '#0ea5e9',
-    fontWeight: '500',
-  },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  detailRowText: {
-    fontSize: 16,
-    color: '#0f172a',
-    marginLeft: 12,
-    flex: 1,
-  },
-  detailPriceContainer: {
-    marginTop: 4,
-  },
-  detailPrice: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#0ea5e9',
-  },
-  detailSectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#0f172a',
-    marginBottom: 8,
-  },
-  detailDescription: {
-    fontSize: 16,
-    color: '#0f172a',
-    lineHeight: 24,
-  },
-  detailActionButtons: {
-    padding: 16,
-    gap: 12,
-  },
-  detailContactButton: {
-    backgroundColor: '#0ea5e9',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  detailContactButtonText: {
-    color: '#ffffff',
-    fontWeight: '500',
-    fontSize: 16,
-    marginLeft: 8,
-  },
-  detailMapButton: {
-    backgroundColor: '#64748b',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  detailMapButtonText: {
-    color: '#ffffff',
-    fontWeight: '500',
-    fontSize: 16,
-    marginLeft: 8,
   },
 }); 
