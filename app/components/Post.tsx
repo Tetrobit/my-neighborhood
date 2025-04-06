@@ -4,6 +4,7 @@ import { Heart, MessageCircle, Share2, Building2, User as UserIcon } from 'lucid
 import { Post as PostType, User } from '../data/posts';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import { useRouter } from 'expo-router';
 
 interface PostProps {
   post: PostType;
@@ -15,6 +16,7 @@ interface PostProps {
 export default function Post({ post, onLike, onComment, onShare }: PostProps) {
   const [isCommenting, setIsCommenting] = useState(false);
   const [commentText, setCommentText] = useState('');
+  const router = useRouter();
 
   const handleLike = () => {
     onLike?.(post.id);
@@ -32,19 +34,28 @@ export default function Post({ post, onLike, onComment, onShare }: PostProps) {
     onShare?.(post.id);
   };
 
+  const navigateToProfile = (userId: string) => {
+    router.push({
+      pathname: '/(tabs)/profile/[id]',
+      params: { id: userId }
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Image source={{ uri: post.author.avatar }} style={styles.avatar} />
+        <Pressable onPress={() => navigateToProfile(post.author.id)}>
+          <Image source={{ uri: post.author.avatar }} style={styles.avatar} />
+        </Pressable>
         <View style={styles.authorInfo}>
-          <View style={styles.authorNameContainer}>
+          <Pressable onPress={() => navigateToProfile(post.author.id)} style={styles.authorNameContainer}>
             <Text style={styles.authorName}>{post.author.name}</Text>
             {post.author.type === 'organization' ? (
               <Building2 size={16} color="#0891b2" />
             ) : (
               <UserIcon size={16} color="#64748b" />
             )}
-          </View>
+          </Pressable>
           <Text style={styles.time}>
             {formatDistanceToNow(new Date(post.createdAt), { locale: ru, addSuffix: true })}
           </Text>
@@ -81,9 +92,13 @@ export default function Post({ post, onLike, onComment, onShare }: PostProps) {
         <View style={styles.comments}>
           {post.comments.map(comment => (
             <View key={comment.id} style={styles.comment}>
-              <Image source={{ uri: comment.user.avatar }} style={styles.commentAvatar} />
+              <Pressable onPress={() => navigateToProfile(comment.user.id)}>
+                <Image source={{ uri: comment.user.avatar }} style={styles.commentAvatar} />
+              </Pressable>
               <View style={styles.commentContent}>
-                <Text style={styles.commentAuthor}>{comment.user.name}</Text>
+                <Pressable onPress={() => navigateToProfile(comment.user.id)}>
+                  <Text style={styles.commentAuthor}>{comment.user.name}</Text>
+                </Pressable>
                 <Text style={styles.commentText}>{comment.text}</Text>
                 <Text style={styles.commentTime}>
                   {formatDistanceToNow(new Date(comment.createdAt), { locale: ru, addSuffix: true })}
