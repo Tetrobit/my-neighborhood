@@ -2144,6 +2144,44 @@ export const SMALL_BUSINESSES: Business[] = [
     email: 'info@fashion-quarter.ru',
     price: 'от 1500 руб',
     description: 'Уникальная одежда от местных дизайнеров. Индивидуальный стиль, качественные материалы. Возможность пошива на заказ.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Платье летнее',
+        price: '3500 руб',
+        image: 'https://images.unsplash.com/photo-1550639525-c97d455acf70?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Джинсы классические',
+        price: '4200 руб',
+        image: 'https://images.unsplash.com/photo-1584370848010-d7fe6bc767ec?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Блуза шелковая',
+        price: '2800 руб',
+        image: 'https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Пальто демисезонное',
+        price: '8500 руб',
+        image: 'https://images.unsplash.com/photo-1520012218364-3dbe62c99bee?w=400'
+      },
+      {
+        id: 'p5',
+        name: 'Футболка принт',
+        price: '1900 руб',
+        image: 'https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=400'
+      },
+      {
+        id: 'p6',
+        name: 'Юбка миди',
+        price: '3200 руб',
+        image: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=400'
+      }
+    ],
     reviews: [
       {
         id: '1',
@@ -2175,6 +2213,38 @@ export const SMALL_BUSINESSES: Business[] = [
     email: 'creative@hands.ru',
     price: 'от 500 руб',
     description: 'Уникальные изделия ручной работы. Сувениры, украшения, элементы декора, подарки на любой вкус. Проводим мастер-классы для детей и взрослых.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Брошь ручной работы',
+        price: '1200 руб',
+        image: 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Керамическая ваза',
+        price: '3500 руб',
+        image: 'https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Вязаный плед',
+        price: '5800 руб',
+        image: 'https://images.unsplash.com/photo-1584286595398-556c0a5fda86?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Шкатулка из дерева',
+        price: '2400 руб',
+        image: 'https://images.unsplash.com/photo-1614771100434-e301a13301f0?w=400'
+      },
+      {
+        id: 'p5',
+        name: 'Мягкая игрушка',
+        price: '1500 руб',
+        image: 'https://images.unsplash.com/photo-1556012018-50c5c0da73bf?w=400'
+      }
+    ],
     reviews: [
       {
         id: '1',
@@ -2207,6 +2277,44 @@ export const SMALL_BUSINESSES: Business[] = [
     email: 'flora@flowers.ru',
     price: 'от 800 руб',
     description: 'Авторские букеты и композиции на любой случай. Доставка цветов по району. Оформление праздников и мероприятий.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Букет "Весенний"',
+        price: '2800 руб',
+        image: 'https://images.unsplash.com/photo-1615280825886-fa817c0a06cc?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Букет из роз',
+        price: '3500 руб',
+        image: 'https://images.unsplash.com/photo-1548094990-c16ca90f1f0d?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Композиция в коробке',
+        price: '4200 руб',
+        image: 'https://images.unsplash.com/photo-1589244158828-58aa58451322?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Свадебный букет',
+        price: '5500 руб',
+        image: 'https://images.unsplash.com/photo-1525257831700-d95230b98239?w=400'
+      },
+      {
+        id: 'p5',
+        name: 'Комнатное растение',
+        price: '1800 руб',
+        image: 'https://images.unsplash.com/photo-1463320898484-cdee8141c787?w=400'
+      },
+      {
+        id: 'p6',
+        name: 'Кашпо керамическое',
+        price: '1200 руб',
+        image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=400'
+      }
+    ],
     reviews: [
       {
         id: '1',
@@ -2239,6 +2347,50 @@ export const SMALL_BUSINESSES: Business[] = [
     email: 'sales@pure-beauty.ru',
     price: 'от 300 руб',
     description: 'Натуральная косметика ручной работы. Мыло, крема, маски, скрабы без консервантов и химических добавок. Все ингредиенты из экологически чистых источников.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Мыло ручной работы',
+        price: '320 руб',
+        image: 'https://images.unsplash.com/photo-1600857544200-b2f666a9a2dc?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Крем для лица',
+        price: '890 руб',
+        image: 'https://images.unsplash.com/photo-1614806687528-1dfdffe71544?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Маска для волос',
+        price: '760 руб',
+        image: 'https://images.unsplash.com/photo-1629132798392-73aa74d9a3f0?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Скраб для тела',
+        price: '650 руб',
+        image: 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=400'
+      },
+      {
+        id: 'p5',
+        name: 'Натуральный дезодорант',
+        price: '420 руб',
+        image: 'https://images.unsplash.com/photo-1624984673484-3c6abe0d5799?w=400'
+      },
+      {
+        id: 'p6',
+        name: 'Гидролат розы',
+        price: '480 руб',
+        image: 'https://images.unsplash.com/photo-1616394371306-349156489212?w=400'
+      },
+      {
+        id: 'p7',
+        name: 'Набор мини-масел',
+        price: '1200 руб',
+        image: 'https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=400'
+      }
+    ],
     reviews: [
       {
         id: '1',
@@ -2270,6 +2422,38 @@ export const SMALL_BUSINESSES: Business[] = [
     email: 'master@kalinin.ru',
     price: 'от 2000 руб',
     description: 'Авторские кованые изделия ручной работы. Элементы интерьера, садовая мебель, ограждения, подарки. Индивидуальные заказы любой сложности.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Подставка для цветов',
+        price: '3800 руб',
+        image: 'https://images.unsplash.com/photo-1609097828576-3b620e86039a?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Настенный светильник',
+        price: '5200 руб',
+        image: 'https://images.unsplash.com/photo-1586804199509-ccf13a8fb245?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Каминный набор',
+        price: '12500 руб',
+        image: 'https://images.unsplash.com/photo-1631156425715-25f6a0f9bba3?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Садовая скамейка',
+        price: '18000 руб',
+        image: 'https://images.unsplash.com/photo-1588949654121-9a42008b0ba0?w=400'
+      },
+      {
+        id: 'p5',
+        name: 'Декоративная решетка',
+        price: '7500 руб',
+        image: 'https://images.unsplash.com/photo-1646845856890-0809a13591e6?w=400'
+      }
+    ],
     reviews: [
       {
         id: '1',

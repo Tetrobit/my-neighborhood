@@ -158,8 +158,8 @@ export default function BusinessScreen() {
 
   // Добавляем функцию для просмотра всего ассортимента
   const handleViewAllProducts = (businessId: string) => {
-    // Пока делаем заглушку, потом можно добавить экран для просмотра товаров
-    alert(`Полный ассортимент ${business.name} скоро будет доступен`);
+    // Переходим на экран полного ассортимента
+    router.push(`/products/${businessId}` as any);
   };
 
   return (
