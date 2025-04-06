@@ -31,4 +31,16 @@ export interface Order {
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
   totalAmount: number;
   createdAt: Date;
+}
+
+export interface CartItem {
+  product: Product;
+  quantity: number;
+  farmerId: string;
+  farmerName: string;
+}
+
+export interface Cart {
+  items: CartItem[];
+  total: number;
 } 

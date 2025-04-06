@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, SafeAreaView, TouchableOpacity, Text } from 'react-native';
 import { router } from 'expo-router';
-import { ChevronLeft, Settings } from 'lucide-react-native';
+import { ChevronLeft, Settings, ShoppingCart } from 'lucide-react-native';
 import { FarmerList } from '../../components/FarmerList';
 import { ProductList } from '../../components/ProductList';
 import { OrderForm } from '../../components/OrderForm';
-import { Farmer, Product } from '../../types/farmer';
+import { OrderSuccess } from '../../components/OrderSuccess';
+import { Cart } from '../../components/Cart';
+import { Farmer, Product, CartItem } from '../../types/farmer';
 
 // Временные данные для демонстрации
 const mockFarmers: Farmer[] = [
@@ -15,6 +17,7 @@ const mockFarmers: Farmer[] = [
     description: 'Экологически чистые овощи и фрукты',
     location: 'Московская область',
     rating: 4.8,
+    imageUrl: 'https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     products: [
       {
         id: '1',
@@ -24,6 +27,7 @@ const mockFarmers: Farmer[] = [
         quantity: 100,
         unit: 'кг',
         farmerId: '1',
+        imageUrl: 'https://images.unsplash.com/photo-1546094096-0df4bcaaa337?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
         createdAt: new Date(),
       },
       {
@@ -34,6 +38,7 @@ const mockFarmers: Farmer[] = [
         quantity: 80,
         unit: 'кг',
         farmerId: '1',
+        imageUrl: 'https://images.unsplash.com/photo-1604977042946-1eecc30f269e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
         createdAt: new Date(),
       },
     ],
@@ -44,6 +49,7 @@ const mockFarmers: Farmer[] = [
     description: 'Натуральные молочные продукты',
     location: 'Ленинградская область',
     rating: 4.9,
+    imageUrl: 'https://images.unsplash.com/photo-1596733430284-f7437764d1a5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
     products: [
       {
         id: '3',
@@ -53,6 +59,7 @@ const mockFarmers: Farmer[] = [
         quantity: 50,
         unit: 'л',
         farmerId: '2',
+        imageUrl: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80',
         createdAt: new Date(),
       },
     ],
@@ -62,40 +69,92 @@ const mockFarmers: Farmer[] = [
 export default function FarmerMarket() {
   const [selectedFarmer, setSelectedFarmer] = useState<Farmer | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [orderSuccess, setOrderSuccess] = useState<{ items: CartItem[]; total: number } | null>(null);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isCartVisible, setIsCartVisible] = useState(false);
+
+  const cartTotal = cartItems.reduce((total, item) => {
+    return total + (item.product.price * item.quantity);
+  }, 0);
+
+  const handleBackPress = () => {
+    if (selectedProduct) {
+      setSelectedProduct(null);
+    } else if (selectedFarmer) {
+      setSelectedFarmer(null);
+    } else {
+      router.back();
+    }
+  };
+
+  const handleDashboardPress = () => {
+    router.push('/profile/farms');
+  };
 
   const handleFarmerPress = (farmer: Farmer) => {
     setSelectedFarmer(farmer);
-    setSelectedProduct(null);
   };
 
   const handleProductPress = (product: Product) => {
     setSelectedProduct(product);
   };
 
-  const handleOrderSubmit = (quantity: number) => {
-    // Здесь будет логика оформления заказа
-    console.log('Заказ оформлен:', {
-      product: selectedProduct,
-      quantity,
-    });
-    setSelectedProduct(null);
-  };
+  const handleAddToCart = (quantity: number) => {
+    if (selectedProduct && selectedFarmer) {
+      const existingItemIndex = cartItems.findIndex(
+        item => item.product.id === selectedProduct.id && item.farmerId === selectedFarmer.id
+      );
 
-  const handleDashboardPress = () => {
-    router.push('/farmer-market/dashboard');
-  };
+      if (existingItemIndex >= 0) {
+        const newItems = [...cartItems];
+        newItems[existingItemIndex].quantity += quantity;
+        setCartItems(newItems);
+      } else {
+        setCartItems([
+          ...cartItems,
+          {
+            product: selectedProduct,
+            quantity,
+            farmerId: selectedFarmer.id,
+            farmerName: selectedFarmer.name,
+          },
+        ]);
+      }
 
-  const handleBackPress = () => {
-    if (selectedProduct) {
-      // Если открыт экран заказа, возвращаемся к списку продуктов фермера
       setSelectedProduct(null);
-    } else if (selectedFarmer) {
-      // Если открыт список продуктов фермера, возвращаемся к списку фермеров
-      setSelectedFarmer(null);
-    } else {
-      // Если открыт список фермеров, возвращаемся на вкладку сервисов
-      router.back();
     }
+  };
+
+  const handleUpdateCartItemQuantity = (item: CartItem, newQuantity: number) => {
+    if (newQuantity <= 0) {
+      handleRemoveCartItem(item);
+      return;
+    }
+
+    const newItems = cartItems.map(cartItem => {
+      if (cartItem.product.id === item.product.id && cartItem.farmerId === item.farmerId) {
+        return { ...cartItem, quantity: newQuantity };
+      }
+      return cartItem;
+    });
+
+    setCartItems(newItems);
+  };
+
+  const handleRemoveCartItem = (item: CartItem) => {
+    setCartItems(cartItems.filter(
+      cartItem => !(cartItem.product.id === item.product.id && cartItem.farmerId === item.farmerId)
+    ));
+  };
+
+  const handleCheckout = () => {
+    // Здесь будет логика оформления заказа
+    setOrderSuccess({
+      items: cartItems,
+      total: cartTotal,
+    });
+    setCartItems([]);
+    setIsCartVisible(false);
   };
 
   return (
@@ -108,9 +167,24 @@ export default function FarmerMarket() {
           {selectedFarmer ? selectedFarmer.name : 'Фермерский рынок'}
         </Text>
         {!selectedFarmer && !selectedProduct && (
-          <TouchableOpacity onPress={handleDashboardPress} style={styles.dashboardButton}>
-            <Settings size={24} color="#0891b2" />
-          </TouchableOpacity>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity onPress={handleDashboardPress} style={styles.dashboardButton}>
+              <Settings size={24} color="#0891b2" />
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={() => setIsCartVisible(true)} 
+              style={styles.cartButton}
+            >
+              <ShoppingCart size={24} color="#0891b2" />
+              {cartItems.length > 0 && (
+                <View style={styles.cartBadge}>
+                  <Text style={styles.cartBadgeText}>
+                    {cartItems.length}
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
         )}
       </View>
 
@@ -127,7 +201,26 @@ export default function FarmerMarket() {
       ) : (
         <OrderForm
           product={selectedProduct}
-          onSubmit={handleOrderSubmit}
+          onSubmit={handleAddToCart}
+        />
+      )}
+
+      {orderSuccess && (
+        <OrderSuccess
+          items={orderSuccess.items}
+          total={orderSuccess.total}
+          onClose={() => setOrderSuccess(null)}
+        />
+      )}
+
+      {isCartVisible && (
+        <Cart
+          items={cartItems}
+          total={cartTotal}
+          onUpdateQuantity={handleUpdateCartItemQuantity}
+          onRemoveItem={handleRemoveCartItem}
+          onCheckout={handleCheckout}
+          onClose={() => setIsCartVisible(false)}
         />
       )}
     </SafeAreaView>
@@ -137,13 +230,12 @@ export default function FarmerMarket() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#fff',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: 'white',
     borderBottomWidth: 1,
     borderBottomColor: '#e2e8f0',
   },
@@ -156,7 +248,31 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#0f172a',
   },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   dashboardButton: {
-    padding: 8,
+    marginRight: 16,
+  },
+  cartButton: {
+    position: 'relative',
+  },
+  cartBadge: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    backgroundColor: '#ef4444',
+    borderRadius: 12,
+    minWidth: 24,
+    height: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+  },
+  cartBadgeText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 }); 
