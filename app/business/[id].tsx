@@ -36,8 +36,8 @@ import { BUSINESSES_BY_ID, DEFAULT_IMAGE, getValidImageUrl } from '../data/busin
 // Константа для URL плейсхолдера
 const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/800x400/e2e8f0/64748b?text=Нет+изображения';
 
-// Добавляем компонент для отображения товаров
-const ProductItem = ({ product }: { product: { id: string, name: string, price: string, image?: string } }) => {
+// Обновляем компонент для отображения товаров с функцией навигации
+const ProductItem = ({ product, businessId }: { product: { id: string, name: string, price: string, image?: string }, businessId: string }) => {
   const [imageError, setImageError] = useState(false);
   
   const handleImageError = (e: NativeSyntheticEvent<ImageErrorEventData>) => {
@@ -45,9 +45,16 @@ const ProductItem = ({ product }: { product: { id: string, name: string, price: 
   };
   
   const imageUrl = imageError ? DEFAULT_IMAGE : (product.image ? product.image : DEFAULT_IMAGE);
+
+  const handleProductPress = () => {
+    router.push(`/productdetail/${businessId}/${product.id}` as any);
+  };
   
   return (
-    <View style={styles.productItem}>
+    <Pressable
+      style={styles.productItem}
+      onPress={handleProductPress}
+    >
       <Image 
         source={{ uri: imageUrl }} 
         style={styles.productImage}
@@ -57,7 +64,7 @@ const ProductItem = ({ product }: { product: { id: string, name: string, price: 
         <Text style={styles.productName}>{product.name}</Text>
         <Text style={styles.productPrice}>{product.price}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
@@ -241,7 +248,7 @@ export default function BusinessScreen() {
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <View style={styles.productsContainer}>
                   {business.products.map(product => (
-                    <ProductItem key={product.id} product={product} />
+                    <ProductItem key={product.id} product={product} businessId={business.id} />
                   ))}
                 </View>
               </ScrollView>

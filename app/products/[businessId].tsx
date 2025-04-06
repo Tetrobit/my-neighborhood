@@ -35,7 +35,7 @@ type Product = {
   image?: string;
 };
 
-const ProductItem = ({ product }: { product: Product }) => {
+const ProductItem = ({ product, businessId }: { product: Product, businessId: string }) => {
   const [imageError, setImageError] = useState(false);
   
   const handleImageError = (e: NativeSyntheticEvent<ImageErrorEventData>) => {
@@ -44,8 +44,15 @@ const ProductItem = ({ product }: { product: Product }) => {
   
   const imageUrl = imageError ? DEFAULT_IMAGE : (product.image ? product.image : DEFAULT_IMAGE);
   
+  const handleProductPress = () => {
+    router.push(`/productdetail/${businessId}/${product.id}` as any);
+  };
+  
   return (
-    <View style={styles.productItem}>
+    <Pressable 
+      style={styles.productItem}
+      onPress={handleProductPress}
+    >
       <Image 
         source={{ uri: imageUrl }} 
         style={styles.productImage}
@@ -55,7 +62,7 @@ const ProductItem = ({ product }: { product: Product }) => {
         <Text style={styles.productName} numberOfLines={2}>{product.name}</Text>
         <Text style={styles.productPrice}>{product.price}</Text>
       </View>
-    </View>
+    </Pressable>
   );
 };
 
@@ -146,7 +153,7 @@ export default function ProductsScreen() {
 
         <FlatList
           data={filteredProducts}
-          renderItem={({ item }) => <ProductItem product={item} />}
+          renderItem={({ item }) => <ProductItem product={item} businessId={businessId as string} />}
           keyExtractor={(item) => item.id}
           numColumns={COLUMN_COUNT}
           contentContainerStyle={styles.productsContainer}

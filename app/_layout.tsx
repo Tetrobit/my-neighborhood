@@ -57,6 +57,7 @@ export default function RootLayout() {
         <Stack.Screen name="localservices" options={{ headerShown: false }} />
         <Stack.Screen name="smallbusiness" options={{ headerShown: false }} />
         <Stack.Screen name="products/[businessId]" options={{ headerShown: false, presentation: 'modal' }} />
+        <Stack.Screen name="productdetail/[businessId]/[productId]" options={{ headerShown: false, presentation: 'modal' }} />
       </Stack>
     </>
   );
