@@ -1,7 +1,7 @@
 import * as SecureStore from 'expo-secure-store';
 import { AuthTokens, ApiResponse, ApiError, AuthResponse, User } from './types/api';
 
-const API_URL = 'http://192.168.31.46:8088';
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 const TOKEN_STORAGE_ACCESS_TOKEN = 'access_token';
 const TOKEN_STORAGE_REFRESH_TOKEN = 'refresh_token';
 
