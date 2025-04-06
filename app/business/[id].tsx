@@ -29,6 +29,7 @@ import {
   X,
   Image as ImageIcon,
   Map,
+  ChevronRight,
 } from 'lucide-react-native';
 import { BUSINESSES_BY_ID, DEFAULT_IMAGE, getValidImageUrl } from '../data/businesses';
 
@@ -155,6 +156,12 @@ export default function BusinessScreen() {
     alert(`Показ на карте будет доступен в ближайшее время.\nАдрес: ${business.address}`);
   };
 
+  // Добавляем функцию для просмотра всего ассортимента
+  const handleViewAllProducts = (businessId: string) => {
+    // Пока делаем заглушку, потом можно добавить экран для просмотра товаров
+    alert(`Полный ассортимент ${business.name} скоро будет доступен`);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -218,10 +225,19 @@ export default function BusinessScreen() {
             )}
           </View>
 
-          {/* Добавляем отображение товаров для малого бизнеса */}
-          {business.products && business.products.length > 0 && business.category === 'Малый бизнес' && (
+          {/* Изменяем секцию с товарами, добавляя стрелочку для просмотра всего ассортимента */}
+          {business.products && business.products.length > 0 && (
             <View style={styles.productsSection}>
-              <Text style={styles.sectionTitle}>Товары</Text>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Товары</Text>
+                <Pressable 
+                  style={styles.viewAllButton} 
+                  onPress={() => handleViewAllProducts(business.id)}
+                >
+                  <Text style={styles.viewAllText}>Весь ассортимент</Text>
+                  <ChevronRight size={16} color="#0891b2" />
+                </Pressable>
+              </View>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 <View style={styles.productsContainer}>
                   {business.products.map(product => (
@@ -756,12 +772,31 @@ const styles = StyleSheet.create({
     backgroundColor: '#10b981',
     borderRadius: 8,
     paddingVertical: 12,
+    paddingHorizontal: 4,
     marginLeft: 8,
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: '600',
     color: '#ffffff',
-    marginLeft: 8,
+    marginLeft: 4,
+    flexShrink: 1,
+    textAlign: 'center',
+  },
+  // Добавляем стили для заголовка секции с кнопкой "Весь ассортимент"
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  viewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  viewAllText: {
+    fontSize: 14,
+    color: '#0891b2',
+    marginRight: 4,
   },
 }); 

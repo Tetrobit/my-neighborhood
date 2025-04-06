@@ -43,6 +43,62 @@ export const getValidImageUrl = (imageUrl?: string): string => {
 export const BUSINESSES: Business[] = [
   {
     id: '1',
+    name: 'Кафе "Утро"',
+    category: 'Рестораны',
+    rating: 4.7,
+    reviewCount: 215,
+    image: 'https://images.unsplash.com/photo-1606836576983-8b458e75221d?w=400',
+    address: 'ул. Ленина, 15',
+    openHours: '08:00 - 22:00',
+    phone: '+7 (999) 123-45-67',
+    website: 'www.utro-cafe.ru',
+    email: 'info@utro-cafe.ru',
+    description: 'Уютное кафе с домашней атмосферой. Завтраки весь день, свежая выпечка, ароматный кофе.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Авокадо тост',
+        price: '320 руб',
+        image: 'https://images.unsplash.com/photo-1603046891744-76e6300f5ef9?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Омлет с овощами',
+        price: '280 руб',
+        image: 'https://images.unsplash.com/photo-1510693206972-df098062cb71?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Круассан с миндалем',
+        price: '180 руб',
+        image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Латте',
+        price: '210 руб',
+        image: 'https://images.unsplash.com/photo-1570968915860-54d5c301fa9f?w=400'
+      }
+    ],
+    reviews: [
+      {
+        id: '1',
+        author: 'Ирина К.',
+        rating: 5,
+        date: '2024-03-15',
+        text: 'Отличное место для завтрака. Очень вкусные круассаны и кофе. Приятный персонал.',
+      },
+      {
+        id: '2',
+        author: 'Александр М.',
+        rating: 4,
+        date: '2024-03-10',
+        text: 'Хорошее качество еды, но иногда долго ждать заказ в часы пик.',
+      },
+    ],
+  },
+  {
+    id: '2',
     name: 'Кафе "У Дома"',
     category: 'Рестораны',
     rating: 4.8,
@@ -205,6 +261,32 @@ export const BUSINESSES: Business[] = [
     website: 'www.master-auto.ru',
     email: 'service@master-auto.ru',
     description: 'Профессиональный автосервис с современным оборудованием. Выполняем все виды ремонта и технического обслуживания.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Замена масла',
+        price: 'от 1500 руб',
+        image: 'https://images.unsplash.com/photo-1487754180451-c456f719a3bf?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Диагностика',
+        price: 'от 1000 руб',
+        image: 'https://images.unsplash.com/photo-1632823471565-1c05e5584ca0?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Ремонт двигателя',
+        price: 'от 10000 руб',
+        image: 'https://images.unsplash.com/photo-1507977500142-8546347e707a?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Шиномонтаж',
+        price: 'от 2400 руб',
+        image: 'https://images.unsplash.com/photo-1578844251758-2f71da64c96f?w=400'
+      }
+    ],
     reviews: [
       {
         id: '1',
@@ -1571,6 +1653,32 @@ export const LOCAL_SERVICES: Business[] = [
     email: 'alexey@plumber.ru',
     price: '1000 руб/час',
     description: 'Ремонт сантехники любой сложности. Установка и замена труб, раковин, ванн, унитазов. Устранение протечек.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Устранение течи',
+        price: 'от 1500 руб',
+        image: 'https://images.unsplash.com/photo-1542013936693-884638332954?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Установка смесителя',
+        price: 'от 1200 руб',
+        image: 'https://images.unsplash.com/photo-1546170358-ae4b5660a4b5?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Замена труб',
+        price: 'от 3000 руб',
+        image: 'https://images.unsplash.com/photo-1674027444872-0e1ebb3ec84a?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Установка унитаза',
+        price: 'от 2500 руб',
+        image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=400'
+      }
+    ],
     reviews: [
       {
         id: '1',
@@ -1634,6 +1742,32 @@ export const LOCAL_SERVICES: Business[] = [
     email: 'viktor@master.ru',
     price: '800 руб/час',
     description: 'Мелкий бытовой ремонт: установка и сборка мебели, замена розеток, навеска полок и картин, ремонт замков и многое другое.',
+    products: [
+      {
+        id: 'p1',
+        name: 'Сборка мебели',
+        price: 'от 1000 руб',
+        image: 'https://images.unsplash.com/photo-1505691938895-1758d7feb511?w=400'
+      },
+      {
+        id: 'p2',
+        name: 'Навес полок',
+        price: 'от 700 руб',
+        image: 'https://images.unsplash.com/photo-1526887644541-4bb7ba163c26?w=400'
+      },
+      {
+        id: 'p3',
+        name: 'Замена замков',
+        price: 'от 1200 руб',
+        image: 'https://images.unsplash.com/photo-1617301535504-55596fa002f3?w=400'
+      },
+      {
+        id: 'p4',
+        name: 'Установка светильников',
+        price: 'от 800 руб',
+        image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=400'
+      }
+    ],
     reviews: [
       {
         id: '1',
