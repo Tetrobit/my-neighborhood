@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, StyleSheet, Pressable, Animated } from 'react-native';
 import { Href, Link } from 'expo-router';
-import { Store, Recycle, MapPin, LucideIcon, ChevronRight, Wheat } from 'lucide-react-native';
+import { Store, Recycle, MapPin, LucideIcon, ChevronRight, Wheat, Gift } from 'lucide-react-native';
 import { useEffect, useRef } from 'react';
 
 export default function MiniAppsScreen() {
@@ -37,7 +37,12 @@ export default function MiniAppsScreen() {
       icon: Wheat, 
       title: 'Фермерский рынок', 
       description: 'Покупка продуктов напрямую у фермеров',
-      href: '/farmer-market' 
+      href: '/farmer-market'    },
+    {
+      icon: Gift,
+      title: 'Фримаркет',
+      description: 'Обмен ненужными вещами с соседями',
+      href: '/freemarket'
     },
   ];
   
