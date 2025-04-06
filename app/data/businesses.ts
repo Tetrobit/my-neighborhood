@@ -2,6 +2,7 @@ export interface Business {
   id: string;
   name: string;
   category: string;
+  subcategory?: string;
   rating: number;
   reviewCount: number;
   image: string;
@@ -11,6 +12,7 @@ export interface Business {
   website?: string;
   email?: string;
   description?: string;
+  price?: string;
   reviews?: Array<{
     id: string;
     author: string;
@@ -1524,7 +1526,215 @@ export const BUSINESSES: Business[] = [
   },
 ];
 
-export const BUSINESSES_BY_ID = BUSINESSES.reduce((acc, business) => {
+export const LOCAL_SERVICE_CATEGORIES = [
+  { id: 'plumbing', name: 'Сантехники', icon: 'droplet' },
+  { id: 'repair', name: 'Ремонтники', icon: 'hammer' },
+  { id: 'cleaning', name: 'Уборка', icon: 'sparkles' },
+  { id: 'handyman', name: 'Муж на час', icon: 'wrench' },
+  { id: 'electric', name: 'Электрики', icon: 'zap' },
+  { id: 'delivery', name: 'Доставка', icon: 'truck' },
+  { id: 'babysitting', name: 'Няни', icon: 'baby' },
+  { id: 'gardening', name: 'Садовники', icon: 'flower' },
+];
+
+// Добавляем новые бизнесы для местных служб
+export const LOCAL_SERVICES: Business[] = [
+  {
+    id: 'ls1',
+    name: 'Сантехник Алексей',
+    category: 'Местные службы',
+    subcategory: 'plumbing',
+    rating: 4.9,
+    reviewCount: 143,
+    image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400',
+    address: 'ул. Водопроводная, 10',
+    openHours: '08:00 - 20:00',
+    phone: '+7 (999) 123-45-67',
+    email: 'alexey@plumber.ru',
+    price: '1000 руб/час',
+    description: 'Ремонт сантехники любой сложности. Установка и замена труб, раковин, ванн, унитазов. Устранение протечек.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Мария К.',
+        rating: 5,
+        date: '2024-03-20',
+        text: 'Быстро и качественно устранил протечку. Рекомендую!',
+      },
+      {
+        id: '2',
+        author: 'Иван П.',
+        rating: 5,
+        date: '2024-03-15',
+        text: 'Отличный специалист, все сделал в срок',
+      },
+    ],
+  },
+  {
+    id: 'ls2',
+    name: 'Клининговая служба "Чистота"',
+    category: 'Местные службы',
+    subcategory: 'cleaning',
+    rating: 4.7,
+    reviewCount: 215,
+    image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400',
+    address: 'ул. Блестящая, 25',
+    openHours: '08:00 - 20:00',
+    phone: '+7 (999) 456-78-90',
+    website: 'www.chistota-service.ru',
+    email: 'order@chistota-service.ru',
+    price: 'от 1500 руб',
+    description: 'Профессиональная уборка квартир, домов и офисов. Генеральная и поддерживающая уборка. Мойка окон и балконов.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Ольга В.',
+        rating: 5,
+        date: '2024-03-18',
+        text: 'Отличное качество уборки, квартира сияет!',
+      },
+      {
+        id: '2',
+        author: 'Петр С.',
+        rating: 4,
+        date: '2024-03-14',
+        text: 'Хорошо убрали, но немного опоздали',
+      },
+    ],
+  },
+  {
+    id: 'ls3',
+    name: 'Мастер Виктор',
+    category: 'Местные службы',
+    subcategory: 'handyman',
+    rating: 4.8,
+    reviewCount: 178,
+    image: 'https://images.unsplash.com/photo-1512295767273-ac109ac3acfa?w=400',
+    address: 'ул. Мастеровая, 15',
+    openHours: '09:00 - 21:00',
+    phone: '+7 (999) 789-01-23',
+    email: 'viktor@master.ru',
+    price: '800 руб/час',
+    description: 'Мелкий бытовой ремонт: установка и сборка мебели, замена розеток, навеска полок и картин, ремонт замков и многое другое.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Анна М.',
+        rating: 5,
+        date: '2024-03-19',
+        text: 'Виктор - настоящий профессионал! Быстро собрал шкаф и повесил полки.',
+      },
+      {
+        id: '2',
+        author: 'Дмитрий К.',
+        rating: 5,
+        date: '2024-03-17',
+        text: 'Качественно, быстро и недорого. Рекомендую!',
+      },
+    ],
+  },
+  {
+    id: 'ls4',
+    name: 'Ремонтная бригада "Новый дом"',
+    category: 'Местные службы',
+    subcategory: 'repair',
+    rating: 4.6,
+    reviewCount: 124,
+    image: 'https://images.unsplash.com/photo-1593313637552-29c433264de0?w=400',
+    address: 'пр. Строителей, 8',
+    openHours: '08:00 - 19:00',
+    phone: '+7 (999) 234-56-78',
+    website: 'www.newhouse-remont.ru',
+    email: 'info@newhouse-remont.ru',
+    price: 'от 3000 руб/м²',
+    description: 'Профессиональный ремонт квартир и домов. Косметический и капитальный ремонт, отделочные работы, электрика, сантехника.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Сергей Н.',
+        rating: 5,
+        date: '2024-03-16',
+        text: 'Отличная работа! Ремонт выполнен качественно и в срок.',
+      },
+      {
+        id: '2',
+        author: 'Елена В.',
+        rating: 4,
+        date: '2024-03-12',
+        text: 'Хорошее качество ремонта, но были небольшие задержки.',
+      },
+    ],
+  },
+  {
+    id: 'ls5',
+    name: 'Электрик Игорь',
+    category: 'Местные службы',
+    subcategory: 'electric',
+    rating: 4.9,
+    reviewCount: 156,
+    image: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=400',
+    address: 'ул. Энергетиков, 42',
+    openHours: '08:00 - 21:00',
+    phone: '+7 (999) 345-67-89',
+    email: 'igor@elektrik.ru',
+    price: '1200 руб/час',
+    description: 'Электромонтажные работы любой сложности. Замена проводки, установка розеток и выключателей, подключение техники.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Андрей П.',
+        rating: 5,
+        date: '2024-03-20',
+        text: 'Профессионал своего дела! Быстро нашел и устранил проблему.',
+      },
+      {
+        id: '2',
+        author: 'Ирина С.',
+        rating: 5,
+        date: '2024-03-18',
+        text: 'Очень довольна работой, все сделано аккуратно и качественно.',
+      },
+    ],
+  },
+  {
+    id: 'ls6',
+    name: 'Служба доставки "Быстрая посылка"',
+    category: 'Местные службы',
+    subcategory: 'delivery',
+    rating: 4.5,
+    reviewCount: 210,
+    image: 'https://images.unsplash.com/photo-1586736477235-5a5d6d5b1ce3?w=400',
+    address: 'ул. Курьерская, 30',
+    openHours: '09:00 - 22:00',
+    phone: '+7 (999) 456-78-90',
+    website: 'www.fast-delivery.ru',
+    email: 'order@fast-delivery.ru',
+    price: 'от 200 руб',
+    description: 'Курьерская доставка документов, посылок и товаров по городу. Быстро, надежно, конфиденциально.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Максим К.',
+        rating: 5,
+        date: '2024-03-19',
+        text: 'Очень быстрая доставка! Вежливый курьер, всё отлично.',
+      },
+      {
+        id: '2',
+        author: 'Наталья В.',
+        rating: 4,
+        date: '2024-03-17',
+        text: 'Хороший сервис, но немного задержали доставку.',
+      },
+    ],
+  },
+];
+
+// Объединяем все бизнесы в один массив
+const ALL_BUSINESSES = [...BUSINESSES, ...LOCAL_SERVICES];
+
+// Используем объединенный массив для создания BUSINESSES_BY_ID
+export const BUSINESSES_BY_ID = ALL_BUSINESSES.reduce((acc, business) => {
   acc[business.id] = business;
   return acc;
 }, {} as Record<string, Business>);
@@ -1539,4 +1749,5 @@ export const CATEGORIES = [
   { id: 'entertainment', name: 'Развлечения', icon: 'gamepad' },
   { id: 'auto', name: 'Авто', icon: 'car' },
   { id: 'services', name: 'Услуги', icon: 'briefcase' },
-]; 
+  { id: 'localservices', name: 'Местные службы', icon: 'tools' },
+];
