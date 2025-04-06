@@ -11,6 +11,8 @@ import {
   Animated,
   ImageErrorEventData,
   NativeSyntheticEvent,
+  Linking,
+  Alert,
 } from 'react-native';
 import { router } from 'expo-router';
 import {
@@ -21,22 +23,23 @@ import {
   MapPin,
   X,
   LucideIcon,
-  Droplet,
-  Hammer,
-  Sparkles,
-  Wrench,
-  Zap,
-  Truck,
-  Baby,
+  Cake,
+  Cookie,
+  ShoppingBag,
+  Scissors,
   Flower,
-  Briefcase,
+  Shirt,
+  Hammer,
+  SprayCan,
+  Phone,
+  Map,
 } from 'lucide-react-native';
-import { LOCAL_SERVICES, LOCAL_SERVICE_CATEGORIES, DEFAULT_IMAGE, getValidImageUrl } from '../data/businesses';
+import { SMALL_BUSINESSES, SMALL_BUSINESS_CATEGORIES, DEFAULT_IMAGE, getValidImageUrl } from '../data/businesses';
 
-type Service = typeof LOCAL_SERVICES[0];
+type Business = typeof SMALL_BUSINESSES[0];
 
-// Выносим карточку услуги в отдельный компонент
-const ServiceCard = ({ item, onPress }: { item: Service; onPress: () => void }) => {
+// Выносим карточку бизнеса в отдельный компонент
+const BusinessCard = ({ item, onPress }: { item: Business; onPress: () => void }) => {
   const [imageError, setImageError] = useState(false);
   
   const handleImageError = (e: NativeSyntheticEvent<ImageErrorEventData>) => {
@@ -47,44 +50,44 @@ const ServiceCard = ({ item, onPress }: { item: Service; onPress: () => void }) 
   
   return (
     <Pressable
-      style={styles.serviceCard}
+      style={styles.businessCard}
       onPress={onPress}
     >
       <Image 
         source={{ uri: imageUrl }} 
-        style={styles.serviceImage}
+        style={styles.businessImage}
         onError={handleImageError}
       />
-      <View style={styles.serviceContent}>
-        <View style={styles.serviceInfo}>
-          <Text style={styles.serviceName}>{item.name}</Text>
+      <View style={styles.businessContent}>
+        <View style={styles.businessInfo}>
+          <Text style={styles.businessName}>{item.name}</Text>
           <View style={styles.ratingContainer}>
             <Star size={16} color="#FFB800" fill="#FFB800" />
             <Text style={styles.rating}>{item.rating}</Text>
             <Text style={styles.reviewCount}>({item.reviewCount})</Text>
           </View>
-          <Text style={styles.serviceCategory}>
-            {LOCAL_SERVICE_CATEGORIES.find(cat => cat.id === item.subcategory)?.name}
+          <Text style={styles.businessCategory}>
+            {SMALL_BUSINESS_CATEGORIES.find(cat => cat.id === item.subcategory)?.name}
           </Text>
-          <View style={styles.serviceDetails}>
+          <View style={styles.businessDetails}>
             <MapPin size={14} color="#64748b" />
-            <Text style={styles.serviceAddress} numberOfLines={1}>
+            <Text style={styles.businessAddress} numberOfLines={1}>
               {item.address}
             </Text>
           </View>
         </View>
         <View style={styles.priceContainer}>
-          <Text style={styles.servicePrice}>{item.price}</Text>
+          <Text style={styles.businessPrice}>{item.price}</Text>
         </View>
       </View>
     </Pressable>
   );
 };
 
-export default function LocalServicesScreen() {
+export default function SmallBusinessScreen() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [filteredServices, setFilteredServices] = useState(LOCAL_SERVICES);
+  const [filteredBusinesses, setFilteredBusinesses] = useState(SMALL_BUSINESSES);
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -96,26 +99,26 @@ export default function LocalServicesScreen() {
   }, []);
 
   useEffect(() => {
-    filterServices();
+    filterBusinesses();
   }, [searchQuery, selectedCategory]);
 
-  const filterServices = () => {
-    let filtered = LOCAL_SERVICES;
+  const filterBusinesses = () => {
+    let filtered = SMALL_BUSINESSES;
 
     if (selectedCategory) {
-      filtered = filtered.filter(service => service.subcategory === selectedCategory);
+      filtered = filtered.filter(business => business.subcategory === selectedCategory);
     }
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
-        service =>
-          service.name.toLowerCase().includes(query) ||
-          service.description?.toLowerCase().includes(query)
+        business =>
+          business.name.toLowerCase().includes(query) ||
+          business.description?.toLowerCase().includes(query)
       );
     }
 
-    setFilteredServices(filtered);
+    setFilteredBusinesses(filtered);
   };
 
   const handleCategoryPress = (categoryId: string) => {
@@ -126,39 +129,71 @@ export default function LocalServicesScreen() {
     setSearchQuery('');
   };
 
-  const handleServicePress = (service: Service) => {
-    router.push(`/business/${service.id}`);
+  const handleBusinessPress = (business: Business) => {
+    router.push(`/business/${business.id}`);
+  };
+
+  const handleCallBusiness = (phone: string) => {
+    Linking.openURL(`tel:${phone}`);
+  };
+
+  const handleShowOnMap = (business: Business) => {
+    Alert.alert(
+      "Показать на карте",
+      `Функция отображения "${business.name}" на карте будет доступна в ближайшее время.`,
+      [
+        { text: "ОК", onPress: () => console.log("OK Pressed") }
+      ]
+    );
   };
 
   const getIconForCategory = (categoryId: string): LucideIcon => {
     switch (categoryId) {
-      case 'plumbing': return Droplet;
-      case 'repair': return Hammer;
-      case 'cleaning': return Sparkles;
-      case 'handyman': return Wrench;
-      case 'electric': return Zap;
-      case 'delivery': return Truck;
-      case 'babysitting': return Baby;
-      case 'gardening': return Flower;
-      default: return Wrench;
+      case 'bakery': return Cake;
+      case 'confectionery': return Cookie;
+      case 'fruits': return ShoppingBag;
+      case 'clothes': return Shirt;
+      case 'handmade': return Scissors;
+      case 'florist': return Flower;
+      case 'cosmetics': return SprayCan;
+      case 'crafts': return Hammer;
+      default: return Hammer;
     }
   };
 
-  // Обновленная функция рендеринга карточки
-  const renderServiceCard = ({ item }: { item: Service }) => (
-    <ServiceCard 
-      item={item} 
-      onPress={() => handleServicePress(item)} 
-    />
+  // Обновленная функция рендеринга карточки с кнопками
+  const renderBusinessCard = ({ item }: { item: Business }) => (
+    <View style={styles.businessCardWrapper}>
+      <BusinessCard 
+        item={item} 
+        onPress={() => handleBusinessPress(item)} 
+      />
+      <View style={styles.businessActions}>
+        <Pressable 
+          style={styles.contactButton}
+          onPress={() => handleCallBusiness(item.phone)}
+        >
+          <Phone size={18} color="#ffffff" />
+          <Text style={styles.contactButtonText}>Связаться</Text>
+        </Pressable>
+        <Pressable 
+          style={styles.mapButton}
+          onPress={() => handleShowOnMap(item)}
+        >
+          <Map size={18} color="#ffffff" />
+          <Text style={styles.mapButtonText}>Показать на карте</Text>
+        </Pressable>
+      </View>
+    </View>
   );
 
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable onPress={() => router.push('/')} style={styles.backButton}>
           <ChevronLeft size={24} color="#0f172a" />
         </Pressable>
-        <Text style={styles.headerTitle}>Местные службы</Text>
+        <Text style={styles.headerTitle}>Малый бизнес</Text>
       </View>
 
       <View style={styles.content}>
@@ -167,7 +202,7 @@ export default function LocalServicesScreen() {
             <Search size={20} color="#64748b" style={styles.searchIcon} />
             <TextInput
               style={styles.searchInput}
-              placeholder="Найти услуги..."
+              placeholder="Найти бизнес..."
               value={searchQuery}
               onChangeText={setSearchQuery}
             />
@@ -186,7 +221,7 @@ export default function LocalServicesScreen() {
             style={styles.categoriesContainer}
             contentContainerStyle={styles.categoriesContent}
           >
-            {LOCAL_SERVICE_CATEGORIES.map((category) => {
+            {SMALL_BUSINESS_CATEGORIES.map((category) => {
               const IconComponent = getIconForCategory(category.id);
               return (
                 <Pressable
@@ -218,10 +253,10 @@ export default function LocalServicesScreen() {
         </View>
 
         <FlatList
-          data={filteredServices}
-          renderItem={renderServiceCard}
+          data={filteredBusinesses}
+          renderItem={renderBusinessCard}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.servicesContainer}
+          contentContainerStyle={styles.businessesContainer}
           showsVerticalScrollIndicator={false}
           initialNumToRender={5}
           maxToRenderPerBatch={10}
@@ -230,7 +265,7 @@ export default function LocalServicesScreen() {
           ListFooterComponent={<View style={styles.listFooterSpacer} />}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>Услуги не найдены</Text>
+              <Text style={styles.emptyText}>Бизнесы не найдены</Text>
             </View>
           }
         />
@@ -249,13 +284,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingTop: 50,
-    paddingBottom: 12,
+    paddingBottom: 16,
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e5e5',
+    borderBottomColor: '#e2e8f0',
   },
   backButton: {
-    marginRight: 16,
+    marginRight: 10,
   },
   headerTitle: {
     fontSize: 20,
@@ -264,67 +299,50 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    backgroundColor: '#ffffff',
   },
   searchContainer: {
-    paddingHorizontal: 12,
-    paddingTop: 6,
-    paddingBottom: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     backgroundColor: '#ffffff',
-    borderBottomWidth: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e2e8f0',
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f1f5f9',
+    borderRadius: 8,
     paddingHorizontal: 12,
-    borderRadius: 12,
-    height: 44,
+    paddingVertical: 8,
   },
   searchIcon: {
     marginRight: 8,
   },
   searchInput: {
     flex: 1,
-    height: '100%',
     fontSize: 16,
     color: '#0f172a',
+    paddingVertical: 4,
   },
   categoriesWrapper: {
     backgroundColor: '#ffffff',
     borderBottomWidth: 1,
-    borderBottomColor: '#e5e5e5',
+    borderBottomColor: '#e2e8f0',
   },
   categoriesContainer: {
-    backgroundColor: '#ffffff',
-    height: 48,
-    zIndex: 10,
+    paddingVertical: 12,
   },
   categoriesContent: {
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingHorizontal: 12,
   },
   categoryButton: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 20,
-    backgroundColor: '#f1f5f9',
-    marginRight: 8,
-    minWidth: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 1,
-    elevation: 1,
-    height: 32,
     flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f1f5f9',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginHorizontal: 4,
   },
   categoryButtonActive: {
     backgroundColor: '#0891b2',
@@ -333,109 +351,139 @@ const styles = StyleSheet.create({
     marginRight: 6,
   },
   categoryButtonText: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
     color: '#64748b',
-    textAlign: 'center',
+    fontWeight: '500',
   },
   categoryButtonTextActive: {
     color: '#ffffff',
   },
-  servicesContainer: {
-    paddingHorizontal: 16,
+  businessCardWrapper: {
+    marginBottom: 16,
   },
-  listHeaderSpacer: {
-    height: 4,
-  },
-  listFooterSpacer: {
-    height: 8,
-  },
-  serviceCard: {
-    flexDirection: 'row',
+  businessCard: {
     backgroundColor: '#ffffff',
-    borderRadius: 16,
+    borderRadius: 12,
+    marginHorizontal: 16,
     overflow: 'hidden',
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 3,
-    elevation: 3,
-    marginBottom: 12,
-    height: 140,
+    elevation: 2,
   },
-  serviceImage: {
-    width: 120,
-    height: 140,
-    borderTopLeftRadius: 16,
-    borderBottomLeftRadius: 16,
+  businessImage: {
+    width: '100%',
+    height: 160,
+    resizeMode: 'cover',
   },
-  serviceContent: {
-    flex: 1,
+  businessContent: {
     padding: 12,
-    justifyContent: 'space-between',
+    flexDirection: 'row',
   },
-  serviceInfo: {
+  businessInfo: {
     flex: 1,
-    justifyContent: 'flex-start',
   },
-  serviceName: {
+  businessName: {
     fontSize: 16,
     fontWeight: '600',
     color: '#0f172a',
     marginBottom: 4,
-    flexShrink: 1,
   },
   ratingContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   rating: {
     fontSize: 14,
     fontWeight: '500',
     color: '#0f172a',
     marginLeft: 4,
-    marginRight: 2,
   },
   reviewCount: {
-    fontSize: 12,
-    color: '#64748b',
-  },
-  serviceCategory: {
     fontSize: 14,
-    fontWeight: '500',
     color: '#64748b',
-    marginBottom: 3,
+    marginLeft: 2,
   },
-  serviceDetails: {
+  businessCategory: {
+    fontSize: 14,
+    color: '#64748b',
+    marginBottom: 6,
+  },
+  businessDetails: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-  serviceAddress: {
-    fontSize: 12,
+  businessAddress: {
+    fontSize: 14,
     color: '#64748b',
     marginLeft: 4,
     flex: 1,
   },
   priceContainer: {
-    alignSelf: 'flex-start',
-    marginTop: 3,
+    marginLeft: 8,
   },
-  servicePrice: {
-    fontSize: 15,
-    fontWeight: '700',
+  businessPrice: {
+    fontSize: 14,
+    fontWeight: '600',
     color: '#0891b2',
   },
+  businessesContainer: {
+    paddingTop: 8,
+    paddingBottom: 24,
+  },
+  listHeaderSpacer: {
+    height: 8,
+  },
+  listFooterSpacer: {
+    height: 32,
+  },
   emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
     padding: 24,
+    alignItems: 'center',
   },
   emptyText: {
     fontSize: 16,
     color: '#64748b',
+    textAlign: 'center',
+  },
+  businessActions: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginTop: 8,
+    justifyContent: 'space-between',
+  },
+  contactButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0891b2',
+    borderRadius: 8,
+    paddingVertical: 10,
+    flex: 1,
+    marginRight: 8,
+  },
+  contactButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginLeft: 6,
+  },
+  mapButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#10b981',
+    borderRadius: 8,
+    paddingVertical: 10,
+    flex: 1,
+    marginLeft: 8,
+  },
+  mapButtonText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginLeft: 6,
   },
 }); 

@@ -11,6 +11,9 @@ import {
   TouchableOpacity,
   Platform,
   SafeAreaView,
+  ImageErrorEventData,
+  NativeSyntheticEvent,
+  FlatList,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import {
@@ -24,8 +27,46 @@ import {
   Calendar,
   CheckCircle,
   X,
+  Image as ImageIcon,
+  Map,
+  ChevronRight,
 } from 'lucide-react-native';
-import { BUSINESSES_BY_ID } from '../data/businesses';
+import { BUSINESSES_BY_ID, DEFAULT_IMAGE, getValidImageUrl } from '../data/businesses';
+
+// Константа для URL плейсхолдера
+const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/800x400/e2e8f0/64748b?text=Нет+изображения';
+
+// Обновляем компонент для отображения товаров с функцией навигации
+const ProductItem = ({ product, businessId }: { product: { id: string, name: string, price: string, image?: string }, businessId: string }) => {
+  const [imageError, setImageError] = useState(false);
+  
+  const handleImageError = (e: NativeSyntheticEvent<ImageErrorEventData>) => {
+    setImageError(true);
+  };
+  
+  const imageUrl = imageError ? DEFAULT_IMAGE : (product.image ? product.image : DEFAULT_IMAGE);
+
+  const handleProductPress = () => {
+    router.push(`/productdetail/${businessId}/${product.id}` as any);
+  };
+  
+  return (
+    <Pressable
+      style={styles.productItem}
+      onPress={handleProductPress}
+    >
+      <Image 
+        source={{ uri: imageUrl }} 
+        style={styles.productImage}
+        onError={handleImageError}
+      />
+      <View style={styles.productContent}>
+        <Text style={styles.productName}>{product.name}</Text>
+        <Text style={styles.productPrice}>{product.price}</Text>
+      </View>
+    </Pressable>
+  );
+};
 
 export default function BusinessScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -34,6 +75,12 @@ export default function BusinessScreen() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  
+  // Обработчик ошибки загрузки изображения
+  const handleImageError = (e: NativeSyntheticEvent<ImageErrorEventData>) => {
+    setImageError(true);
+  };
   
   // Генерируем даты на неделю вперед
   const getDates = () => {
@@ -92,6 +139,9 @@ export default function BusinessScreen() {
     );
   }
 
+  // Получаем корректный URL изображения
+  const imageUrl = imageError ? DEFAULT_IMAGE : getValidImageUrl(business.image);
+
   const handleCall = () => {
     Linking.openURL(`tel:${business.phone}`);
   };
@@ -108,17 +158,32 @@ export default function BusinessScreen() {
     }
   };
 
+  // Обработчик для показа на карте
+  const handleShowOnMap = () => {
+    alert(`Показ на карте будет доступен в ближайшее время.\nАдрес: ${business.address}`);
+  };
+
+  // Добавляем функцию для просмотра всего ассортимента
+  const handleViewAllProducts = (businessId: string) => {
+    // Переходим на экран полного ассортимента
+    router.push(`/products/${businessId}` as any);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable onPress={() => router.push('/smallbusiness')} style={styles.backButton}>
           <ChevronLeft size={24} color="#0f172a" />
         </Pressable>
         <Text style={styles.headerTitle}>{business.name}</Text>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <Image source={{ uri: business.image }} style={styles.image} />
+        <Image 
+          source={{ uri: imageUrl }} 
+          style={styles.image} 
+          onError={handleImageError}
+        />
 
         <View style={styles.infoSection}>
           <View style={styles.ratingContainer}>
@@ -166,6 +231,29 @@ export default function BusinessScreen() {
               </Pressable>
             )}
           </View>
+
+          {/* Изменяем секцию с товарами, добавляя стрелочку для просмотра всего ассортимента */}
+          {business.products && business.products.length > 0 && (
+            <View style={styles.productsSection}>
+              <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Товары</Text>
+                <Pressable 
+                  style={styles.viewAllButton} 
+                  onPress={() => handleViewAllProducts(business.id)}
+                >
+                  <Text style={styles.viewAllText}>Весь ассортимент</Text>
+                  <ChevronRight size={16} color="#0891b2" />
+                </Pressable>
+              </View>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                <View style={styles.productsContainer}>
+                  {business.products.map(product => (
+                    <ProductItem key={product.id} product={product} businessId={business.id} />
+                  ))}
+                </View>
+              </ScrollView>
+            </View>
+          )}
         </View>
 
         {business.reviews && business.reviews.length > 0 && (
@@ -189,10 +277,23 @@ export default function BusinessScreen() {
       </ScrollView>
 
       <SafeAreaView style={styles.footer}>
-        <Pressable style={styles.messageButton} onPress={() => setModalVisible(true)}>
-          <Calendar size={20} color="#ffffff" />
-          <Text style={styles.messageButtonText}>Подать заявку</Text>
-        </Pressable>
+        {business.category === 'Малый бизнес' ? (
+          <View style={styles.footerButtonsContainer}>
+            <Pressable style={styles.callButton} onPress={handleCall}>
+              <Phone size={20} color="#ffffff" />
+              <Text style={styles.buttonText}>Связаться</Text>
+            </Pressable>
+            <Pressable style={styles.mapButton} onPress={handleShowOnMap}>
+              <Map size={20} color="#ffffff" />
+              <Text style={styles.buttonText}>Показать на карте</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <Pressable style={styles.messageButton} onPress={() => setModalVisible(true)}>
+            <Calendar size={20} color="#ffffff" />
+            <Text style={styles.messageButtonText}>Подать заявку</Text>
+          </Pressable>
+        )}
       </SafeAreaView>
       
       <Modal
@@ -608,5 +709,101 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  placeholderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  // Стили для отображения товаров
+  productsSection: {
+    marginTop: 16,
+  },
+  productsContainer: {
+    flexDirection: 'row',
+    paddingVertical: 8,
+  },
+  productItem: {
+    width: 140,
+    marginRight: 12,
+    backgroundColor: '#ffffff',
+    borderRadius: 8,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  productImage: {
+    width: '100%',
+    height: 100,
+    resizeMode: 'cover',
+  },
+  productContent: {
+    padding: 8,
+  },
+  productName: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#0f172a',
+    marginBottom: 4,
+  },
+  productPrice: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#0891b2',
+  },
+  
+  // Стили для футера с кнопками
+  footerButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+  },
+  callButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0891b2',
+    borderRadius: 8,
+    paddingVertical: 12,
+    marginRight: 8,
+  },
+  mapButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#10b981',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+    marginLeft: 8,
+  },
+  buttonText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#ffffff',
+    marginLeft: 4,
+    flexShrink: 1,
+    textAlign: 'center',
+  },
+  // Добавляем стили для заголовка секции с кнопкой "Весь ассортимент"
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  viewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  viewAllText: {
+    fontSize: 14,
+    color: '#0891b2',
+    marginRight: 4,
   },
 }); 
