@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Pressable, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Image, ScrollView, Linking } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Phone, MapPin, MessageCircle, ArrowLeft } from 'lucide-react-native';
 
@@ -63,6 +63,14 @@ export default function ProductDetailsScreen() {
     );
   }
 
+  const handleCall = () => {
+    Linking.openURL(`tel:${product.phone.replace(/\s/g, '')}`);
+  };
+
+  const handleMessage = () => {
+    Linking.openURL(`sms:${product.phone.replace(/\s/g, '')}`);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -97,9 +105,7 @@ export default function ProductDetailsScreen() {
             <View style={styles.contactButtons}>
               <Pressable 
                 style={styles.contactButton}
-                onPress={() => {
-                  // Здесь будет логика звонка
-                }}
+                onPress={handleCall}
               >
                 <Phone size={16} color="#0891b2" />
                 <Text style={styles.contactButtonText}>Позвонить</Text>
@@ -107,9 +113,7 @@ export default function ProductDetailsScreen() {
               
               <Pressable 
                 style={styles.contactButton}
-                onPress={() => {
-                  // Здесь будет логика сообщения
-                }}
+                onPress={handleMessage}
               >
                 <MessageCircle size={16} color="#0891b2" />
                 <Text style={styles.contactButtonText}>Написать</Text>

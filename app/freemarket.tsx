@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Pressable, Image } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Pressable, Image, Linking } from 'react-native';
 import { Link, router } from 'expo-router';
 import { Phone, MapPin, MessageCircle, ArrowLeft, Plus } from 'lucide-react-native';
 
@@ -52,6 +52,14 @@ const products: Product[] = [
 ];
 
 export default function FreeMarketScreen() {
+  const handleCall = (phone: string) => {
+    Linking.openURL(`tel:${phone.replace(/\s/g, '')}`);
+  };
+
+  const handleMessage = (phone: string) => {
+    Linking.openURL(`sms:${phone.replace(/\s/g, '')}`);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -93,7 +101,7 @@ export default function FreeMarketScreen() {
                       style={styles.contactButton}
                       onPress={(e) => {
                         e.stopPropagation();
-                        // Здесь будет логика звонка
+                        handleCall(product.phone);
                       }}
                     >
                       <Phone size={16} color="#0891b2" />
@@ -104,7 +112,7 @@ export default function FreeMarketScreen() {
                       style={styles.contactButton}
                       onPress={(e) => {
                         e.stopPropagation();
-                        // Здесь будет логика сообщения
+                        handleMessage(product.phone);
                       }}
                     >
                       <MessageCircle size={16} color="#0891b2" />
