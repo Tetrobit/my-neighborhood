@@ -1,3 +1,4 @@
+// В начале файла, после импортов
 export interface Business {
   id: string;
   name: string;
@@ -21,6 +22,17 @@ export interface Business {
     text: string;
   }>;
 }
+
+// URL плейсхолдера для случаев, когда URL изображения отсутствует
+export const DEFAULT_IMAGE = 'https://via.placeholder.com/400x400/e2e8f0/64748b?text=Нет+изображения';
+
+// Функция для проверки и получения валидного URL изображения
+export const getValidImageUrl = (imageUrl?: string): string => {
+  if (!imageUrl || imageUrl.trim() === '') {
+    return DEFAULT_IMAGE;
+  }
+  return imageUrl;
+};
 
 export const BUSINESSES: Business[] = [
   {
@@ -1546,7 +1558,7 @@ export const LOCAL_SERVICES: Business[] = [
     subcategory: 'plumbing',
     rating: 4.9,
     reviewCount: 143,
-    image: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=400',
+    image: 'https://images.unsplash.com/photo-1580256081112-e49377338b7f?w=400',
     address: 'ул. Водопроводная, 10',
     openHours: '08:00 - 20:00',
     phone: '+7 (999) 123-45-67',
@@ -1577,7 +1589,7 @@ export const LOCAL_SERVICES: Business[] = [
     subcategory: 'cleaning',
     rating: 4.7,
     reviewCount: 215,
-    image: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=400',
+    image: 'https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=400',
     address: 'ул. Блестящая, 25',
     openHours: '08:00 - 20:00',
     phone: '+7 (999) 456-78-90',
@@ -1609,7 +1621,7 @@ export const LOCAL_SERVICES: Business[] = [
     subcategory: 'handyman',
     rating: 4.8,
     reviewCount: 178,
-    image: 'https://images.unsplash.com/photo-1512295767273-ac109ac3acfa?w=400',
+    image: 'https://images.unsplash.com/photo-1613322801994-4a64d3f9ae38?w=400',
     address: 'ул. Мастеровая, 15',
     openHours: '09:00 - 21:00',
     phone: '+7 (999) 789-01-23',
@@ -1640,7 +1652,7 @@ export const LOCAL_SERVICES: Business[] = [
     subcategory: 'repair',
     rating: 4.6,
     reviewCount: 124,
-    image: 'https://images.unsplash.com/photo-1593313637552-29c433264de0?w=400',
+    image: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=400',
     address: 'пр. Строителей, 8',
     openHours: '08:00 - 19:00',
     phone: '+7 (999) 234-56-78',
@@ -1672,7 +1684,7 @@ export const LOCAL_SERVICES: Business[] = [
     subcategory: 'electric',
     rating: 4.9,
     reviewCount: 156,
-    image: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?w=400',
+    image: 'https://images.unsplash.com/photo-1619454016518-697bc231e7bb?w=400',
     address: 'ул. Энергетиков, 42',
     openHours: '08:00 - 21:00',
     phone: '+7 (999) 345-67-89',
@@ -1703,7 +1715,7 @@ export const LOCAL_SERVICES: Business[] = [
     subcategory: 'delivery',
     rating: 4.5,
     reviewCount: 210,
-    image: 'https://images.unsplash.com/photo-1586736477235-5a5d6d5b1ce3?w=400',
+    image: 'https://images.unsplash.com/photo-1605249935718-8a5c8b5b6a85?w=400',
     address: 'ул. Курьерская, 30',
     openHours: '09:00 - 22:00',
     phone: '+7 (999) 456-78-90',
@@ -1728,13 +1740,342 @@ export const LOCAL_SERVICES: Business[] = [
       },
     ],
   },
+  {
+    id: 'ls7',
+    name: 'Няня Елена',
+    category: 'Местные службы',
+    subcategory: 'babysitting',
+    rating: 4.9,
+    reviewCount: 178,
+    image: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=400',
+    address: 'ул. Детская, 15',
+    openHours: '08:00 - 20:00',
+    phone: '+7 (999) 567-89-01',
+    email: 'elena@babysitter.ru',
+    price: '300 руб/час',
+    description: 'Профессиональная няня с педагогическим образованием и опытом работы более 10 лет. Забота о детях любого возраста, развивающие занятия, помощь с домашними заданиями.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Ольга М.',
+        rating: 5,
+        date: '2024-03-15',
+        text: 'Елена - замечательная няня! Дети её обожают. Всегда пунктуальна и ответственна.',
+      },
+      {
+        id: '2',
+        author: 'Сергей В.',
+        rating: 5,
+        date: '2024-03-10',
+        text: 'Очень рады, что нашли такую отличную няню. Рекомендуем всем!',
+      },
+    ],
+  },
+  {
+    id: 'ls8',
+    name: 'Садовник Павел',
+    category: 'Местные службы',
+    subcategory: 'gardening',
+    rating: 4.8,
+    reviewCount: 132,
+    image: 'https://images.unsplash.com/photo-1592494804071-faea15d93a8a?w=400',
+    address: 'ул. Садовая, 42',
+    openHours: '07:00 - 19:00',
+    phone: '+7 (999) 678-90-12',
+    email: 'pavel@garden.ru',
+    price: 'от 2000 руб',
+    description: 'Профессиональный уход за садом и участком. Стрижка газонов, обрезка деревьев, посадка растений, ландшафтный дизайн. Многолетний опыт работы с частными участками и коттеджными поселками.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Марина К.',
+        rating: 5,
+        date: '2024-03-18',
+        text: 'Павел преобразил наш участок! Очень доволены работой и результатом.',
+      },
+      {
+        id: '2',
+        author: 'Алексей Д.',
+        rating: 4,
+        date: '2024-03-12',
+        text: 'Хорошая работа по уходу за садом, есть замечания по срокам.',
+      },
+    ],
+  },
+];
+
+export const SMALL_BUSINESS_CATEGORIES = [
+  { id: 'bakery', name: 'Пекарни', icon: 'cake' },
+  { id: 'confectionery', name: 'Кондитеры', icon: 'cookie' },
+  { id: 'fruits', name: 'Фрукты и овощи', icon: 'apple' },
+  { id: 'clothes', name: 'Шоурумы', icon: 'shirt' },
+  { id: 'handmade', name: 'Хендмейд', icon: 'scissors' },
+  { id: 'florist', name: 'Флористы', icon: 'flower' },
+  { id: 'cosmetics', name: 'Косметика', icon: 'spray-can' },
+  { id: 'crafts', name: 'Ремесленники', icon: 'hammer' },
+];
+
+// Добавляем бизнесы для раздела Малый бизнес
+export const SMALL_BUSINESSES: Business[] = [
+  {
+    id: 'sb1',
+    name: 'Пекарня "Свежий хлеб"',
+    category: 'Малый бизнес',
+    subcategory: 'bakery',
+    rating: 4.8,
+    reviewCount: 156,
+    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400',
+    address: 'ул. Хлебная, 15',
+    openHours: '07:00 - 19:00',
+    phone: '+7 (999) 123-45-67',
+    email: 'info@freshbread.ru',
+    price: 'от 50 руб',
+    description: 'Свежая выпечка и хлеб каждый день. Используем только натуральные ингредиенты и традиционные рецепты.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Ольга К.',
+        rating: 5,
+        date: '2024-03-20',
+        text: 'Лучшая пекарня в районе! Очень вкусный хлеб и булочки.',
+      },
+      {
+        id: '2',
+        author: 'Сергей П.',
+        rating: 5,
+        date: '2024-03-15',
+        text: 'Прекрасная выпечка, всегда свежая и ароматная.',
+      },
+    ],
+  },
+  {
+    id: 'sb2',
+    name: 'Кондитерская "Сладкие мечты"',
+    category: 'Малый бизнес',
+    subcategory: 'confectionery',
+    rating: 4.9,
+    reviewCount: 198,
+    image: 'https://images.unsplash.com/photo-1587314168485-3236d6710123?w=400',
+    address: 'пр. Кондитерский, 8',
+    openHours: '09:00 - 20:00',
+    phone: '+7 (999) 234-56-78',
+    website: 'www.sweetdreams.ru',
+    email: 'orders@sweetdreams.ru',
+    price: 'от 200 руб',
+    description: 'Торты и пирожные ручной работы на заказ. Десерты из натуральных ингредиентов. Индивидуальный подход к каждому клиенту.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Марина Н.',
+        rating: 5,
+        date: '2024-03-19',
+        text: 'Заказывала торт на день рождения, все были в восторге. Очень вкусно и красиво!',
+      },
+      {
+        id: '2',
+        author: 'Иван С.',
+        rating: 5,
+        date: '2024-03-17',
+        text: 'Великолепный вкус и дизайн. Спасибо за прекрасный торт!',
+      },
+    ],
+  },
+  {
+    id: 'sb3',
+    name: 'Фруктовый рай',
+    category: 'Малый бизнес',
+    subcategory: 'fruits',
+    rating: 4.7,
+    reviewCount: 145,
+    image: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=400',
+    address: 'ул. Садовая, 25',
+    openHours: '08:00 - 20:00',
+    phone: '+7 (999) 345-67-89',
+    email: 'fruitparadise@mail.ru',
+    price: 'от 100 руб/кг',
+    description: 'Свежие фрукты и овощи с местных ферм. Доставка по району. Специальные предложения и сезонные скидки.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Алексей М.',
+        rating: 5,
+        date: '2024-03-18',
+        text: 'Очень свежие фрукты, всегда хорошее качество.',
+      },
+      {
+        id: '2',
+        author: 'Елена В.',
+        rating: 4,
+        date: '2024-03-16',
+        text: 'Хорошие цены и отличное качество товаров.',
+      },
+    ],
+  },
+  {
+    id: 'sb4',
+    name: 'Шоурум "Модный квартал"',
+    category: 'Малый бизнес',
+    subcategory: 'clothes',
+    rating: 4.6,
+    reviewCount: 123,
+    image: 'https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?w=400',
+    address: 'пр. Модный, 17',
+    openHours: '10:00 - 21:00',
+    phone: '+7 (999) 456-78-90',
+    website: 'www.fashion-quarter.ru',
+    email: 'info@fashion-quarter.ru',
+    price: 'от 1500 руб',
+    description: 'Уникальная одежда от местных дизайнеров. Индивидуальный стиль, качественные материалы. Возможность пошива на заказ.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Наталья К.',
+        rating: 5,
+        date: '2024-03-17',
+        text: 'Прекрасный выбор одежды, внимательные консультанты.',
+      },
+      {
+        id: '2',
+        author: 'Дмитрий С.',
+        rating: 4,
+        date: '2024-03-15',
+        text: 'Отличное качество, но хотелось бы больший выбор размеров.',
+      },
+    ],
+  },
+  {
+    id: 'sb5',
+    name: 'Мастерская "Творческие руки"',
+    category: 'Малый бизнес',
+    subcategory: 'handmade',
+    rating: 4.9,
+    reviewCount: 167,
+    image: 'https://images.unsplash.com/photo-1560421683-6856ea585c78?w=400',
+    address: 'ул. Ремесленная, 10',
+    openHours: '10:00 - 19:00',
+    phone: '+7 (999) 567-89-01',
+    email: 'creative@hands.ru',
+    price: 'от 500 руб',
+    description: 'Уникальные изделия ручной работы. Сувениры, украшения, элементы декора, подарки на любой вкус. Проводим мастер-классы для детей и взрослых.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Анна М.',
+        rating: 5,
+        date: '2024-03-19',
+        text: 'Замечательный магазин с прекрасными изделиями ручной работы!',
+      },
+      {
+        id: '2',
+        author: 'Павел К.',
+        rating: 5,
+        date: '2024-03-18',
+        text: 'Посетил мастер-класс, очень понравилось. Теперь хожу сюда регулярно.',
+      },
+    ],
+  },
+  {
+    id: 'sb6',
+    name: 'Цветочная студия "Флора"',
+    category: 'Малый бизнес',
+    subcategory: 'florist',
+    rating: 4.8,
+    reviewCount: 178,
+    image: 'https://images.unsplash.com/photo-1561181286-d3fee3785613?w=400',
+    address: 'ул. Цветочная, 7',
+    openHours: '08:00 - 20:00',
+    phone: '+7 (999) 678-90-12',
+    website: 'www.flora-studio.ru',
+    email: 'flora@flowers.ru',
+    price: 'от 800 руб',
+    description: 'Авторские букеты и композиции на любой случай. Доставка цветов по району. Оформление праздников и мероприятий.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Ирина П.',
+        rating: 5,
+        date: '2024-03-16',
+        text: 'Великолепные букеты! Заказывала несколько раз, всегда отличное качество.',
+      },
+      {
+        id: '2',
+        author: 'Михаил Н.',
+        rating: 4,
+        date: '2024-03-14',
+        text: 'Хорошее качество цветов, немного дороговато.',
+      },
+    ],
+  },
+  {
+    id: 'sb7',
+    name: 'Натуральная косметика "Чистая красота"',
+    category: 'Малый бизнес',
+    subcategory: 'cosmetics',
+    rating: 4.7,
+    reviewCount: 145,
+    image: 'https://images.unsplash.com/photo-1556760544-74068565f05c?w=400',
+    address: 'пр. Косметический, 5',
+    openHours: '10:00 - 20:00',
+    phone: '+7 (999) 789-01-23',
+    website: 'www.pure-beauty.ru',
+    email: 'sales@pure-beauty.ru',
+    price: 'от 300 руб',
+    description: 'Натуральная косметика ручной работы. Мыло, крема, маски, скрабы без консервантов и химических добавок. Все ингредиенты из экологически чистых источников.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Светлана К.',
+        rating: 5,
+        date: '2024-03-15',
+        text: 'Прекрасная натуральная косметика! Пользуюсь постоянно.',
+      },
+      {
+        id: '2',
+        author: 'Анастасия Д.',
+        rating: 4,
+        date: '2024-03-13',
+        text: 'Очень понравилось мыло ручной работы, кожа стала намного лучше.',
+      },
+    ],
+  },
+  {
+    id: 'sb8',
+    name: 'Кузница "Мастер Калинин"',
+    category: 'Малый бизнес',
+    subcategory: 'crafts',
+    rating: 4.9,
+    reviewCount: 132,
+    image: 'https://images.unsplash.com/photo-1521336635000-8f8673ad9e42?w=400',
+    address: 'ул. Кузнечная, 3',
+    openHours: '09:00 - 18:00',
+    phone: '+7 (999) 890-12-34',
+    email: 'master@kalinin.ru',
+    price: 'от 2000 руб',
+    description: 'Авторские кованые изделия ручной работы. Элементы интерьера, садовая мебель, ограждения, подарки. Индивидуальные заказы любой сложности.',
+    reviews: [
+      {
+        id: '1',
+        author: 'Виктор М.',
+        rating: 5,
+        date: '2024-03-18',
+        text: 'Заказывал кованую подставку для цветов. Отличная работа!',
+      },
+      {
+        id: '2',
+        author: 'Андрей П.',
+        rating: 5,
+        date: '2024-03-16',
+        text: 'Настоящее мастерство. Рекомендую всем, кто ценит ручной труд.',
+      },
+    ],
+  },
 ];
 
 // Объединяем все бизнесы в один массив
-const ALL_BUSINESSES = [...BUSINESSES, ...LOCAL_SERVICES];
+export const ALL_BUSINESSES = [...BUSINESSES, ...LOCAL_SERVICES, ...SMALL_BUSINESSES];
 
 // Используем объединенный массив для создания BUSINESSES_BY_ID
-export const BUSINESSES_BY_ID = ALL_BUSINESSES.reduce((acc, business) => {
+export const BUSINESSES_BY_ID: Record<string, Business> = ALL_BUSINESSES.reduce((acc, business) => {
   acc[business.id] = business;
   return acc;
 }, {} as Record<string, Business>);
@@ -1751,3 +2092,14 @@ export const CATEGORIES = [
   { id: 'services', name: 'Услуги', icon: 'briefcase' },
   { id: 'localservices', name: 'Местные службы', icon: 'tools' },
 ];
+
+// Группируем бизнесы по категориям для удобства фильтрации
+export const BUSINESSES_BY_CATEGORY: Record<string, Business[]> = {
+  'Бизнесы': BUSINESSES.filter(b => b.category === 'Бизнесы'),
+  'Услуги': BUSINESSES.filter(b => b.category === 'Услуги'),
+  'Образование': BUSINESSES.filter(b => b.category === 'Образование'),
+  'Развлечения': BUSINESSES.filter(b => b.category === 'Развлечения'),
+  'Авто': BUSINESSES.filter(b => b.category === 'Авто'),
+  'Местные службы': LOCAL_SERVICES,
+  'Малый бизнес': SMALL_BUSINESSES,
+};

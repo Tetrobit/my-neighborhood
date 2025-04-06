@@ -11,6 +11,8 @@ import {
   TouchableOpacity,
   Platform,
   SafeAreaView,
+  ImageErrorEventData,
+  NativeSyntheticEvent,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import {
@@ -24,8 +26,12 @@ import {
   Calendar,
   CheckCircle,
   X,
+  Image as ImageIcon,
 } from 'lucide-react-native';
-import { BUSINESSES_BY_ID } from '../data/businesses';
+import { BUSINESSES_BY_ID, DEFAULT_IMAGE, getValidImageUrl } from '../data/businesses';
+
+// Константа для URL плейсхолдера
+const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/800x400/e2e8f0/64748b?text=Нет+изображения';
 
 export default function BusinessScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -34,6 +40,12 @@ export default function BusinessScreen() {
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [successModalVisible, setSuccessModalVisible] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  
+  // Обработчик ошибки загрузки изображения
+  const handleImageError = (e: NativeSyntheticEvent<ImageErrorEventData>) => {
+    setImageError(true);
+  };
   
   // Генерируем даты на неделю вперед
   const getDates = () => {
@@ -92,6 +104,9 @@ export default function BusinessScreen() {
     );
   }
 
+  // Получаем корректный URL изображения
+  const imageUrl = imageError ? DEFAULT_IMAGE : getValidImageUrl(business.image);
+
   const handleCall = () => {
     Linking.openURL(`tel:${business.phone}`);
   };
@@ -118,7 +133,11 @@ export default function BusinessScreen() {
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <Image source={{ uri: business.image }} style={styles.image} />
+        <Image 
+          source={{ uri: imageUrl }} 
+          style={styles.image} 
+          onError={handleImageError}
+        />
 
         <View style={styles.infoSection}>
           <View style={styles.ratingContainer}>
@@ -608,5 +627,10 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  placeholderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 }); 

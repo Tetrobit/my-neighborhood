@@ -1,3 +1,4 @@
+import React from 'react';
 import { useEffect, useState } from 'react';
 import { Stack, Slot, useRouter, useSegments, usePathname } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -53,6 +54,8 @@ export default function RootLayout() {
         <Stack.Screen name="map" options={{ headerShown: false }} />
         <Stack.Screen name="recycling/[id]" options={{ headerShown: false }} />
         <Stack.Screen name="profile/edit" options={{ headerShown: false }} />
+        <Stack.Screen name="localservices" options={{ headerShown: false }} />
+        <Stack.Screen name="smallbusiness" options={{ headerShown: false }} />
       </Stack>
     </>
   );
