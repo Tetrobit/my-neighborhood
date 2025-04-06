@@ -105,6 +105,15 @@ export default function FarmerMarket() {
         item => item.product.id === selectedProduct.id && item.farmerId === selectedFarmer.id
       );
 
+      // Проверяем доступное количество
+      const currentInCart = existingItemIndex >= 0 ? cartItems[existingItemIndex].quantity : 0;
+      const totalQuantity = currentInCart + quantity;
+
+      if (totalQuantity > selectedProduct.quantity) {
+        alert(`Извините, доступно только ${selectedProduct.quantity} ${selectedProduct.unit}`);
+        return;
+      }
+
       if (existingItemIndex >= 0) {
         const newItems = [...cartItems];
         newItems[existingItemIndex].quantity += quantity;
@@ -128,6 +137,12 @@ export default function FarmerMarket() {
   const handleUpdateCartItemQuantity = (item: CartItem, newQuantity: number) => {
     if (newQuantity <= 0) {
       handleRemoveCartItem(item);
+      return;
+    }
+
+    // Проверяем доступное количество
+    if (newQuantity > item.product.quantity) {
+      alert(`Извините, доступно только ${item.product.quantity} ${item.product.unit}`);
       return;
     }
 
