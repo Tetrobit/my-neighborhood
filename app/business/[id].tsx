@@ -9,6 +9,8 @@ import {
   Linking,
   Modal,
   TouchableOpacity,
+  Platform,
+  SafeAreaView,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import {
@@ -31,6 +33,7 @@ export default function BusinessScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [successModalVisible, setSuccessModalVisible] = useState(false);
   
   // Генерируем даты на неделю вперед
   const getDates = () => {
@@ -74,8 +77,8 @@ export default function BusinessScreen() {
   const handleSubmitRequest = () => {
     if (selectedDate && selectedTime) {
       // Здесь можно добавить логику отправки заявки
-      alert('Запись подтверждена\n\nСервис свяжется с вами для согласования');
       setModalVisible(false);
+      setSuccessModalVisible(true);
     } else {
       alert('Пожалуйста, выберите дату и время');
     }
@@ -185,12 +188,12 @@ export default function BusinessScreen() {
         )}
       </ScrollView>
 
-      <View style={styles.footer}>
+      <SafeAreaView style={styles.footer}>
         <Pressable style={styles.messageButton} onPress={() => setModalVisible(true)}>
           <Calendar size={20} color="#ffffff" />
           <Text style={styles.messageButtonText}>Подать заявку</Text>
         </Pressable>
-      </View>
+      </SafeAreaView>
       
       <Modal
         animationType="slide"
@@ -199,7 +202,7 @@ export default function BusinessScreen() {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
+          <SafeAreaView style={styles.modalContainer}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Выберите время</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
@@ -219,14 +222,24 @@ export default function BusinessScreen() {
                     ]}
                     onPress={() => setSelectedDate(date.full)}
                   >
-                    <Text style={styles.dateDay}>{date.day}</Text>
+                    <Text style={[
+                      styles.dateDay,
+                      selectedDate === date.full && styles.selectedDateText
+                    ]}>
+                      {date.day}
+                    </Text>
                     <Text style={[
                       styles.dateNumber,
                       selectedDate === date.full && styles.selectedDateText
                     ]}>
                       {date.date}
                     </Text>
-                    <Text style={styles.dateMonth}>{date.month}</Text>
+                    <Text style={[
+                      styles.dateMonth,
+                      selectedDate === date.full && styles.selectedDateText
+                    ]}>
+                      {date.month}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </ScrollView>
@@ -262,6 +275,27 @@ export default function BusinessScreen() {
               onPress={handleSubmitRequest}
             >
               <Text style={styles.submitButtonText}>Отправить заявку</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
+        </View>
+      </Modal>
+      
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={successModalVisible}
+        onRequestClose={() => setSuccessModalVisible(false)}
+      >
+        <View style={styles.successModalOverlay}>
+          <View style={styles.successModalContainer}>
+            <CheckCircle size={60} color="#0891b2" style={styles.successIcon} />
+            <Text style={styles.successTitle}>Запись подтверждена</Text>
+            <Text style={styles.successMessage}>Сервис свяжется с вами для согласования</Text>
+            <TouchableOpacity 
+              style={styles.successButton}
+              onPress={() => setSuccessModalVisible(false)}
+            >
+              <Text style={styles.successButtonText}>Закрыть</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -415,6 +449,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopWidth: 1,
     borderTopColor: '#e5e5e5',
+    paddingBottom: Platform.OS === 'ios' ? 30 : 16,
   },
   messageButton: {
     flexDirection: 'row',
@@ -440,7 +475,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     paddingHorizontal: 16,
-    paddingBottom: 24,
+    paddingBottom: Platform.OS === 'ios' ? 34 : 24,
     maxHeight: '80%',
   },
   modalHeader: {
@@ -528,5 +563,50 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#ffffff',
+  },
+  successModalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  successModalContainer: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
+    width: '85%',
+    maxWidth: 320,
+  },
+  successIcon: {
+    marginBottom: 16,
+  },
+  successTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#0f172a',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  successMessage: {
+    fontSize: 16,
+    color: '#64748b',
+    marginBottom: 24,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  successButton: {
+    backgroundColor: '#0891b2',
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    width: '100%',
+    alignItems: 'center',
+  },
+  successButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 }); 
