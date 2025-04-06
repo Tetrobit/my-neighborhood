@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   Alert,
+  Image,
 } from 'react-native';
 import { Product } from '../types/farmer';
 
@@ -46,6 +47,10 @@ export const OrderForm: React.FC<OrderFormProps> = ({ product, onSubmit }) => {
       <Text style={styles.title}>Оформление заказа</Text>
       
       <View style={styles.productInfo}>
+        <Image
+          source={{ uri: product.imageUrl || 'https://via.placeholder.com/150' }}
+          style={styles.productImage}
+        />
         <Text style={styles.productName}>{product.name}</Text>
         <Text style={styles.price}>Цена: {product.price} ₽/{product.unit}</Text>
         <Text style={styles.available}>
@@ -93,6 +98,12 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#f8f9fa',
     borderRadius: 8,
+  },
+  productImage: {
+    width: '100%',
+    height: 200,
+    borderRadius: 8,
+    marginBottom: 12,
   },
   productName: {
     fontSize: 18,
