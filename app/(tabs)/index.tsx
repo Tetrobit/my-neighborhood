@@ -12,11 +12,11 @@ export default function HomeScreen() {
   const [posts, setPosts] = useState<PostType[]>(POSTS);
   
   useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
+    // Animated.timing(fadeAnim, {
+    //   toValue: 1,
+    //   duration: 500,
+    //   useNativeDriver: true,
+    // }).start();
   }, []);
 
   const handleLike = (postId: string) => {
@@ -92,7 +92,7 @@ export default function HomeScreen() {
   ];
 
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+    <View style={[styles.container]}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.headerTitle}>Мой район</Text>
@@ -166,7 +166,7 @@ export default function HomeScreen() {
           ))}
         </View>
       </ScrollView>
-    </Animated.View>
+    </View>
   );
 }
 

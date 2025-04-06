@@ -1,27 +1,128 @@
 import { View, Text, StyleSheet, Pressable, Image, ScrollView, FlatList } from 'react-native';
-import { useRouter, useLocalSearchParams } from 'expo-router';
-import { ArrowLeft, MapPin, Calendar, Link, Mail, Phone, Building2, User as UserIcon } from 'lucide-react-native';
-import { useState, useEffect } from 'react';
+import { useRouter, useLocalSearchParams, useFocusEffect } from 'expo-router';
+import { ArrowLeft, MapPin, Calendar, Link, Mail, Phone, Building2, User as UserIcon, Clock, Award, Briefcase, Heart, AlertCircle } from 'lucide-react-native';
+import { useState, useCallback, useMemo } from 'react';
 import Post from '../../components/Post';
 import { Post as PostType } from '../../data/posts';
+import { USERS_BY_ID } from '../../data/users';
+import { PersonProfile, OrganizationProfile } from '../../types/profile';
 
-interface UserProfile {
-  id: string;
-  name: string;
-  avatar: string;
-  type: 'organization' | 'person';
-  bio?: string;
-  location?: string;
-  joinDate: string;
-  website?: string;
-  email?: string;
-  phone?: string;
-  stats: {
-    posts: number;
-    followers: number;
-    following: number;
-  };
-}
+type UserProfile = PersonProfile | OrganizationProfile;
+
+const EmptyProfile = () => {
+  return (
+    <View style={styles.emptyContainer}>
+      <AlertCircle size={64} color="#94a3b8" style={styles.emptyIcon} />
+      <Text style={styles.emptyTitle}>Профиль не найден</Text>
+      <Text style={styles.emptyDescription}>
+        Пользователь с указанным идентификатором не существует или был удален
+      </Text>
+    </View>
+  );
+};
+
+const RenderAboutContent = ({ profile }: { profile: UserProfile }) => {
+  if (profile.type === 'organization') {
+    return (
+      <View style={styles.aboutSection}>
+        <View style={styles.infoRow}>
+          <MapPin size={20} color="#64748b" />
+          <Text style={styles.infoText}>{profile.location}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Calendar size={20} color="#64748b" />
+          <Text style={styles.infoText}>
+            На платформе с {new Date(profile.joinDate).toLocaleDateString('ru-RU')}
+          </Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Clock size={20} color="#64748b" />
+          <Text style={styles.infoText}>{profile.workingHours}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Link size={20} color="#64748b" />
+          <Text style={styles.infoText}>{profile.website}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Mail size={20} color="#64748b" />
+          <Text style={styles.infoText}>{profile.email}</Text>
+        </View>
+        <View style={styles.infoRow}>
+          <Phone size={20} color="#64748b" />
+          <Text style={styles.infoText}>{profile.phone}</Text>
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Услуги</Text>
+          {profile.services?.map((service, index) => (
+            <Text key={index} style={styles.listItem}>• {service}</Text>
+          ))}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Текущие проекты</Text>
+          {profile.projects?.map((project, index) => (
+            <Text key={index} style={styles.listItem}>• {project}</Text>
+          ))}
+        </View>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.aboutSection}>
+      <View style={styles.infoRow}>
+        <MapPin size={20} color="#64748b" />
+        <Text style={styles.infoText}>{profile.location}</Text>
+      </View>
+      <View style={styles.infoRow}>
+        <Calendar size={20} color="#64748b" />
+        <Text style={styles.infoText}>
+          На платформе с {new Date(profile.joinDate).toLocaleDateString('ru-RU')}
+        </Text>
+      </View>
+      <View style={styles.infoRow}>
+        <Mail size={20} color="#64748b" />
+        <Text style={styles.infoText}>{profile.email}</Text>
+      </View>
+      <View style={styles.infoRow}>
+        <Briefcase size={20} color="#64748b" />
+        <Text style={styles.infoText}>{profile.profession}</Text>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Интересы</Text>
+        <View style={styles.interestsList}>
+          {profile.interests?.map((interest, index) => (
+            <View key={index} style={styles.interestTag}>
+              <Text style={styles.interestText}>{interest}</Text>
+            </View>
+          ))}
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Достижения</Text>
+        {profile.achievements?.map((achievement, index) => (
+          <View key={index} style={styles.infoRow}>
+            <Award size={16} color="#0891b2" />
+            <Text style={styles.listItem}>{achievement}</Text>
+          </View>
+        ))}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Волонтерство</Text>
+        {profile.volunteering?.map((activity, index) => (
+          <View key={index} style={styles.infoRow}>
+            <Heart size={16} color="#0891b2" />
+            <Text style={styles.listItem}>{activity}</Text>
+          </View>
+        ))}
+      </View>
+    </View>
+  );
+};
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -29,79 +130,131 @@ export default function ProfileScreen() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [posts, setPosts] = useState<PostType[]>([]);
   const [activeTab, setActiveTab] = useState<'posts' | 'about'>('posts');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isScreenMounted, setIsScreenMounted] = useState(false);
+  const [isNotFound, setIsNotFound] = useState(false);
 
-  useEffect(() => {
-    // В реальном приложении здесь будет запрос к API
-    // Сейчас используем моковые данные
-    const mockProfile: UserProfile = {
-      id: id as string,
-      name: id === 'admin1' ? 'Администратор' : 'Иван Петров',
-      avatar: id === 'admin1' 
-        ? 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400'
-        : 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400',
-      type: id === 'admin1' ? 'organization' : 'person',
-      bio: id === 'admin1' 
-        ? 'Официальный аккаунт администрации района'
-        : 'Активный житель района, люблю наш город и стремлюсь сделать его лучше',
-      location: 'Москва, Россия',
-      joinDate: '2024-01-01',
-      website: id === 'admin1' ? 'www.admin.ru' : undefined,
-      email: id === 'admin1' ? 'admin@admin.ru' : 'user@example.com',
-      phone: id === 'admin1' ? '+7 (999) 123-45-67' : undefined,
-      stats: {
-        posts: 45,
-        followers: 1250,
-        following: 84
+  const loadProfile = useCallback(async () => {
+    if (!id) return;
+    
+    try {
+      setIsLoading(true);
+      setIsNotFound(false);
+      const userProfile = USERS_BY_ID[id as string];
+      
+      if (!userProfile) {
+        setIsNotFound(true);
+        setIsLoading(false);
+        return;
       }
-    };
 
-    const mockPosts: PostType[] = [
-      {
-        id: '1',
-        author: {
-          id: id as string,
-          name: mockProfile.name,
-          avatar: mockProfile.avatar,
-          type: mockProfile.type
+      const mockPosts: PostType[] = [
+        {
+          id: '1',
+          author: {
+            id: userProfile.id,
+            name: userProfile.name,
+            avatar: userProfile.avatar,
+            type: userProfile.type
+          },
+          content: userProfile.type === 'organization' 
+            ? 'Сегодня прошло очередное собрание жителей района. Обсудили важные вопросы благоустройства и приняли решение о начале реконструкции парка.'
+            : userProfile.name === 'Анна Михайлова'
+              ? 'Провела сегодня увлекательный мастер-класс для детей. Рисовали, играли и учились новому. Спасибо всем участникам!'
+              : 'Принял участие в субботнике! Вместе мы сделали наш двор чище и уютнее. Спасибо всем, кто присоединился!',
+          image: 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=400',
+          createdAt: new Date().toISOString(),
+          likes: 15,
+          isLiked: false,
+          comments: []
         },
-        content: 'Сегодня прошло очередное собрание жителей района. Обсудили важные вопросы благоустройства.',
-        image: 'https://images.unsplash.com/photo-1577563908411-5077b6dc7624?w=400',
-        createdAt: new Date().toISOString(),
-        likes: 15,
-        isLiked: false,
-        comments: []
-      },
-      {
-        id: '2',
-        author: {
-          id: id as string,
-          name: mockProfile.name,
-          avatar: mockProfile.avatar,
-          type: mockProfile.type
-        },
-        content: 'Начинаем подготовку к весеннему субботнику! Приглашаем всех желающих принять участие.',
-        createdAt: new Date(Date.now() - 86400000).toISOString(),
-        likes: 24,
-        isLiked: true,
-        comments: []
-      }
-    ];
+        {
+          id: '2',
+          author: {
+            id: userProfile.id,
+            name: userProfile.name,
+            avatar: userProfile.avatar,
+            type: userProfile.type
+          },
+          content: userProfile.type === 'organization'
+            ? 'Начинаем подготовку к весеннему субботнику! Приглашаем всех желающих принять участие. Сбор в 10:00 у здания администрации.'
+            : userProfile.name === 'Анна Михайлова'
+              ? 'Готовимся к школьному фестивалю талантов! Наши ученики покажут свои творческие способности. Приглашаем всех поддержать юные таланты!'
+              : 'Отличная новость! Наш проект по благоустройству двора получил поддержку администрации. Скоро начнем реализацию!',
+          createdAt: new Date(Date.now() - 86400000).toISOString(),
+          likes: 24,
+          isLiked: true,
+          comments: []
+        }
+      ];
 
-    setProfile(mockProfile);
-    setPosts(mockPosts);
-  }, [id]);
+      setTimeout(() => {
+        if (isScreenMounted) {
+          setProfile(userProfile);
+          setPosts(mockPosts);
+          setIsLoading(false);
+        }
+      }, 100);
 
-  if (!profile) {
+    } catch (error) {
+      console.error('Error loading profile:', error);
+      setIsNotFound(true);
+      setIsLoading(false);
+    }
+  }, [id, isScreenMounted]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsScreenMounted(true);
+      loadProfile();
+
+      return () => {
+        setIsScreenMounted(false);
+        setProfile(null);
+        setPosts([]);
+        setIsLoading(true);
+        setIsNotFound(false);
+      };
+    }, [loadProfile])
+  );
+
+  const handleTabChange = useCallback((tab: 'posts' | 'about') => {
+    requestAnimationFrame(() => {
+      setActiveTab(tab);
+    });
+  }, []);
+
+  const renderAboutContent = useMemo(() => {
+    if (!profile) return null;
+
     return (
-      <View style={styles.container}>
+      <RenderAboutContent profile={profile} />
+    );
+  }, [profile]);
+
+  if (!isScreenMounted || isLoading) {
+    return (
+      <View style={[styles.container, styles.centered]}>
         <Text>Загрузка...</Text>
       </View>
     );
   }
 
-  const renderPost = ({ item }: { item: PostType }) => (
-    <Post post={item} />
-  );
+  if (isNotFound || !profile) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Pressable style={styles.backButton} onPress={() => router.back()}>
+            <ArrowLeft size={24} color="#0f172a" />
+          </Pressable>
+          <Text style={styles.headerTitle}>Профиль</Text>
+        </View>
+        <EmptyProfile />
+      </View>
+    );
+  }
+
+  const currentProfile = profile;
 
   return (
     <View style={styles.container}>
@@ -109,36 +262,39 @@ export default function ProfileScreen() {
         <Pressable style={styles.backButton} onPress={() => router.back()}>
           <ArrowLeft size={24} color="#0f172a" />
         </Pressable>
-        <Text style={styles.headerTitle}>{profile.name}</Text>
+        <Text style={styles.headerTitle}>{currentProfile.name}</Text>
       </View>
 
       <ScrollView style={styles.content}>
         <View style={styles.profileHeader}>
-          <Image source={{ uri: profile.avatar }} style={styles.avatar} />
+          <Image 
+            source={{ uri: currentProfile.avatar }} 
+            style={styles.avatar}
+          />
           <View style={styles.profileInfo}>
             <View style={styles.nameContainer}>
-              <Text style={styles.name}>{profile.name}</Text>
-              {profile.type === 'organization' ? (
+              <Text style={styles.name}>{currentProfile.name}</Text>
+              {currentProfile.type === 'organization' ? (
                 <Building2 size={16} color="#0891b2" />
               ) : (
                 <UserIcon size={16} color="#64748b" />
               )}
             </View>
-            {profile.bio && <Text style={styles.bio}>{profile.bio}</Text>}
+            {currentProfile.bio && <Text style={styles.bio}>{currentProfile.bio}</Text>}
           </View>
         </View>
 
         <View style={styles.stats}>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{profile.stats.posts}</Text>
+            <Text style={styles.statValue}>{currentProfile.stats.posts}</Text>
             <Text style={styles.statLabel}>Постов</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{profile.stats.followers}</Text>
+            <Text style={styles.statValue}>{currentProfile.stats.followers}</Text>
             <Text style={styles.statLabel}>Подписчиков</Text>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>{profile.stats.following}</Text>
+            <Text style={styles.statValue}>{currentProfile.stats.following}</Text>
             <Text style={styles.statLabel}>Подписок</Text>
           </View>
         </View>
@@ -146,7 +302,7 @@ export default function ProfileScreen() {
         <View style={styles.tabs}>
           <Pressable 
             style={[styles.tab, activeTab === 'posts' && styles.activeTab]}
-            onPress={() => setActiveTab('posts')}
+            onPress={() => handleTabChange('posts')}
           >
             <Text style={[styles.tabText, activeTab === 'posts' && styles.activeTabText]}>
               Посты
@@ -154,10 +310,10 @@ export default function ProfileScreen() {
           </Pressable>
           <Pressable 
             style={[styles.tab, activeTab === 'about' && styles.activeTab]}
-            onPress={() => setActiveTab('about')}
+            onPress={() => handleTabChange('about')}
           >
             <Text style={[styles.tabText, activeTab === 'about' && styles.activeTabText]}>
-              О пользователе
+              О {currentProfile.type === 'organization' ? 'компании' : 'пользователе'}
             </Text>
           </Pressable>
         </View>
@@ -169,38 +325,7 @@ export default function ProfileScreen() {
             ))}
           </View>
         ) : (
-          <View style={styles.aboutSection}>
-            {profile.location && (
-              <View style={styles.infoRow}>
-                <MapPin size={20} color="#64748b" />
-                <Text style={styles.infoText}>{profile.location}</Text>
-              </View>
-            )}
-            <View style={styles.infoRow}>
-              <Calendar size={20} color="#64748b" />
-              <Text style={styles.infoText}>
-                На платформе с {new Date(profile.joinDate).toLocaleDateString('ru-RU')}
-              </Text>
-            </View>
-            {profile.website && (
-              <View style={styles.infoRow}>
-                <Link size={20} color="#64748b" />
-                <Text style={styles.infoText}>{profile.website}</Text>
-              </View>
-            )}
-            {profile.email && (
-              <View style={styles.infoRow}>
-                <Mail size={20} color="#64748b" />
-                <Text style={styles.infoText}>{profile.email}</Text>
-              </View>
-            )}
-            {profile.phone && (
-              <View style={styles.infoRow}>
-                <Phone size={20} color="#64748b" />
-                <Text style={styles.infoText}>{profile.phone}</Text>
-              </View>
-            )}
-          </View>
+          <RenderAboutContent profile={currentProfile} />
         )}
       </ScrollView>
     </View>
@@ -211,6 +336,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f8fafc',
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -326,5 +455,57 @@ const styles = StyleSheet.create({
   infoText: {
     fontSize: 14,
     color: '#0f172a',
+  },
+  section: {
+    marginTop: 24,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#0f172a',
+    marginBottom: 12,
+  },
+  listItem: {
+    fontSize: 14,
+    color: '#0f172a',
+    marginLeft: 8,
+  },
+  interestsList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  interestTag: {
+    backgroundColor: '#e2e8f0',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  interestText: {
+    fontSize: 12,
+    color: '#0f172a',
+  },
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    backgroundColor: '#ffffff',
+  },
+  emptyIcon: {
+    marginBottom: 16,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#0f172a',
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  emptyDescription: {
+    fontSize: 14,
+    color: '#64748b',
+    textAlign: 'center',
+    lineHeight: 20,
   },
 }); 
