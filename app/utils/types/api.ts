@@ -31,12 +31,15 @@ export interface ApiResponse<T> {
 export interface SportSection {
   id: string;
   name: string;
-  price: number;
   description: string;
+  price: number;
   schedule: Array<{
     day: string;
     time: string[];
   }>;
+  image: string;
+  address: string;
+  phone: string;
   trainer: string;
   level: string;
   minAge: number;
