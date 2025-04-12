@@ -83,12 +83,11 @@ const MainScreen = () => {
           ))}
         </View>
 
-        {/* Сетка сервисов
         <View
           style={{
-            flexDirection: 'row',
-            flexWrap: 'wrap',
-            padding: 15,
+            flexDirection: 'row', 
+            flexWrap: 'wrap',      
+            padding: 15,           
             backgroundColor: 'white',
             marginTop: 10,
           }}
@@ -98,76 +97,22 @@ const MainScreen = () => {
               key={service.id}
               href={service.route}
               style={{
-                width: '25%',
-                alignItems: 'center',
-                marginBottom: 24,
-                paddingHorizontal: 8,
-              }}
-            >
-              <View
-                style={{
-                  width: 72,
-                  height: 72,
-                  backgroundColor: '#F7E4E4',
-                  borderRadius: 20,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  marginBottom: 6,
-                }}
-              >
-                <Ionicons name={service.icon} size={36} color="#A67F8E" />
-              </View>
-              <View style={{
-                height: 32,
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-                <Text 
-                  style={{ 
-                    fontSize: 11,
-                    textAlign: 'center',
-                    color: '#6D4C4C',
-                    lineHeight: 13,
-                  }}
-                  numberOfLines={2}
-                >
-                  {service.name}
-                </Text>
-              </View>
-            </Link>
-          ))}
-        </View> */}
-
-        <View
-          style={{
-            flexDirection: 'row', // Оставляем гибкую компоновку для адаптивности
-            flexWrap: 'wrap',      // Элементы переносятся на следующую строку, если не помещаются
-            padding: 15,           // Внешний отступ
-            backgroundColor: 'white',
-            marginTop: 10,
-          }}
-        >
-          {services.map((service) => (
-            <Link
-              key={service.id}
-              href={service.route}
-              style={{
-                width: '25%',             // Ширина карточки
-                alignItems: 'center',      // Выравниваем контент по вертикали
-                marginBottom: 24,          // Отступ снизу между элементами
-                paddingHorizontal: 8,      // Горизонтальный внутренний отступ
+                width: '25%',            
+                alignItems: 'center',      
+                marginBottom: 24,          
+                paddingHorizontal: 8,      
               }}
             >
               {/* Контейнер с иконкой */}
               <View
                 style={{
-                  width: 72,               // Устанавливаем фиксированную ширину
-                  height: 72,              // Высота иконки
+                  width: 72,               
+                  height: 72,              
                   backgroundColor: '#F7E4E4',
-                  borderRadius: 20,        // Скругление углов
-                  justifyContent: 'center',// Выравнивать иконку по центру
-                  alignItems: 'center',    // Выравнивать иконку по центру
-                  marginBottom: 10,         // Отступ между иконкой и текстом
+                  borderRadius: 20,        
+                  justifyContent: 'center',
+                  alignItems: 'center',    
+                  marginBottom: 10,         
                 }}
               >
                 <Ionicons name={service.icon} size={36} color="#A67F8E" />
@@ -176,20 +121,22 @@ const MainScreen = () => {
               {/* Контейнер с текстом */}
               <View
                 style={{
-                  width: 72,                   // То же самое значение ширины, что и у иконки
-                  alignItems: 'center',        // Центрирование текста по горизонтали
-                  justifyContent: 'center',    // Центрирование текста по вертикали
+                  width: '100%',              
+                  paddingHorizontal: 2,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  height: 32,        
                 }}
               >
                 <Text 
                   style={{ 
-                    fontSize: 12,
-                    textAlign: 'center',      // Центрирование текста
+                    fontSize: 12,              
+                    textAlign: 'center',
                     color: '#6D4C4C',
-                    lineHeight: 13,
-                    marginTop: 10,
+                    lineHeight: 12,             
                   }}
                   numberOfLines={2}
+                  adjustsFontSizeToFit         
                 >
                   {service.name}
                 </Text>
