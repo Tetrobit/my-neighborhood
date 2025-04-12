@@ -1,174 +1,153 @@
-import { View, Text, ScrollView, StyleSheet, Image, Pressable, Animated } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, Pressable, Animated, TouchableOpacity } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { Bell, MessageCircle, User, ChevronRight } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { POSTS, Post as PostType } from '../data/posts';
 import Post from '../components/Post';
 import { Share } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function HomeScreen() {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const router = useRouter();
-  const [posts, setPosts] = useState<PostType[]>(POSTS);
-  
-  useEffect(() => {
-    // Animated.timing(fadeAnim, {
-    //   toValue: 1,
-    //   duration: 500,
-    //   useNativeDriver: true,
-    // }).start();
-  }, []);
+type IconName = keyof typeof Ionicons.glyphMap;
 
-  const handleLike = (postId: string) => {
-    setPosts(prevPosts => 
-      prevPosts.map(post => 
-        post.id === postId
-          ? { 
-              ...post, 
-              likes: post.isLiked ? post.likes - 1 : post.likes + 1,
-              isLiked: !post.isLiked 
-            }
-          : post
-      )
-    );
-  };
+const services: Array<{
+  id: number;
+  name: string;
+  icon: IconName;
+  route: string;
+}> = [
+  { id: 1, name: 'Фермерский рынок', icon: 'leaf-outline', route: '/farmer-market' },
+  { id: 2, name: 'События', icon: 'calendar-outline', route: '/events' },
+  { id: 3, name: 'Местные услуги', icon: 'construct-outline', route: '/localservices' },
+  { id: 4, name: 'Сообщество', icon: 'people-outline', route: '/community' },
+  { id: 5, name: 'Переработка', icon: 'refresh-outline', route: '/recycling' },
+  { id: 6, name: 'Бизнес', icon: 'business-outline', route: '/business' },
+  { id: 7, name: 'Чат', icon: 'chatbubbles-outline', route: '/chat' },
+  { id: 8, name: 'Ещё', icon: 'ellipsis-horizontal-outline', route: '/services' },
+];
 
-  const handleComment = (postId: string, text: string) => {
-    setPosts(prevPosts =>
-      prevPosts.map(post =>
-        post.id === postId
-          ? {
-              ...post,
-              comments: [
-                ...post.comments,
-                {
-                  id: Date.now().toString(),
-                  user: {
-                    id: 'current-user',
-                    name: 'Вы',
-                    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=100',
-                    type: 'person'
-                  },
-                  text,
-                  createdAt: new Date().toISOString()
-                }
-              ]
-            }
-          : post
-      )
-    );
-  };
-
-  const handleShare = async (postId: string) => {
-    const post = posts.find(p => p.id === postId);
-    if (post) {
-      try {
-        await Share.share({
-          message: `${post.content}\n\nОпубликовано пользователем ${post.author.name} в приложении WeLocal`,
-        });
-      } catch (error) {
-        console.error('Error sharing:', error);
-      }
-    }
-  };
-
-  const recentMessages = [
-    {
-      id: 1,
-      name: 'Администрация района',
-      lastMessage: 'Спасибо за ваше обращение! Мы рассмотрим его в ближайшее время.',
-      time: '10:30',
-      unread: true,
-      avatar: 'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?auto=format&fit=crop&q=80&w=800',
-    },
-    {
-      id: 2,
-      name: 'Служба поддержки',
-      lastMessage: 'Ваше обращение №12345 принято в работу',
-      time: 'Вчера',
-      unread: false,
-      avatar: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80&w=800',
-    },
-  ];
+const MainScreen = () => {
+  const tabs = ['Все', 'Услуги', 'События', 'Магазины'];
 
   return (
-    <View style={[styles.container]}>
-      <View style={styles.header}>
-        <View style={styles.headerLeft}>
-          <Text style={styles.headerTitle}>Мой район</Text>
-          <Text style={styles.headerSubtitle}>Будьте в курсе событий</Text>
-        </View>
-        <View style={styles.headerIcons}>
-          <Link href="/notifications" asChild>
-            <Pressable style={styles.iconButton}>
-              <Bell size={24} color="#0f172a" />
-            </Pressable>
-          </Link>
-          <Link href="/messages" asChild>
-            <Pressable style={styles.iconButton}>
-              <MessageCircle size={24} color="#0f172a" />
-            </Pressable>
-          </Link>
-          <Link href="/profile" asChild>
-            <Pressable style={styles.iconButton}>
-              <User size={24} color="#0f172a" />
-            </Pressable>
-          </Link>
-        </View>
-      </View>
+    <View style={{ flex: 1, backgroundColor: '#f5f5f5' }}>
+      <StatusBar style="light" />
+      
+      <ScrollView>
+        {/* Верхний баннер */}
+        <LinearGradient
+          colors={['#6D4C4C', '#A67F8E']}
+          style={{ padding: 20, height: 180 }}
+        >
+          <Text style={{ color: 'white', fontSize: 24, marginTop: 40 }}>
+            Местные продукты
+          </Text>
+          <Text style={{ color: 'white', fontSize: 18, marginTop: 5 }}>
+            Поддержите локальных производителей
+          </Text>
+          <TouchableOpacity
+            style={{
+              backgroundColor: '#F5C0C0',
+              padding: 10,
+              borderRadius: 20,
+              marginTop: 15,
+              width: 120,
+            }}
+          >
+            <Text style={{ color: '#6D4C4C', fontWeight: 'bold' }}>Подробнее</Text>
+          </TouchableOpacity>
+        </LinearGradient>
 
-      <ScrollView style={styles.content}>
-        <View style={styles.messagesSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Сообщения</Text>
-            <Pressable style={styles.seeAllButton} onPress={() => router.push('/messages')}>
-              <Text style={styles.seeAllText}>Все сообщения</Text>
-              <ChevronRight size={16} color="#0891b2" />
-            </Pressable>
-          </View>
-          {recentMessages.map((message) => (
-            <Pressable 
-              key={message.id} 
-              style={styles.messageCard}
-              onPress={() => router.push(`/chat/${message.id}`)}
+        {/* Навигационные вкладки */}
+        <View style={{ flexDirection: 'row', padding: 15, backgroundColor: 'white' }}>
+          {tabs.map((tab, index) => (
+            <TouchableOpacity
+              key={index}
+              style={{
+                marginRight: 20,
+                paddingBottom: 5,
+                borderBottomWidth: index === 0 ? 2 : 0,
+                borderBottomColor: '#A67F8E',
+              }}
             >
-              <Image source={{ uri: message.avatar }} style={styles.messageAvatar} />
-              <View style={styles.messageContent}>
-                <View style={styles.messageHeader}>
-                  <Text style={styles.messageName}>{message.name}</Text>
-                  <Text style={styles.messageTime}>{message.time}</Text>
-                </View>
-                <View style={styles.messageFooter}>
-                  <Text style={styles.messageText} numberOfLines={1}>{message.lastMessage}</Text>
-                  {message.unread && <View style={styles.unreadBadge} />}
-                </View>
-              </View>
-            </Pressable>
+              <Text
+                style={{
+                  color: index === 0 ? '#A67F8E' : '#999',
+                  fontWeight: index === 0 ? 'bold' : 'normal',
+                }}
+              >
+                {tab}
+              </Text>
+            </TouchableOpacity>
           ))}
         </View>
 
-        <View style={styles.postsSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Новости района</Text>
-            <Pressable style={styles.seeAllButton}>
-              <Text style={styles.seeAllText}>Все новости</Text>
-              <ChevronRight size={16} color="#0891b2" />
-            </Pressable>
-          </View>
-          {posts.map(post => (
-            <Post
-              key={post.id}
-              post={post}
-              onLike={handleLike}
-              onComment={handleComment}
-              onShare={handleShare}
-            />
+        {/* Сетка сервисов */}
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            padding: 15,
+            backgroundColor: 'white',
+            marginTop: 10,
+          }}
+        >
+          {services.map((service) => (
+            <Link
+              key={service.id}
+              href={service.route}
+              style={{
+                width: '25%',
+                alignItems: 'center',
+                marginBottom: 20,
+              }}
+            >
+              <View
+                style={{
+                  width: 60,
+                  height: 60,
+                  backgroundColor: '#F7E4E4',
+                  borderRadius: 15,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Ionicons name={service.icon} size={30} color="#A67F8E" />
+              </View>
+              <Text style={{ marginTop: 5, fontSize: 12, textAlign: 'center', color: '#6D4C4C' }}>
+                {service.name}
+              </Text>
+            </Link>
           ))}
+        </View>
+
+        {/* Промо-баннер */}
+        <View style={{ padding: 15, backgroundColor: 'white', marginTop: 10, marginBottom: 20 }}>
+          <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 15, color: '#6D4C4C' }}>
+            Новости сообщества
+          </Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {[1, 2, 3].map((item) => (
+              <View
+                key={item}
+                style={{
+                  width: 200,
+                  height: 250,
+                  backgroundColor: '#F5C0C0',
+                  borderRadius: 20,
+                  marginRight: 15,
+                }}
+              />
+            ))}
+          </ScrollView>
         </View>
       </ScrollView>
     </View>
   );
-}
+};
+
+export default MainScreen;
 
 const styles = StyleSheet.create({
   container: {
