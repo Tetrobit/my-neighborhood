@@ -145,24 +145,209 @@ const MainScreen = () => {
           ))}
         </View>
 
-        {/* Промо-баннер */}
-        <View style={{ padding: 15, backgroundColor: 'white', marginTop: 10, marginBottom: 20 }}>
-          <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 15, color: '#6D4C4C' }}>
-            Новости сообщества
-          </Text>
+        {/* Блок сообщества */}
+        <View style={{ padding: 15, backgroundColor: 'white', marginTop: 10 }}>
+          <View style={{ 
+            flexDirection: 'row', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: 15,
+          }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#6D4C4C' }}>
+              Сообщество
+            </Text>
+            <Link href="/community" asChild>
+              <TouchableOpacity>
+                <Text style={{ color: '#A67F8E', fontSize: 14 }}>
+                  Все записи
+                </Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {[1, 2, 3].map((item) => (
-              <View
+              <TouchableOpacity
                 key={item}
+                onPress={() => {}}
                 style={{
-                  width: 200,
-                  height: 250,
-                  backgroundColor: '#F5C0C0',
+                  width: 280,
+                  height: 180,
+                  backgroundColor: '#F7E4E4',
                   borderRadius: 20,
                   marginRight: 15,
+                  padding: 15,
+                  overflow: 'hidden',
                 }}
-              />
+              >
+                <View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+                    <View style={{ 
+                      width: 40, 
+                      height: 40, 
+                      borderRadius: 20, 
+                      backgroundColor: '#F5C0C0',
+                      marginRight: 10,
+                    }} />
+                    <View>
+                      <Text style={{ color: '#6D4C4C', fontWeight: '600', fontSize: 14 }}>
+                        Анна Петрова
+                      </Text>
+                      <Text style={{ color: '#A67F8E', fontSize: 12 }}>
+                        2 часа назад
+                      </Text>
+                    </View>
+                  </View>
+                  <Text 
+                    style={{ 
+                      color: '#6D4C4C', 
+                      fontSize: 14, 
+                      lineHeight: 20,
+                    }}
+                    numberOfLines={4}
+                  >
+                    Друзья! В эту субботу в нашем районе проводится субботник. Приглашаем всех желающих присоединиться к уборке парка. Вместе мы сделаем наш район чище и уютнее! 🌿
+                  </Text>
+                  <View style={{ 
+                    flexDirection: 'row', 
+                    marginTop: 10,
+                    alignItems: 'center'
+                  }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginRight: 15 }}>
+                      <Ionicons name="heart-outline" size={16} color="#A67F8E" />
+                      <Text style={{ color: '#A67F8E', marginLeft: 4, fontSize: 12 }}>12</Text>
+                    </View>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Ionicons name="chatbubble-outline" size={16} color="#A67F8E" />
+                      <Text style={{ color: '#A67F8E', marginLeft: 4, fontSize: 12 }}>8</Text>
+                    </View>
+                  </View>
+                </View>
+              </TouchableOpacity>
             ))}
+          </ScrollView>
+        </View>
+
+        {/* Блок малого бизнеса */}
+        <View style={{ padding: 15, backgroundColor: 'white', marginTop: 10, marginBottom: 20 }}>
+          <View style={{ 
+            flexDirection: 'row', 
+            justifyContent: 'space-between', 
+            alignItems: 'center',
+            marginBottom: 15,
+          }}>
+            <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#6D4C4C' }}>
+              Топ-предложения
+            </Text>
+            <Link href="/business" asChild>
+              <TouchableOpacity>
+                <Text style={{ color: '#A67F8E', fontSize: 14 }}>
+                  Все предложения
+                </Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <TouchableOpacity
+              style={{
+                width: 200,
+                height: 250,
+                backgroundColor: '#F7E4E4',
+                borderRadius: 20,
+                marginRight: 15,
+                overflow: 'hidden',
+              }}
+            >
+              <Image
+                source={{ uri: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800' }}
+                style={{
+                  width: '100%',
+                  height: 160,
+                }}
+                resizeMode="cover"
+              />
+              <View style={{ padding: 12 }}>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: '#6D4C4C', marginBottom: 4 }}>
+                  Кафе "У Реки"
+                </Text>
+                <Text style={{ fontSize: 14, color: '#A67F8E', marginBottom: 8 }}>
+                  от 1 200 ₽ за обед
+                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Ionicons name="location-outline" size={14} color="#A67F8E" />
+                  <Text style={{ fontSize: 12, color: '#A67F8E', marginLeft: 4 }}>
+                    1.5 км от вас
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                width: 200,
+                height: 250,
+                backgroundColor: '#F7E4E4',
+                borderRadius: 20,
+                marginRight: 15,
+                overflow: 'hidden',
+              }}
+            >
+              <Image
+                source={{ uri: 'https://images.unsplash.com/photo-1556740738-b6a63e27c4df?w=800' }}
+                style={{
+                  width: '100%',
+                  height: 160,
+                }}
+                resizeMode="cover"
+              />
+              <View style={{ padding: 12 }}>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: '#6D4C4C', marginBottom: 4 }}>
+                  Фитнес "Энергия"
+                </Text>
+                <Text style={{ fontSize: 14, color: '#A67F8E', marginBottom: 8 }}>
+                  Скидка 20% на абонемент
+                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Ionicons name="location-outline" size={14} color="#A67F8E" />
+                  <Text style={{ fontSize: 12, color: '#A67F8E', marginLeft: 4 }}>
+                    2.3 км от вас
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                width: 200,
+                height: 250,
+                backgroundColor: '#F7E4E4',
+                borderRadius: 20,
+                marginRight: 15,
+                overflow: 'hidden',
+              }}
+            >
+              <Image
+                source={{ uri: 'https://images.unsplash.com/photo-1472851294608-062f824d29cc?w=800' }}
+                style={{
+                  width: '100%',
+                  height: 160,
+                }}
+                resizeMode="cover"
+              />
+              <View style={{ padding: 12 }}>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: '#6D4C4C', marginBottom: 4 }}>
+                  Салон "Красота"
+                </Text>
+                <Text style={{ fontSize: 14, color: '#A67F8E', marginBottom: 8 }}>
+                  Маникюр + педикюр 250₽
+                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Ionicons name="location-outline" size={14} color="#A67F8E" />
+                  <Text style={{ fontSize: 12, color: '#A67F8E', marginLeft: 4 }}>
+                    800 м от вас
+                  </Text>
+                </View>
+              </View>
+            </TouchableOpacity>
           </ScrollView>
         </View>
       </ScrollView>
