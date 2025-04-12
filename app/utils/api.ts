@@ -1,20 +1,29 @@
-import * as SecureStore from 'expo-secure-store';
-import { AuthTokens, ApiResponse, ApiError, AuthResponse, User } from './types/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthTokens, ApiResponse, ApiError, AuthResponse, User, Service, Event, Booking, EventRegistration, Category } from './types/api';
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
-const TOKEN_STORAGE_ACCESS_TOKEN = 'access_token';
-const TOKEN_STORAGE_REFRESH_TOKEN = 'refresh_token';
 
-class ApiService {
+if (!API_URL) {
+  console.error('API_URL is not defined in environment variables');
+  throw new Error('API_URL is not defined in environment variables');
+}
+
+const TOKEN_STORAGE_KEY = 'authTokens';
+
+export class ApiService {
   private static instance: ApiService;
+  private baseUrl: string;
   private tokens: AuthTokens | null = null;
   private refreshPromise: Promise<AuthTokens> | null = null;
 
-  private constructor() {}
+  private constructor(baseUrl: string) {
+    this.baseUrl = baseUrl;
+    this.loadTokens();
+  }
 
   static getInstance(): ApiService {
     if (!ApiService.instance) {
-      ApiService.instance = new ApiService();
+      ApiService.instance = new ApiService(API_URL);
     }
     return ApiService.instance;
   }
@@ -23,38 +32,32 @@ class ApiService {
     await this.loadTokens();
   }
 
-  private async loadTokens(): Promise<void> {
+  private async loadTokens() {
     try {
-      const accessToken = await SecureStore.getItemAsync(TOKEN_STORAGE_ACCESS_TOKEN);
-      const refreshToken = await SecureStore.getItemAsync(TOKEN_STORAGE_REFRESH_TOKEN);
-      if (accessToken && refreshToken) {
-        this.tokens = {
-          accessToken,
-          refreshToken,
-        };
+      const tokens = await AsyncStorage.getItem(TOKEN_STORAGE_KEY);
+      if (tokens) {
+        this.tokens = JSON.parse(tokens);
       }
     } catch (error) {
-      console.error('Error loading tokens:', error);
+      console.error('Ошибка при загрузке токенов:', error);
     }
   }
 
-  private async saveTokens(tokens: AuthTokens): Promise<void> {
+  private async saveTokens(tokens: AuthTokens) {
     try {
       this.tokens = tokens;
-      await SecureStore.setItemAsync(TOKEN_STORAGE_ACCESS_TOKEN, tokens.accessToken);
-      await SecureStore.setItemAsync(TOKEN_STORAGE_REFRESH_TOKEN, tokens.refreshToken);
+      await AsyncStorage.setItem(TOKEN_STORAGE_KEY, JSON.stringify(tokens));
     } catch (error) {
-      console.error('Error saving tokens:', error);
+      console.error('Ошибка при сохранении токенов:', error);
     }
   }
 
-  async clearTokens(): Promise<void> {
+  async clearTokens() {
     try {
       this.tokens = null;
-      await SecureStore.deleteItemAsync(TOKEN_STORAGE_ACCESS_TOKEN);
-      await SecureStore.deleteItemAsync(TOKEN_STORAGE_REFRESH_TOKEN);
+      await AsyncStorage.removeItem(TOKEN_STORAGE_KEY);
     } catch (error) {
-      console.error('Error clearing tokens:', error);
+      console.error('Ошибка при удалении токенов:', error);
     }
   }
 
@@ -64,7 +67,7 @@ class ApiService {
     }
 
     try {
-      const response = await fetch(`${API_URL}/api/auth/refresh-token`, {
+      const response = await fetch(`${this.baseUrl}/auth/refresh`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,7 +87,7 @@ class ApiService {
         refreshToken: data.refreshToken,
       };
 
-      await this.saveTokens(newTokens);
+      this.saveTokens(newTokens);
       return newTokens;
     } catch (error) {
       await this.clearTokens();
@@ -122,68 +125,95 @@ class ApiService {
 
   async request<T>(
     endpoint: string,
-    options: RequestInit = {},
-    withCredentials: boolean = true
+    options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
+    const headers = new Headers(options.headers);
+    
+    if (this.tokens?.accessToken) {
+      headers.append('Authorization', `Bearer ${this.tokens.accessToken}`);
+    }
+    
+    headers.append('Content-Type', 'application/json');
+
     try {
-      if (withCredentials) {
-        const tokens = await this.getValidTokens();
-        options.headers = {
-          ...options.headers,
-          Authorization: `Bearer ${tokens.accessToken}`,
-        };
-      }
-
-      const headers = {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      };
-
-      const response = await fetch(`${API_URL}${endpoint}`, {
+      const url = `${this.baseUrl}${endpoint}`;
+      console.log('API_URL:', API_URL);
+      console.log('Making request to:', url);
+      console.log('With headers:', Object.fromEntries(headers.entries()));
+      
+      const response = await fetch(url, {
         ...options,
         headers,
       });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Request failed');
+
+      const contentType = response.headers.get('content-type');
+      if (!contentType?.includes('application/json')) {
+        const text = await response.text();
+        console.error('Non-JSON response:', text);
+        return {
+          data: null,
+          ok: false,
+          status: response.status,
+          error: {
+            message: 'Сервер вернул некорректный ответ',
+            status: response.status,
+          },
+        };
       }
 
-      return { data, ok: response.ok, status: response.status };
-    } catch (error) {
-      const apiError: ApiError = {
-        message: error instanceof Error ? error.message : 'Unknown error occurred',
-        status: error instanceof Response ? error.status : undefined,
+      const data = await response.json();
+      console.log('Response data:', data);
+
+      if (!response.ok) {
+        return {
+          data: null,
+          ok: false,
+          status: response.status,
+          error: {
+            message: data.message || 'Произошла ошибка',
+            status: response.status,
+          },
+        };
+      }
+
+      return {
+        data,
+        ok: true,
+        status: response.status,
       };
-      return { data: null as T, ok: false, status: error instanceof Response ? error.status : undefined, error: apiError };
+    } catch (error) {
+      console.error('Request error:', error);
+      return {
+        data: null,
+        ok: false,
+        error: {
+          message: 'Ошибка сети',
+        },
+      };
     }
   }
 
-  // Auth endpoints
   async login(email: string, password: string): Promise<ApiResponse<AuthResponse>> {
     const response = await this.request<AuthResponse>('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify({ email, password }),
-    }, false);
+    });
 
-    await this.saveTokens(response.data);
+    if (response.ok && response.data?.tokens) {
+      await this.saveTokens(response.data.tokens);
+    }
 
     return response;
   }
 
-  async register(
-    name: string,
-    email: string,
-    password: string
-  ): Promise<ApiResponse<AuthResponse>> {
+  async register(name: string, email: string, password: string): Promise<ApiResponse<AuthResponse>> {
     const response = await this.request<AuthResponse>('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify({ name, email, password }),
-    }, false);
+    });
 
-    if (response.ok) {
-      await this.saveTokens(response.data);
+    if (response.ok && response.data?.tokens) {
+      await this.saveTokens(response.data.tokens);
     }
 
     return response;
@@ -194,24 +224,73 @@ class ApiService {
       method: 'POST',
     });
 
-    await this.clearTokens()
+    await this.clearTokens();
   }
 
-  // User endpoints
-  async getCurrentUser(): Promise<ApiResponse<User>> {
-    return this.request<User>('/api/auth/me');
+  async getProfile(): Promise<ApiResponse<User>> {
+    return this.request<User>('/api/profile');
   }
 
   async updateProfile(data: Partial<User>): Promise<ApiResponse<User>> {
-    const response = await this.request<User>('/api/auth/profile', {
-      method: 'PUT',
+    return this.request<User>('/api/profile', {
+      method: 'PATCH',
       body: JSON.stringify(data),
     });
-    return response;
   }
 
   async isAuthenticated(): Promise<boolean> {
     return (await this.request<boolean>('/api/protected')).ok;
+  }
+
+  async getServices(): Promise<ApiResponse<Service[]>> {
+    return this.request<Service[]>('/api/services');
+  }
+
+  async getServiceById(id: string): Promise<ApiResponse<Service>> {
+    return this.request<Service>(`/api/services/${id}`);
+  }
+
+  async getEvents(): Promise<ApiResponse<Event[]>> {
+    return this.request<Event[]>('/api/events');
+  }
+
+  async getEventById(id: string): Promise<ApiResponse<Event>> {
+    return this.request<Event>(`/api/events/${id}`);
+  }
+
+  async bookService(serviceId: string, date: string, time: string): Promise<ApiResponse<Booking>> {
+    return this.request<Booking>('/api/bookings', {
+      method: 'POST',
+      body: JSON.stringify({ serviceId, date, time }),
+    });
+  }
+
+  async registerForEvent(eventId: string): Promise<ApiResponse<EventRegistration>> {
+    return this.request<EventRegistration>('/api/events/register', {
+      method: 'POST',
+      body: JSON.stringify({ eventId }),
+    });
+  }
+
+  async uploadImage(file: File): Promise<ApiResponse<{ url: string }>> {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    return this.request<{ url: string }>('/api/upload', {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+  }
+
+  async getServiceCategories(): Promise<ApiResponse<Category[]>> {
+    return this.request<Category[]>('/api/categories/services');
+  }
+
+  async getEventCategories(): Promise<ApiResponse<Category[]>> {
+    return this.request<Category[]>('/api/categories/events');
   }
 }
 

@@ -2,33 +2,35 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
-  Alert,
-  Image,
 } from 'react-native';
 import { router } from 'expo-router';
-import { apiService } from '@/app/utils/api';
+import { AuthService } from '@/app/utils/auth';
+import { Input } from '@/app/components/ui/input';
+import { Button } from '@/app/components/ui/button';
 import Logo from '@/app/components/Logo';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
-    if (!email || !password) {
-      Alert.alert('Ошибка', 'Пожалуйста, заполните все поля');
-      return;
-    }
-
     try {
       setLoading(true);
-      await apiService.login(email, password);
-      router.replace('/(tabs)');
-    } catch (error) {
-      Alert.alert('Ошибка', 'Неверный email или пароль');
+      setError('');
+      const authService = AuthService.getInstance();
+      const response = await authService.login(email, password);
+      
+      if (response.ok) {
+        router.replace('/(tabs)');
+      } else {
+        setError(response.error?.message || 'Ошибка входа');
+      }
+    } catch (err) {
+      setError('Произошла ошибка при входе');
     } finally {
       setLoading(false);
     }
@@ -40,33 +42,29 @@ export default function LoginScreen() {
       <Text style={styles.title}>С возвращением</Text>
       <Text style={styles.subtitle}>Войдите, чтобы продолжить</Text>
 
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+
       <View style={styles.form}>
-        <TextInput
-          style={styles.input}
+        <Input
           placeholder="Email"
           value={email}
           onChangeText={setEmail}
-          autoCapitalize="none"
           keyboardType="email-address"
+          autoCapitalize="none"
         />
 
-        <TextInput
-          style={styles.input}
+        <Input
           placeholder="Пароль"
           value={password}
           onChangeText={setPassword}
           secureTextEntry
         />
 
-        <TouchableOpacity
-          style={[styles.button, loading && styles.buttonDisabled]}
+        <Button 
+          title="Войти" 
           onPress={handleLogin}
-          disabled={loading}
-        >
-          <Text style={styles.buttonText}>
-            {loading ? 'Вход...' : 'Войти'}
-          </Text>
-        </TouchableOpacity>
+          loading={loading}
+        />
 
         <TouchableOpacity
           style={styles.linkButton}
@@ -103,27 +101,10 @@ const styles = StyleSheet.create({
   form: {
     gap: 16,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    padding: 16,
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: '#007AFF',
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonDisabled: {
-    opacity: 0.7,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+  error: {
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
   },
   linkButton: {
     marginTop: 16,
