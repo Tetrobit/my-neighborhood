@@ -83,7 +83,7 @@ const MainScreen = () => {
           ))}
         </View>
 
-        {/* Сетка сервисов */}
+        {/* Сетка сервисов
         <View
           style={{
             flexDirection: 'row',
@@ -100,24 +100,100 @@ const MainScreen = () => {
               style={{
                 width: '25%',
                 alignItems: 'center',
-                marginBottom: 20,
+                marginBottom: 24,
+                paddingHorizontal: 8,
               }}
             >
               <View
                 style={{
-                  width: 60,
-                  height: 60,
+                  width: 72,
+                  height: 72,
                   backgroundColor: '#F7E4E4',
-                  borderRadius: 15,
+                  borderRadius: 20,
                   justifyContent: 'center',
                   alignItems: 'center',
+                  marginBottom: 6,
                 }}
               >
-                <Ionicons name={service.icon} size={30} color="#A67F8E" />
+                <Ionicons name={service.icon} size={36} color="#A67F8E" />
               </View>
-              <Text style={{ marginTop: 5, fontSize: 12, textAlign: 'center', color: '#6D4C4C' }}>
-                {service.name}
-              </Text>
+              <View style={{
+                height: 32,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+                <Text 
+                  style={{ 
+                    fontSize: 11,
+                    textAlign: 'center',
+                    color: '#6D4C4C',
+                    lineHeight: 13,
+                  }}
+                  numberOfLines={2}
+                >
+                  {service.name}
+                </Text>
+              </View>
+            </Link>
+          ))}
+        </View> */}
+
+        <View
+          style={{
+            flexDirection: 'row', // Оставляем гибкую компоновку для адаптивности
+            flexWrap: 'wrap',      // Элементы переносятся на следующую строку, если не помещаются
+            padding: 15,           // Внешний отступ
+            backgroundColor: 'white',
+            marginTop: 10,
+          }}
+        >
+          {services.map((service) => (
+            <Link
+              key={service.id}
+              href={service.route}
+              style={{
+                width: '25%',             // Ширина карточки
+                alignItems: 'center',      // Выравниваем контент по вертикали
+                marginBottom: 24,          // Отступ снизу между элементами
+                paddingHorizontal: 8,      // Горизонтальный внутренний отступ
+              }}
+            >
+              {/* Контейнер с иконкой */}
+              <View
+                style={{
+                  width: 72,               // Устанавливаем фиксированную ширину
+                  height: 72,              // Высота иконки
+                  backgroundColor: '#F7E4E4',
+                  borderRadius: 20,        // Скругление углов
+                  justifyContent: 'center',// Выравнивать иконку по центру
+                  alignItems: 'center',    // Выравнивать иконку по центру
+                  marginBottom: 10,         // Отступ между иконкой и текстом
+                }}
+              >
+                <Ionicons name={service.icon} size={36} color="#A67F8E" />
+              </View>
+              
+              {/* Контейнер с текстом */}
+              <View
+                style={{
+                  width: 72,                   // То же самое значение ширины, что и у иконки
+                  alignItems: 'center',        // Центрирование текста по горизонтали
+                  justifyContent: 'center',    // Центрирование текста по вертикали
+                }}
+              >
+                <Text 
+                  style={{ 
+                    fontSize: 12,
+                    textAlign: 'center',      // Центрирование текста
+                    color: '#6D4C4C',
+                    lineHeight: 13,
+                    marginTop: 10,
+                  }}
+                  numberOfLines={2}
+                >
+                  {service.name}
+                </Text>
+              </View>
             </Link>
           ))}
         </View>
