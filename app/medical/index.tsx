@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Linking, Platform } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { MedicalOrganization } from '@/app/utils/types/api';
-import { ChevronLeft, Phone, MapPin, Star } from 'lucide-react-native';
+import { Phone, MapPin, Star } from 'lucide-react-native';
 import { useState, useEffect } from 'react';
 import { MOCK_ORGANIZATIONS } from '@/app/utils/mock/medical';
 
@@ -41,87 +41,11 @@ export default function MedicalOrganizationsScreen() {
     }
   };
 
-  const renderOrganization = ({ item }: { item: MedicalOrganization }) => (
-    <TouchableOpacity
-      style={styles.card}
-      onPress={() => handleOrganizationPress(item)}
-    >
-      {item.photos && item.photos.length > 0 && (
-        <View style={styles.imageContainer}>
-          <Image source={{ uri: item.photos[0] }} style={styles.image} />
-          <View style={styles.imageOverlay}>
-            <View style={styles.ratingContainer}>
-              <Star size={16} color="#FFD700" fill="#FFD700" />
-              <Text style={styles.ratingText}>{item.rating}/5</Text>
-            </View>
-          </View>
-        </View>
-      )}
-      <View style={styles.content}>
-        <Text style={styles.title}>{item.name}</Text>
-        
-        <View style={styles.infoRow}>
-          <MapPin size={16} color="#666" />
-          <Text style={styles.address}>{item.address}</Text>
-        </View>
-
-        <View style={styles.infoRow}>
-          <Phone size={16} color="#666" />
-          <Text style={styles.phone}>{item.phone}</Text>
-        </View>
-
-        <View style={styles.statsContainer}>
-          <View style={styles.stat}>
-            <Text style={styles.statValue}>{item.doctors.length}</Text>
-            <Text style={styles.statLabel}>Врачей</Text>
-          </View>
-          <View style={styles.statDivider} />
-          <View style={styles.stat}>
-            <Text style={styles.statValue}>
-              {item.workingHours.find(h => h.day === 'Понедельник')?.start} - {item.workingHours.find(h => h.day === 'Понедельник')?.end}
-            </Text>
-            <Text style={styles.statLabel}>Часы работы</Text>
-          </View>
-        </View>
-
-        <Text numberOfLines={2} style={styles.description}>
-          {item.description}
-        </Text>
-        
-        <View style={styles.buttonsContainer}>
-          <TouchableOpacity 
-            style={[styles.button, styles.callButton]} 
-            onPress={() => handleCallPress(item.phone)}
-          >
-            <Phone size={16} color="#fff" />
-            <Text style={styles.buttonText}>Записаться</Text>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={[styles.button, styles.mapButton]}
-            onPress={() => handleMapPress(item)}
-          >
-            <MapPin size={16} color="#fff" />
-            <Text style={styles.buttonText}>На карте</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
-
   return (
     <>
       <Stack.Screen 
         options={{
           title: 'Медицинские организации',
-          headerLeft: () => (
-            <TouchableOpacity 
-              onPress={() => router.back()}
-              style={styles.backButton}
-            >
-              <ChevronLeft size={24} color="#000" />
-            </TouchableOpacity>
-          ),
         }} 
       />
       <View style={styles.container}>
@@ -132,7 +56,73 @@ export default function MedicalOrganizationsScreen() {
         ) : (
           <FlatList
             data={organizations}
-            renderItem={renderOrganization}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={styles.card}
+                onPress={() => handleOrganizationPress(item)}
+              >
+                {item.photos && item.photos.length > 0 && (
+                  <View style={styles.imageContainer}>
+                    <Image source={{ uri: item.photos[0] }} style={styles.image} />
+                    <View style={styles.imageOverlay}>
+                      <View style={styles.ratingContainer}>
+                        <Star size={16} color="#FFD700" fill="#FFD700" />
+                        <Text style={styles.ratingText}>{item.rating}/5</Text>
+                      </View>
+                    </View>
+                  </View>
+                )}
+                <View style={styles.content}>
+                  <Text style={styles.title}>{item.name}</Text>
+                  
+                  <View style={styles.infoRow}>
+                    <MapPin size={16} color="#666" />
+                    <Text style={styles.address}>{item.address}</Text>
+                  </View>
+
+                  <View style={styles.infoRow}>
+                    <Phone size={16} color="#666" />
+                    <Text style={styles.phone}>{item.phone}</Text>
+                  </View>
+
+                  <View style={styles.statsContainer}>
+                    <View style={styles.stat}>
+                      <Text style={styles.statValue}>{item.doctors.length}</Text>
+                      <Text style={styles.statLabel}>Врачей</Text>
+                    </View>
+                    <View style={styles.statDivider} />
+                    <View style={styles.stat}>
+                      <Text style={styles.statValue}>
+                        {item.workingHours.find(h => h.day === 'Понедельник')?.start} - {item.workingHours.find(h => h.day === 'Понедельник')?.end}
+                      </Text>
+                      <Text style={styles.statLabel}>Часы работы</Text>
+                    </View>
+                  </View>
+
+                  <Text numberOfLines={2} style={styles.description}>
+                    {item.description}
+                  </Text>
+                  
+                  <View style={styles.buttonsContainer}>
+                    <TouchableOpacity 
+                      style={[styles.button, styles.callButton]} 
+                      onPress={() => handleCallPress(item.phone)}
+                    >
+                      <Phone size={16} color="#fff" />
+                      <Text style={styles.buttonText}>Записаться</Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity 
+                      style={[styles.button, styles.mapButton]}
+                      onPress={() => handleMapPress(item)}
+                    >
+                      <MapPin size={16} color="#fff" />
+                      <Text style={styles.buttonText}>На карте</Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            )}
             keyExtractor={(item) => item.id}
             contentContainerStyle={styles.list}
             refreshing={loading}
@@ -282,8 +272,5 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 14,
     fontWeight: '600',
-  },
-  backButton: {
-    marginLeft: 8,
   },
 }); 

@@ -81,14 +81,6 @@ export default function OrganizationDetailsScreen() {
       <Stack.Screen 
         options={{
           title: organization.name,
-          headerLeft: () => (
-            <TouchableOpacity 
-              onPress={() => router.back()}
-              style={styles.backButton}
-            >
-              <ChevronLeft size={24} color="#000" />
-            </TouchableOpacity>
-          ),
         }} 
       />
       <ScrollView style={styles.container}>
