@@ -44,6 +44,28 @@ export interface SportSection {
   level: string;
   minAge: number;
 }
+export interface OrganizationInfo {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+}
+
+export interface Doctor {
+  id: string;
+  name: string;
+  specialization: string;
+  price: number;
+  experience: number;
+  rating: number;
+  photo?: string;
+  description?: string;
+  schedule: Array<{
+    day: string;
+    time: string[];
+  }>;
+  organization?: OrganizationInfo | MedicalOrganization;
+}
 
 export interface SportOrganization {
   id: string;
@@ -62,3 +84,21 @@ export interface SportOrganization {
   description: string;
   photos: string[];
 } 
+
+export interface MedicalOrganization {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  latitude: number;
+  longitude: number;
+  rating: number;
+  workingHours: Array<{
+    day: string;
+    start: string;
+    end: string;
+  }>;
+  doctors: Doctor[];
+  description?: string;
+  photos?: string[];
+}
