@@ -28,6 +28,22 @@ export interface ApiResponse<T> {
   error?: ApiError;
 }
 
+export interface SportSection {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  schedule: Array<{
+    day: string;
+    time: string[];
+  }>;
+  image: string;
+  address: string;
+  phone: string;
+  trainer: string;
+  level: string;
+  minAge: number;
+}
 export interface OrganizationInfo {
   id: string;
   name: string;
@@ -51,6 +67,24 @@ export interface Doctor {
   organization?: OrganizationInfo | MedicalOrganization;
 }
 
+export interface SportOrganization {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  latitude: number;
+  longitude: number;
+  rating: number;
+  workingHours: Array<{
+    day: string;
+    start: string;
+    end: string;
+  }>;
+  sections: SportSection[];
+  description: string;
+  photos: string[];
+} 
+
 export interface MedicalOrganization {
   id: string;
   name: string;
@@ -67,4 +101,4 @@ export interface MedicalOrganization {
   doctors: Doctor[];
   description?: string;
   photos?: string[];
-} 
+}
