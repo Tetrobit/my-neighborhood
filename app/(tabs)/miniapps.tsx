@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, StyleSheet, Pressable, Animated } from 'react-native';
 import { Href, Link } from 'expo-router';
-import { Store, Recycle, MapPin, LucideIcon, ChevronRight, Wheat, Gift, Wrench, Briefcase, Calendar, ClipboardList } from 'lucide-react-native';
+import { Store, Recycle, MapPin, LucideIcon, ChevronRight, Wheat, Gift, Wrench, Briefcase, Calendar, ClipboardList, Stethoscope } from 'lucide-react-native';
 import { useEffect, useRef } from 'react';
 
 export default function MiniAppsScreen() {
@@ -15,6 +15,12 @@ export default function MiniAppsScreen() {
   }, []);
 
   const miniApps: Array<{icon: LucideIcon, title: string, description: string, href: Href}> = [
+    { 
+      icon: Stethoscope, 
+      title: 'Медицинские организации', 
+      description: 'Клиники, больницы и медицинские центры',
+      href: '/medical' 
+    },
     { 
       icon: Store, 
       title: 'Бизнесы', 
