@@ -27,7 +27,7 @@ export default function RegisterScreen() {
       setLoading(true);
       const response = await apiService.register(name, email, password);
       if (response.ok) {
-        router.replace('/(tabs)');
+        router.replace('/(auth)/additional-info');
       } else {
         Alert.alert('Ошибка', 'Ошибка регистрации. Пожалуйста, попробуйте снова.');
       }
