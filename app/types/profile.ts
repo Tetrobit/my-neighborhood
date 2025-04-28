@@ -16,6 +16,7 @@ export interface BaseProfile {
 export interface PersonProfile extends BaseProfile {
   type: 'person';
   email: string;
+  age?: number;
   interests?: string[];
   profession?: string;
   achievements?: string[];

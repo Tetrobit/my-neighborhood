@@ -9,6 +9,8 @@ export interface User {
   name: string;
   phone: string;
   profileImage?: string;
+  age?: number;
+  interests?: string[];
 }
 
 export interface AuthResponse extends AuthTokens {

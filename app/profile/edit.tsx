@@ -16,10 +16,27 @@ import { apiService } from '@/app/utils/api';
 import { User } from '@/app/utils/types/api';
 import { ArrowLeft, Store } from 'lucide-react-native';
 
+const INTERESTS = [
+  'Спорт',
+  'Дача',
+  'Искусство',
+  'Музыка',
+  'Кино',
+  'Кулинария',
+  'Путешествия',
+  'Фотография',
+  'Рукоделие',
+  'Садоводство',
+  'Чтение',
+  'Технологии',
+];
+
 export default function EditProfileScreen() {
   const [profile, setProfile] = useState<User | null>(null);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [age, setAge] = useState('');
+  const [interests, setInterests] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -42,6 +59,8 @@ export default function EditProfileScreen() {
       setProfile(response.data);
       setName(response.data.name);
       setPhone(response.data.phone);
+      setAge(response.data.age?.toString() || '');
+      setInterests(response.data.interests || []);
     } catch (error) {
       Alert.alert('Ошибка', 'Не удалось загрузить профиль');
     } finally {
@@ -60,6 +79,8 @@ export default function EditProfileScreen() {
       const response = await apiService.updateProfile({
         name: name?.trim(),
         phone: phone?.trim(),
+        age: age ? parseInt(age) : undefined,
+        interests: interests,
       });
 
       if (response.error) {
@@ -136,6 +157,50 @@ export default function EditProfileScreen() {
                 keyboardType="phone-pad"
                 placeholderTextColor="#94a3b8"
               />
+            </View>
+
+            <View style={styles.field}>
+              <Text style={styles.label}>Возраст</Text>
+              <TextInput
+                style={styles.input}
+                value={age}
+                onChangeText={setAge}
+                placeholder="Введите ваш возраст"
+                keyboardType="numeric"
+                maxLength={2}
+                placeholderTextColor="#94a3b8"
+              />
+            </View>
+
+            <View style={styles.field}>
+              <Text style={styles.label}>Увлечения</Text>
+              <View style={styles.interestsContainer}>
+                {INTERESTS.map(interest => (
+                  <TouchableOpacity
+                    key={interest}
+                    style={[
+                      styles.interestButton,
+                      interests.includes(interest) && styles.interestButtonSelected,
+                    ]}
+                    onPress={() => {
+                      setInterests(prev =>
+                        prev.includes(interest)
+                          ? prev.filter(i => i !== interest)
+                          : [...prev, interest]
+                      );
+                    }}
+                  >
+                    <Text
+                      style={[
+                        styles.interestText,
+                        interests.includes(interest) && styles.interestTextSelected,
+                      ]}
+                    >
+                      {interest}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
 
             <TouchableOpacity
@@ -258,5 +323,29 @@ const styles = StyleSheet.create({
   },
   farmIcon: {
     marginRight: 8,
+  },
+  interestsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  interestButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#f1f5f9',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  interestButtonSelected: {
+    backgroundColor: '#0891b2',
+    borderColor: '#0891b2',
+  },
+  interestText: {
+    color: '#0f172a',
+    fontSize: 14,
+  },
+  interestTextSelected: {
+    color: '#ffffff',
   },
 }); 
