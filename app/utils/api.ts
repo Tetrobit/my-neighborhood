@@ -199,19 +199,35 @@ class ApiService {
 
   // User endpoints
   async getCurrentUser(): Promise<ApiResponse<User>> {
-    return this.request<User>('/api/auth/me');
+    return ({
+      data: {
+        id: '1',
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        profileImage: 'https://example.com/avatar.png',
+        phone: '+79999999999',
+      },
+      ok: true,
+      status: 200,
+    })
   }
 
   async updateProfile(data: Partial<User>): Promise<ApiResponse<User>> {
-    const response = await this.request<User>('/api/auth/profile', {
-      method: 'PUT',
-      body: JSON.stringify(data),
+    return ({
+      data: {
+        id: '1',
+        name: 'John Doe',
+        email: 'john.doe@example.com',
+        profileImage: 'https://example.com/avatar.png',
+        phone: '+79999999999',
+      },
+      ok: true,
+      status: 200,
     });
-    return response;
   }
 
   async isAuthenticated(): Promise<boolean> {
-    return (await this.request<boolean>('/api/protected')).ok;
+    return true;
   }
 }
 
