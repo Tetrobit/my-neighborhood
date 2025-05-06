@@ -33,6 +33,7 @@ import {
   SprayCan,
   Phone,
   Map,
+  ChevronRight,
 } from 'lucide-react-native';
 import { SMALL_BUSINESSES, SMALL_BUSINESS_CATEGORIES, DEFAULT_IMAGE, getValidImageUrl } from '../data/businesses';
 
@@ -89,6 +90,8 @@ export default function SmallBusinessScreen() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [filteredBusinesses, setFilteredBusinesses] = useState(SMALL_BUSINESSES);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [filter, setFilter] = useState<'nearby' | 'district'>('nearby');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -161,6 +164,12 @@ export default function SmallBusinessScreen() {
     }
   };
 
+  // Фильтрация по району
+  const displayedBusinesses = filter === 'nearby'
+    ? filteredBusinesses
+    : filteredBusinesses.slice(0, 5);
+  const filterLabel = filter === 'nearby' ? 'Ближайшие 3 км' : 'Вахитовский район';
+
   // Обновленная функция рендеринга карточки с кнопками
   const renderBusinessCard = ({ item }: { item: Business }) => (
     <View style={styles.businessCardWrapper}>
@@ -194,6 +203,30 @@ export default function SmallBusinessScreen() {
           <ChevronLeft size={24} color="#0f172a" />
         </Pressable>
         <Text style={styles.headerTitle}>Малый бизнес</Text>
+      </View>
+
+      {/* Фильтр выбора района */}
+      <View style={{marginTop: 8, minHeight: 24, marginLeft: 16}}>
+        <Pressable onPress={() => setDropdownOpen(open => !open)} style={styles.dropdownLabelRow}>
+          <Text style={styles.dropdownLabel}>{filterLabel}</Text>
+          <ChevronRight size={16} color="#94a3b8" style={{transform: [{rotate: dropdownOpen ? '90deg' : '0deg'}]}} />
+        </Pressable>
+        {dropdownOpen && (
+          <View style={styles.dropdownMenu}>
+            <Pressable
+              style={[styles.dropdownItem, filter === 'nearby' && styles.dropdownItemActive]}
+              onPress={() => { setFilter('nearby'); setDropdownOpen(false); }}
+            >
+              <Text style={[styles.dropdownItemText, filter === 'nearby' && styles.dropdownItemTextActive]}>Ближайшие 3 км</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.dropdownItem, filter === 'district' && styles.dropdownItemActive]}
+              onPress={() => { setFilter('district'); setDropdownOpen(false); }}
+            >
+              <Text style={[styles.dropdownItemText, filter === 'district' && styles.dropdownItemTextActive]}>Вахитовский район</Text>
+            </Pressable>
+          </View>
+        )}
       </View>
 
       <View style={styles.content}>
@@ -253,7 +286,7 @@ export default function SmallBusinessScreen() {
         </View>
 
         <FlatList
-          data={filteredBusinesses}
+          data={displayedBusinesses}
           renderItem={renderBusinessCard}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.businessesContainer}
@@ -485,5 +518,55 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#ffffff',
     marginLeft: 6,
+  },
+  dropdownLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    borderRadius: 0,
+    backgroundColor: 'transparent',
+    marginTop: 0,
+    gap: 4,
+    minHeight: 24,
+  },
+  dropdownLabel: {
+    color: '#94a3b8',
+    fontWeight: '400',
+    fontSize: 15,
+  },
+  dropdownMenu: {
+    position: 'absolute',
+    top: 24,
+    left: 0,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginTop: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 4,
+    alignSelf: 'flex-start',
+    minWidth: 160,
+    zIndex: 100,
+  },
+  dropdownItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  dropdownItemActive: {
+    backgroundColor: '#e0f2fe',
+  },
+  dropdownItemText: {
+    color: '#0f172a',
+    fontSize: 15,
+  },
+  dropdownItemTextActive: {
+    color: '#0891b2',
+    fontWeight: '600',
   },
 }); 

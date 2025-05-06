@@ -10,6 +10,8 @@ export default function HomeScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const router = useRouter();
   const [posts, setPosts] = useState<PostType[]>(POSTS);
+  const [filter, setFilter] = useState<'nearby' | 'district'>('nearby');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   
   useEffect(() => {
     // Animated.timing(fadeAnim, {
@@ -91,12 +93,43 @@ export default function HomeScreen() {
     },
   ];
 
+  // Фильтрация постов для Вахитовского района (пример: только организации, сортировка по лайкам)
+  const districtPosts = posts
+    .filter(post => post.author.type === 'organization')
+    .sort((a, b) => b.likes - a.likes);
+
+  // Текст для выбранного фильтра
+  const filterLabel = filter === 'nearby' ? 'Ближайшие 3 км' : 'Вахитовский район';
+
   return (
     <View style={[styles.container]}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.headerTitle}>Мой район</Text>
           <Text style={styles.headerSubtitle}>Будьте в курсе событий</Text>
+          {/* Dropdown под подзаголовком */}
+          <View style={{marginTop: 4, minHeight: 24}}>
+            <Pressable onPress={() => setDropdownOpen(open => !open)} style={styles.dropdownLabelRow}>
+              <Text style={styles.dropdownLabel}>{filterLabel}</Text>
+              <ChevronRight size={16} color="#94a3b8" style={{transform: [{rotate: dropdownOpen ? '90deg' : '0deg'}]}} />
+            </Pressable>
+            {dropdownOpen && (
+              <View style={styles.dropdownMenu}>
+                <Pressable
+                  style={[styles.dropdownItem, filter === 'nearby' && styles.dropdownItemActive]}
+                  onPress={() => { setFilter('nearby'); setDropdownOpen(false); }}
+                >
+                  <Text style={[styles.dropdownItemText, filter === 'nearby' && styles.dropdownItemTextActive]}>Ближайшие 3 км</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.dropdownItem, filter === 'district' && styles.dropdownItemActive]}
+                  onPress={() => { setFilter('district'); setDropdownOpen(false); }}
+                >
+                  <Text style={[styles.dropdownItemText, filter === 'district' && styles.dropdownItemTextActive]}>Вахитовский район</Text>
+                </Pressable>
+              </View>
+            )}
+          </View>
         </View>
         <View style={styles.headerIcons}>
           <Link href="/notifications" asChild>
@@ -155,7 +188,7 @@ export default function HomeScreen() {
               <ChevronRight size={16} color="#0891b2" />
             </Pressable>
           </View>
-          {posts.map(post => (
+          {(filter === 'nearby' ? posts : districtPosts).map(post => (
             <Post
               key={post.id}
               post={post}
@@ -164,6 +197,9 @@ export default function HomeScreen() {
               onShare={handleShare}
             />
           ))}
+          {filter === 'district' && districtPosts.length === 0 && (
+            <Text style={{textAlign: 'center', color: '#64748b', marginTop: 16}}>Постов от организаций пока нет</Text>
+          )}
         </View>
       </ScrollView>
     </View>
@@ -294,5 +330,55 @@ const styles = StyleSheet.create({
     height: 8,
     borderRadius: 4,
     backgroundColor: '#0891b2',
+  },
+  dropdownLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    borderRadius: 0,
+    backgroundColor: 'transparent',
+    marginTop: 0,
+    gap: 4,
+    minHeight: 24,
+  },
+  dropdownLabel: {
+    color: '#94a3b8',
+    fontWeight: '400',
+    fontSize: 15,
+  },
+  dropdownMenu: {
+    position: 'absolute',
+    top: 24,
+    left: 0,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginTop: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 4,
+    alignSelf: 'flex-start',
+    minWidth: 160,
+    zIndex: 100,
+  },
+  dropdownItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  dropdownItemActive: {
+    backgroundColor: '#e0f2fe',
+  },
+  dropdownItemText: {
+    color: '#0f172a',
+    fontSize: 15,
+  },
+  dropdownItemTextActive: {
+    color: '#0891b2',
+    fontWeight: '600',
   },
 });
