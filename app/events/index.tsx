@@ -36,6 +36,7 @@ import {
   Baby,
   Ellipsis,
   Clock,
+  ChevronRight,
 } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -119,6 +120,8 @@ export default function EventsScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [createSuccess, setCreateSuccess] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [filter, setFilter] = useState<'nearby' | 'district'>('nearby');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   
   // Состояние для формы создания мероприятия
   const [newEvent, setNewEvent] = useState({
@@ -276,6 +279,12 @@ export default function EventsScreen() {
     }
   };
 
+  // Фильтрация по району
+  const displayedEvents = filter === 'nearby'
+    ? filteredEvents
+    : filteredEvents.slice(0, 5);
+  const filterLabel = filter === 'nearby' ? 'Ближайшие 3 км' : 'Вахитовский район';
+
   // Рендер карточки мероприятия с кнопками
   const renderEventCard = ({ item }: { item: Event }) => (
     <View style={styles.eventCardWrapper}>
@@ -322,6 +331,30 @@ export default function EventsScreen() {
         >
           <Plus size={24} color="#0f172a" />
         </Pressable>
+      </View>
+
+      {/* Фильтр выбора района */}
+      <View style={{marginTop: 8, minHeight: 24, marginLeft: 16}}>
+        <Pressable onPress={() => setDropdownOpen(open => !open)} style={styles.dropdownLabelRow}>
+          <Text style={styles.dropdownLabel}>{filterLabel}</Text>
+          <ChevronRight size={16} color="#94a3b8" style={{transform: [{rotate: dropdownOpen ? '90deg' : '0deg'}]}} />
+        </Pressable>
+        {dropdownOpen && (
+          <View style={styles.dropdownMenu}>
+            <Pressable
+              style={[styles.dropdownItem, filter === 'nearby' && styles.dropdownItemActive]}
+              onPress={() => { setFilter('nearby'); setDropdownOpen(false); }}
+            >
+              <Text style={[styles.dropdownItemText, filter === 'nearby' && styles.dropdownItemTextActive]}>Ближайшие 3 км</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.dropdownItem, filter === 'district' && styles.dropdownItemActive]}
+              onPress={() => { setFilter('district'); setDropdownOpen(false); }}
+            >
+              <Text style={[styles.dropdownItemText, filter === 'district' && styles.dropdownItemTextActive]}>Вахитовский район</Text>
+            </Pressable>
+          </View>
+        )}
       </View>
 
       <View style={styles.content}>
@@ -381,10 +414,10 @@ export default function EventsScreen() {
         </View>
 
         <FlatList
-          data={filteredEvents}
+          data={displayedEvents}
           renderItem={renderEventCard}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={styles.eventsContainer}
+          contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
           initialNumToRender={5}
           maxToRenderPerBatch={10}
@@ -658,7 +691,7 @@ const styles = StyleSheet.create({
   listFooterSpacer: {
     height: 20,
   },
-  eventsContainer: {
+  list: {
     paddingHorizontal: 16,
   },
   eventCardWrapper: {
@@ -938,5 +971,55 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '500',
+  },
+  dropdownLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    borderRadius: 0,
+    backgroundColor: 'transparent',
+    marginTop: 0,
+    gap: 4,
+    minHeight: 24,
+  },
+  dropdownLabel: {
+    color: '#94a3b8',
+    fontWeight: '400',
+    fontSize: 15,
+  },
+  dropdownMenu: {
+    position: 'absolute',
+    top: 24,
+    left: 0,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginTop: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 4,
+    alignSelf: 'flex-start',
+    minWidth: 160,
+    zIndex: 100,
+  },
+  dropdownItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  dropdownItemActive: {
+    backgroundColor: '#e0f2fe',
+  },
+  dropdownItemText: {
+    color: '#0f172a',
+    fontSize: 15,
+  },
+  dropdownItemTextActive: {
+    color: '#0891b2',
+    fontWeight: '600',
   },
 }); 

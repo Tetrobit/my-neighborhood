@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Linking, Platform } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, Linking, Platform, Pressable } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { SportOrganization } from '@/app/utils/types/api';
-import { Phone, MapPin, Star } from 'lucide-react-native';
+import { Phone, MapPin, Star, ChevronRight } from 'lucide-react-native';
 import { useState, useEffect } from 'react';
 import { MOCK_SPORT_ORGANIZATIONS } from '@/app/utils/mock/sports';
 
@@ -10,6 +10,8 @@ export default function SportOrganizationsScreen() {
   const router = useRouter();
   const [organizations, setOrganizations] = useState<SportOrganization[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<'nearby' | 'district'>('nearby');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     // Имитация загрузки данных
@@ -18,6 +20,12 @@ export default function SportOrganizationsScreen() {
       setLoading(false);
     }, 1000);
   }, []);
+
+  // Фильтрация по району
+  const filteredOrganizations = filter === 'nearby'
+    ? organizations
+    : organizations.slice(0, 5);
+  const filterLabel = filter === 'nearby' ? 'Ближайшие 3 км' : 'Вахитовский район';
 
   const handleOrganizationPress = (organization: SportOrganization) => {
     router.push(`/sports/organization/${organization.id}`);
@@ -49,13 +57,36 @@ export default function SportOrganizationsScreen() {
         }} 
       />
       <View style={styles.container}>
+        {/* Фильтр выбора района */}
+        <View style={{marginTop: 8, minHeight: 24, marginLeft: 16}}>
+          <Pressable onPress={() => setDropdownOpen(open => !open)} style={styles.dropdownLabelRow}>
+            <Text style={styles.dropdownLabel}>{filterLabel}</Text>
+            <ChevronRight size={16} color="#94a3b8" style={{transform: [{rotate: dropdownOpen ? '90deg' : '0deg'}]}} />
+          </Pressable>
+          {dropdownOpen && (
+            <View style={styles.dropdownMenu}>
+              <Pressable
+                style={[styles.dropdownItem, filter === 'nearby' && styles.dropdownItemActive]}
+                onPress={() => { setFilter('nearby'); setDropdownOpen(false); }}
+              >
+                <Text style={[styles.dropdownItemText, filter === 'nearby' && styles.dropdownItemTextActive]}>Ближайшие 3 км</Text>
+              </Pressable>
+              <Pressable
+                style={[styles.dropdownItem, filter === 'district' && styles.dropdownItemActive]}
+                onPress={() => { setFilter('district'); setDropdownOpen(false); }}
+              >
+                <Text style={[styles.dropdownItemText, filter === 'district' && styles.dropdownItemTextActive]}>Вахитовский район</Text>
+              </Pressable>
+            </View>
+          )}
+        </View>
         {loading ? (
           <View style={styles.centerContainer}>
             <Text>Загрузка...</Text>
           </View>
         ) : (
           <FlatList
-            data={organizations}
+            data={filteredOrganizations}
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={styles.card}
@@ -271,6 +302,56 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontSize: 14,
+    fontWeight: '600',
+  },
+  dropdownLabelRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    borderRadius: 0,
+    backgroundColor: 'transparent',
+    marginTop: 0,
+    gap: 4,
+    minHeight: 24,
+  },
+  dropdownLabel: {
+    color: '#94a3b8',
+    fontWeight: '400',
+    fontSize: 15,
+  },
+  dropdownMenu: {
+    position: 'absolute',
+    top: 24,
+    left: 0,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    marginTop: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 4,
+    alignSelf: 'flex-start',
+    minWidth: 160,
+    zIndex: 100,
+  },
+  dropdownItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  dropdownItemActive: {
+    backgroundColor: '#e0f2fe',
+  },
+  dropdownItemText: {
+    color: '#0f172a',
+    fontSize: 15,
+  },
+  dropdownItemTextActive: {
+    color: '#0891b2',
     fontWeight: '600',
   },
 }); 
