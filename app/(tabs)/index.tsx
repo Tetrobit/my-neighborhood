@@ -108,10 +108,10 @@ export default function HomeScreen() {
           <Text style={styles.headerTitle}>Мой район</Text>
           <Text style={styles.headerSubtitle}>Будьте в курсе событий</Text>
           {/* Dropdown под подзаголовком */}
-          <View style={{marginTop: 4}}>
+          <View style={{marginTop: 4, minHeight: 24}}>
             <Pressable onPress={() => setDropdownOpen(open => !open)} style={styles.dropdownLabelRow}>
               <Text style={styles.dropdownLabel}>{filterLabel}</Text>
-              <ChevronRight size={16} color="#0891b2" style={{transform: [{rotate: dropdownOpen ? '90deg' : '0deg'}]}} />
+              <ChevronRight size={16} color="#94a3b8" style={{transform: [{rotate: dropdownOpen ? '90deg' : '0deg'}]}} />
             </Pressable>
             {dropdownOpen && (
               <View style={styles.dropdownMenu}>
@@ -335,22 +335,26 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     alignSelf: 'flex-start',
-    paddingVertical: 4,
-    paddingHorizontal: 10,
-    borderRadius: 12,
-    backgroundColor: '#e0f2fe',
-    marginTop: 2,
+    paddingVertical: 0,
+    paddingHorizontal: 0,
+    borderRadius: 0,
+    backgroundColor: 'transparent',
+    marginTop: 0,
     gap: 4,
+    minHeight: 24,
   },
   dropdownLabel: {
-    color: '#0891b2',
-    fontWeight: '600',
+    color: '#94a3b8',
+    fontWeight: '400',
     fontSize: 15,
   },
   dropdownMenu: {
+    position: 'absolute',
+    top: 24,
+    left: 0,
     backgroundColor: '#fff',
     borderRadius: 12,
-    marginTop: 4,
+    marginTop: 0,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
@@ -358,7 +362,7 @@ const styles = StyleSheet.create({
     elevation: 4,
     alignSelf: 'flex-start',
     minWidth: 160,
-    zIndex: 10,
+    zIndex: 100,
   },
   dropdownItem: {
     paddingVertical: 10,
