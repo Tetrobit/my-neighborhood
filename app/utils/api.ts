@@ -5,6 +5,17 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL;
 const TOKEN_STORAGE_ACCESS_TOKEN = 'access_token';
 const TOKEN_STORAGE_REFRESH_TOKEN = 'refresh_token';
 
+// Вынесем mockUser в начало файла
+let mockUser = {
+  id: '1',
+  name: 'John Doe',
+  email: 'john.doe@example.com',
+  profileImage: 'https://example.com/avatar.png',
+  phone: '+79999999999',
+  age: 37,
+  interests: ['Спорт', 'Дача'],
+};
+
 class ApiService {
   private static instance: ApiService;
   private tokens: AuthTokens | null = null;
@@ -199,19 +210,24 @@ class ApiService {
 
   // User endpoints
   async getCurrentUser(): Promise<ApiResponse<User>> {
-    return this.request<User>('/api/auth/me');
+    return {
+      data: mockUser,
+      ok: true,
+      status: 200,
+    };
   }
 
   async updateProfile(data: Partial<User>): Promise<ApiResponse<User>> {
-    const response = await this.request<User>('/api/auth/profile', {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-    return response;
+    mockUser = { ...mockUser, ...data };
+    return {
+      data: mockUser,
+      ok: true,
+      status: 200,
+    };
   }
 
   async isAuthenticated(): Promise<boolean> {
-    return (await this.request<boolean>('/api/protected')).ok;
+    return true;
   }
 }
 
