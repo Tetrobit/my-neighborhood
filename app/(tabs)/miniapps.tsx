@@ -82,6 +82,11 @@ export default function MiniAppsScreen() {
     }
   ];
   
+  // Группируем сервисы
+  const mainServicesTitles = ['Спортивные секции', 'Медицинские организации', 'Местные службы'];
+  const mainServices = miniApps.filter(app => mainServicesTitles.includes(app.title));
+  const otherServices = miniApps.filter(app => !mainServicesTitles.includes(app.title));
+
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.header}>
@@ -93,10 +98,28 @@ export default function MiniAppsScreen() {
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.miniAppsSection}>
-          <Text style={styles.sectionTitle}>Все приложения</Text>
+          <Text style={styles.sectionTitle}>Может понадобиться:</Text>
           <View style={styles.miniAppsGrid}>
-            {miniApps.map((app, index) => (
-              <Link key={index} href={app.href} asChild>
+            {mainServices.map((app, index) => (
+              <Link key={app.title} href={app.href} asChild>
+                <Pressable style={styles.miniAppButton}>
+                  <View style={styles.miniAppIcon}>
+                    <app.icon size={24} color="#0891b2" />
+                  </View>
+                  <View style={styles.miniAppContent}>
+                    <Text style={styles.miniAppTitle}>{app.title}</Text>
+                    <Text style={styles.miniAppDescription}>{app.description}</Text>
+                  </View>
+                  <ChevronRight size={20} color="#94a3b8" />
+                </Pressable>
+              </Link>
+            ))}
+          </View>
+
+          <Text style={[styles.sectionTitle, {marginTop: 32}]}>Все сервисы:</Text>
+          <View style={styles.miniAppsGrid}>
+            {otherServices.map((app, index) => (
+              <Link key={app.title} href={app.href} asChild>
                 <Pressable style={styles.miniAppButton}>
                   <View style={styles.miniAppIcon}>
                     <app.icon size={24} color="#0891b2" />
