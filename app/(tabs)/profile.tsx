@@ -10,8 +10,10 @@ import {
   Animated,
   ScrollView,
   SafeAreaView,
+  Pressable,
+  Linking,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { apiService } from '../utils/api';
 import { Settings, LogOut, ChevronRight } from 'lucide-react-native';
 
@@ -20,6 +22,7 @@ interface UserProfile {
   name: string;
   email: string;
   avatar?: string;
+  interests?: string[];
 }
 
 export default function ProfileScreen() {
@@ -35,6 +38,13 @@ export default function ProfileScreen() {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  // Обновлять профиль при возврате на экран
+  useFocusEffect(
+    React.useCallback(() => {
+      loadProfile();
+    }, [])
+  );
 
   const loadProfile = async () => {
     try {
@@ -58,6 +68,19 @@ export default function ProfileScreen() {
     } catch (error) {
       Alert.alert('Ошибка', 'Не удалось выйти');
     }
+  };
+
+  // Получаем интересы пользователя (mock или с сервера)
+  const interests = (profile as any)?.interests || [];
+
+  // Карточки групп по интересам
+  const INTEREST_GROUPS: Record<string, { title: string; link: string }> = {
+    'Спорт': { title: 'Группа любителей спорта Казани', link: 'https://t.me/+B4VXTaNGzD5mZGYy' },
+    'Дача': { title: 'Группа дачников Казани', link: 'https://t.me/+B4VXTaNGzD5mZGYy' },
+    'Искусство': { title: 'Группа любителей искусства Казани', link: 'https://t.me/+B4VXTaNGzD5mZGYy' },
+    'Технологии': { title: 'Группа по технологиям Казани', link: 'https://t.me/+B4VXTaNGzD5mZGYy' },
+    'Музыка': { title: 'Группа музыкантов Казани', link: 'https://t.me/+B4VXTaNGzD5mZGYy' },
+    // ... можно добавить другие интересы ...
   };
 
   if (loading) {
@@ -98,6 +121,16 @@ export default function ProfileScreen() {
           <View style={styles.section}>
             <TouchableOpacity
               style={styles.menuItem}
+              onPress={() => router.push('/../profile/groups')}
+            >
+              <View style={styles.menuItemLeft}>
+                <Settings size={20} color="#0891b2" />
+                <Text style={styles.menuItemText}>Группы по интересам</Text>
+              </View>
+              <ChevronRight size={20} color="#94a3b8" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuItem}
               onPress={() => router.push('/profile/edit')}
             >
               <View style={styles.menuItemLeft}>
@@ -106,7 +139,6 @@ export default function ProfileScreen() {
               </View>
               <ChevronRight size={20} color="#94a3b8" />
             </TouchableOpacity>
-
             <TouchableOpacity
               style={[styles.menuItem, styles.logoutButton]}
               onPress={handleLogout}
@@ -222,5 +254,38 @@ const styles = StyleSheet.create({
   },
   logoutText: {
     color: '#ef4444',
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#0f172a',
+    marginBottom: 12,
+  },
+  groupCard: {
+    backgroundColor: '#f1f5f9',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  groupTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#0f172a',
+    marginBottom: 4,
+  },
+  groupLink: {
+    color: '#0891b2',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  emptyGroupsText: {
+    color: '#64748b',
+    fontSize: 15,
+    marginBottom: 8,
   },
 }); 
