@@ -1,10 +1,14 @@
 import { View, Text, ScrollView, StyleSheet, Pressable, Animated } from 'react-native';
 import { Href, Link } from 'expo-router';
 import { Store, Recycle, MapPin, LucideIcon, ChevronRight, Wheat, Gift, Wrench, Briefcase, Calendar, ClipboardList, Dumbbell,  Stethoscope } from 'lucide-react-native';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { apiService } from '../utils/api';
+import { useFocusEffect } from 'expo-router';
+import React from 'react';
 
 export default function MiniAppsScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [age, setAge] = useState<number | null>(null);
   
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -13,6 +17,17 @@ export default function MiniAppsScreen() {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  // Обновлять возраст при возврате на экран
+  useFocusEffect(
+    React.useCallback(() => {
+      apiService.getCurrentUser().then(user => {
+        if (user && user.data && user.data.age) {
+          setAge(user.data.age);
+        }
+      });
+    }, [])
+  );
 
   const miniApps: Array<{icon: LucideIcon, title: string, description: string, href: Href}> = [
     {
@@ -82,6 +97,23 @@ export default function MiniAppsScreen() {
     }
   ];
   
+  // Группируем сервисы по возрасту
+  let mainServicesTitles: string[] = [];
+  if (age !== null) {
+    if (age <= 20) {
+      mainServicesTitles = ['Мероприятия', 'Спортивные секции', 'Фримаркет'];
+    } else if (age <= 40) {
+      mainServicesTitles = ['Спортивные секции', 'Медицинские организации', 'Местные службы'];
+    } else {
+      mainServicesTitles = ['Медицинские организации', 'Местные службы', 'Фермерский рынок'];
+    }
+  } else {
+    // Пока не загрузился возраст — дефолт
+    mainServicesTitles = ['Спортивные секции', 'Медицинские организации', 'Местные службы'];
+  }
+  const mainServices = miniApps.filter(app => mainServicesTitles.includes(app.title));
+  const otherServices = miniApps.filter(app => !mainServicesTitles.includes(app.title));
+
   return (
     <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
       <View style={styles.header}>
@@ -93,10 +125,28 @@ export default function MiniAppsScreen() {
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.miniAppsSection}>
-          <Text style={styles.sectionTitle}>Все приложения</Text>
+          <Text style={styles.sectionTitle}>Может понадобиться:</Text>
           <View style={styles.miniAppsGrid}>
-            {miniApps.map((app, index) => (
-              <Link key={index} href={app.href} asChild>
+            {mainServices.map((app, index) => (
+              <Link key={app.title} href={app.href} asChild>
+                <Pressable style={styles.miniAppButton}>
+                  <View style={styles.miniAppIcon}>
+                    <app.icon size={24} color="#0891b2" />
+                  </View>
+                  <View style={styles.miniAppContent}>
+                    <Text style={styles.miniAppTitle}>{app.title}</Text>
+                    <Text style={styles.miniAppDescription}>{app.description}</Text>
+                  </View>
+                  <ChevronRight size={20} color="#94a3b8" />
+                </Pressable>
+              </Link>
+            ))}
+          </View>
+
+          <Text style={[styles.sectionTitle, {marginTop: 32}]}>Все сервисы:</Text>
+          <View style={styles.miniAppsGrid}>
+            {otherServices.map((app, index) => (
+              <Link key={app.title} href={app.href} asChild>
                 <Pressable style={styles.miniAppButton}>
                   <View style={styles.miniAppIcon}>
                     <app.icon size={24} color="#0891b2" />
