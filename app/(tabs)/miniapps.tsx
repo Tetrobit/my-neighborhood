@@ -1,10 +1,14 @@
 import { View, Text, ScrollView, StyleSheet, Pressable, Animated } from 'react-native';
 import { Href, Link } from 'expo-router';
 import { Store, Recycle, MapPin, LucideIcon, ChevronRight, Wheat, Gift, Wrench, Briefcase, Calendar, ClipboardList, Dumbbell,  Stethoscope } from 'lucide-react-native';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { apiService } from '../utils/api';
+import { useFocusEffect } from 'expo-router';
+import React from 'react';
 
 export default function MiniAppsScreen() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [age, setAge] = useState<number | null>(null);
   
   useEffect(() => {
     Animated.timing(fadeAnim, {
@@ -13,6 +17,17 @@ export default function MiniAppsScreen() {
       useNativeDriver: true,
     }).start();
   }, []);
+
+  // Обновлять возраст при возврате на экран
+  useFocusEffect(
+    React.useCallback(() => {
+      apiService.getCurrentUser().then(user => {
+        if (user && user.data && user.data.age) {
+          setAge(user.data.age);
+        }
+      });
+    }, [])
+  );
 
   const miniApps: Array<{icon: LucideIcon, title: string, description: string, href: Href}> = [
     {
@@ -82,8 +97,20 @@ export default function MiniAppsScreen() {
     }
   ];
   
-  // Группируем сервисы
-  const mainServicesTitles = ['Спортивные секции', 'Медицинские организации', 'Местные службы'];
+  // Группируем сервисы по возрасту
+  let mainServicesTitles: string[] = [];
+  if (age !== null) {
+    if (age <= 20) {
+      mainServicesTitles = ['Мероприятия', 'Спортивные секции', 'Фримаркет'];
+    } else if (age <= 40) {
+      mainServicesTitles = ['Спортивные секции', 'Медицинские организации', 'Местные службы'];
+    } else {
+      mainServicesTitles = ['Медицинские организации', 'Местные службы', 'Фермерский рынок'];
+    }
+  } else {
+    // Пока не загрузился возраст — дефолт
+    mainServicesTitles = ['Спортивные секции', 'Медицинские организации', 'Местные службы'];
+  }
   const mainServices = miniApps.filter(app => mainServicesTitles.includes(app.title));
   const otherServices = miniApps.filter(app => !mainServicesTitles.includes(app.title));
 
