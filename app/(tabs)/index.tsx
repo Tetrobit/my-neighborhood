@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, StyleSheet, Image, Pressable, Animated } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Image, Pressable, Animated, TextInput } from 'react-native';
 import { Link, useRouter } from 'expo-router';
 import { Bell, MessageCircle, User, ChevronRight } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
@@ -12,6 +12,7 @@ export default function HomeScreen() {
   const [posts, setPosts] = useState<PostType[]>(POSTS);
   const [filter, setFilter] = useState<'nearby' | 'district'>('nearby');
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [search, setSearch] = useState('');
   
   useEffect(() => {
     // Animated.timing(fadeAnim, {
@@ -130,6 +131,17 @@ export default function HomeScreen() {
               </View>
             )}
           </View>
+          {/* Поле поиска функций приложения */}
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Я хочу..."
+            placeholderTextColor="#94a3b8"
+            value={search}
+            onChangeText={setSearch}
+            returnKeyType="search"
+            autoCorrect={false}
+            autoCapitalize="none"
+          />
         </View>
         <View style={styles.headerIcons}>
           <Link href="/notifications" asChild>
@@ -380,5 +392,18 @@ const styles = StyleSheet.create({
   dropdownItemTextActive: {
     color: '#0891b2',
     fontWeight: '600',
+  },
+  searchInput: {
+    marginTop: 12,
+    marginBottom: 0,
+    backgroundColor: '#f1f5f9',
+    borderRadius: 12,
+    borderTopRightRadius: 24,
+    borderBottomRightRadius: 24,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 16,
+    color: '#0f172a',
+    width: '100%',
   },
 });
