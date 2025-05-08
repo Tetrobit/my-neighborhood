@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, StyleSheet, Pressable, Animated } from 'react-native';
 import { Href, Link } from 'expo-router';
-import { Store, Recycle, MapPin, LucideIcon, ChevronRight, Wheat, Gift, Wrench, Briefcase, Calendar, ClipboardList, Dumbbell,  Stethoscope } from 'lucide-react-native';
+import { Store, Recycle, MapPin, LucideIcon, ChevronRight, Wheat, Gift, Wrench, Briefcase, Calendar, ClipboardList, Dumbbell,  Stethoscope, Home } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { apiService } from '../utils/api';
 import { useFocusEffect } from 'expo-router';
@@ -94,7 +94,13 @@ export default function MiniAppsScreen() {
       title: 'Опросы',
       description: 'Участвуйте в опросах и голосованиях',
       href: '/surveys'
-    }
+    },
+    {
+      icon: Home,
+      title: 'Аренда квартир',
+      description: 'Сдайте или найдите квартиру в аренду',
+      href: '/rentals',
+    },
   ];
   
   // Группируем сервисы по возрасту
