@@ -61,6 +61,14 @@ export default function InterestGroupsScreen() {
           </View>
         ) : (
           <ScrollView contentContainerStyle={styles.content}>
+            {/* Ссылка на чат Вахитовского района */}
+            <Pressable
+              style={styles.groupCard}
+              onPress={() => Linking.openURL('https://t.me/vahitovo_chat')}
+            >
+              <Text style={styles.groupTitle}>Чат Вахитовского района</Text>
+              <Text style={styles.groupLink}>Перейти в Telegram</Text>
+            </Pressable>
             {interests && interests.length > 0 ? (
               interests.map((interest: string) =>
                 INTEREST_GROUPS[interest] ? (
