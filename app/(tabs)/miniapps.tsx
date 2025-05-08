@@ -1,6 +1,6 @@
 import { View, Text, ScrollView, StyleSheet, Pressable, Animated } from 'react-native';
 import { Href, Link } from 'expo-router';
-import { Store, Recycle, MapPin, LucideIcon, ChevronRight, Wheat, Gift, Wrench, Briefcase, Calendar, ClipboardList, Dumbbell,  Stethoscope } from 'lucide-react-native';
+import { Store, Recycle, MapPin, LucideIcon, ChevronRight, Wheat, Gift, Wrench, Briefcase, Calendar, ClipboardList, Dumbbell,  Stethoscope, Baby } from 'lucide-react-native';
 import { useEffect, useRef, useState } from 'react';
 import { apiService } from '../utils/api';
 import { useFocusEffect } from 'expo-router';
@@ -53,6 +53,12 @@ export default function MiniAppsScreen() {
       title: 'Местные службы', 
       description: 'Сантехники, ремонтники, уборка и другие услуги',
       href: '/localservices' 
+    },
+    {
+      icon: Baby,
+      title: 'Кружки для детей и подростков',
+      description: 'Творческие, научные и языковые кружки для детей и подростков',
+      href: '/kidsclubs',
     },
     { 
       icon: Briefcase, 
