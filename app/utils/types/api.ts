@@ -104,3 +104,39 @@ export interface MedicalOrganization {
   description?: string;
   photos?: string[];
 }
+
+export interface KidsClub {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  schedule: Array<{
+    day: string;
+    time: string[];
+  }>;
+  image: string;
+  address: string;
+  phone: string;
+  contactPerson: string;
+  minAge: number;
+  maxAge: number;
+  category: string; // например, "Творчество", "Наука", "Танцы" и т.д.
+}
+
+export interface KidsClubOrganization {
+  id: string;
+  name: string;
+  address: string;
+  phone: string;
+  latitude: number;
+  longitude: number;
+  rating: number;
+  workingHours: Array<{
+    day: string;
+    start: string;
+    end: string;
+  }>;
+  clubs: KidsClub[];
+  description: string;
+  photos: string[];
+}
