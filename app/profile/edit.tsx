@@ -203,6 +203,15 @@ export default function EditProfileScreen() {
               </View>
             </View>
 
+            <View style={styles.field}>
+              <TouchableOpacity
+                style={[styles.saveButton, { backgroundColor: '#fbbf24', marginTop: 16 }]}
+                onPress={() => router.push('/rentals/add')}
+              >
+                <Text style={[styles.saveButtonText, { color: '#fff' }]}>Выставить квартиру на продажу</Text>
+              </TouchableOpacity>
+            </View>
+
             <TouchableOpacity
               style={[styles.button, saving && styles.buttonDisabled]}
               onPress={handleSave}
@@ -347,5 +356,14 @@ const styles = StyleSheet.create({
   },
   interestTextSelected: {
     color: '#ffffff',
+  },
+  saveButton: {
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    fontSize: 16,
+    fontWeight: '600',
   },
 }); 
